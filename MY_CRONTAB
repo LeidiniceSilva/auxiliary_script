@@ -1,0 +1,5 @@
+# MM HH DD MON DOW  COMMAND
+
+00 10 20 * * bash /home/leidinice/Documentos/esi/code/download_esi_ftp_padrao.sh > /home/leidinice/Documentos/esi/code/erro_log.txt
+
+ 
