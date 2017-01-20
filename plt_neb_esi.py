@@ -134,10 +134,9 @@ for i, season in enumerate(mes):
         figou1 = 'ESI_Regiao_NEB_4WK_{0}_{1}.png'.format(mes[i], ANO)
         title1 = u'Índice de Estresse Evaporativo \n{0} - {1}'.format(mes[i], ANO)
 
-        pm.plotmap(
-        Dmasked[0, :, :], lats, lons,
-        latsouthpoint=y1, latnorthpoint=y2, lonwestpoint=x1, loneastpoint=x2, ocean_mask=1, shapefile=None,
-        fig_name=figou1, fig_title=title1, barcolor=cor1, barlevs=lev1, barinf='both', barloc='right')
+        pm.plotmap(Dmasked[0, :, :], lats, lons, latsouthpoint=y1, latnorthpoint=y2, lonwestpoint=x1, loneastpoint=x2,
+                   ocean_mask=1, shapefile=None, fig_name=figou1, fig_title=title1, barcolor=cor1, barlevs=lev1,
+                   barinf='both', barloc='right')
 
         plt.close('all')
         plt.cla()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-""" Bias correction of pr_thiessen echam46 """
+""" Bias correction of pet_thiessen echam46 """
 
 import os
 import requests
@@ -19,16 +19,16 @@ import math
 from netCDF4 import Dataset
 from matplotlib import pyplot as plt
 
-from hidropy.utils.hidropy_utils import basin_dict
+from hidropy.utils.hidropy_utils import basin_dict, create_path
 from hidropy.utils.write_thiessen import write_thiessen
 
 __author__ = "Leidinice Silva"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = "19/12/2016"
-__description__ = " Bias correction of pr_thiessen echam46 "
+__description__ = "Bias correction of pet thiessen echam46"
 
 scale = 'monthly'
-param = 'pr'
+param = 'pet'
 period = 'calibration'
 home = os.path.expanduser("~")
 hidropy_path = "/home/leidinice/Documentos/musf"
@@ -71,8 +71,8 @@ if __name__ == '__main__':
         stc2 = []
         stc3 = []
 
-        link1 = home+"/io/inmet_ana_chirps/calibration/{0}/{1}_thiessen/{2}".format(scale, param, macro_name)
-        arq1 = "{0}/{1}_{2}_inmet_ana_chirps_obs_19610101_20141231_thiessen_{3}.nc".format(link1, param, scale, basin_fullname)
+        link1 = home+"/io/inmet_filled/calibration/{0}/{1}_thiessen/{2}".format(scale, param, macro_name)
+        arq1 = "{0}/{1}_{2}_inmet_filled_obs_19610101_20141231_thiessen_{3}.nc".format(link1, param, scale, basin_fullname)
         data1 = netCDF4.Dataset(arq1)
         variable1 = data1.variables[param][:].T
         time_obs = data1.variables['time']
@@ -83,7 +83,6 @@ if __name__ == '__main__':
         stc3.append(st[2::12])
 
         # open netcdf mod
-        st2 = []
         ste1 = []
         ste2 = []
         ste3 = []
@@ -154,15 +153,26 @@ if __name__ == '__main__':
 
         fig = plt.figure(figsize=(18, 6))
         plt.plot(np.array(data), obser, 'b', np.array(data), echam_b, '--k', np.array(data), echam_c, 'r')
-        plt.title(u'Pr_Thiessen - viés corrigido - Dez (JFM)\n bacia {0}'.format(basin_fullname))
+        plt.title(u'Pet_Thiessen - viés corrigido - Dec (JFM)\n bacia {0}'.format(basin_fullname))
         plt.ylim(0, 700)
         plt.ylabel(u'mm')
         plt.xlabel(u'anos')
         legenda = ('OBS', 'ECHAM_bru', 'ECHAM46_corri')
         plt.legend(legenda, frameon=False)
-        path_out1 = ('{0}/check_echam46_obs_basins/pr_thiessen/pr_thiessen_monthly_echam46_corrected/figures/dec/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
-        path_out2 = ('{0}/check_echam46_obs_basins/pr_thiessen/pr_thiessen_monthly_echam46_corrected/dec/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
-        plt.savefig(os.path.join(path_out1, 'pr_thiessen_obs_echam46_corrigido_{0}.png'.format(basin_fullname)))
+        path_out1 = ('{0}/check_echam46_obs_basins/pet_thiessen/pet_thiessen_monthly_echam46_corrected/figures/dec/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
+        path_out2 = ('{0}/check_echam46_obs_basins/pet_thiessen/pet_thiessen_monthly_echam46_corrected/dec/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
+
+        if not os.path.exists(path_out1):
+            create_path(path_out1)
+
+            if os.path.exists(path_out1):
+                print 'Done -->', path_out1
+            else:
+                print 'Not done -->', path_out1
+        else:
+            print 'Exist -->', path_out1
+
+        plt.savefig(os.path.join(path_out1, 'pet_thiessen_obs_echam46_corrigido_{0}.png'.format(basin_fullname)))
         plt.close('all')
         plt.cla()
 
@@ -171,7 +181,7 @@ if __name__ == '__main__':
             aux = echam_corri[k::30]
 
             dat1 = date(yea, 12, 1)
-            last_day_mon = calendar.monthrange(yea, 1)[1]
+            last_day_mon = calendar.monthrange(yea, 12)[1]
             dat2 = date(yea, 12, last_day_mon)
             new_start = dat1 + relativedelta(months=1)
             new_endd = dat2 + relativedelta(months=3)
@@ -179,6 +189,13 @@ if __name__ == '__main__':
             start_y = str(dat1)[0:4] + str(dat1)[5:7] + str(dat1)[8:10]
             new_y = str(new_start)[0:4] + str(new_start)[5:7] + str(new_start)[8:10]
             end_y = str(new_endd)[0:4] + str(new_endd)[5:7] + str(new_endd)[8:10]
+            # print start_y, new_y, end_y
+            # exit()
 
-            name_nc = write_thiessen(aux, new_y, end_y, 'monthly', 'pr', 'echam46_hind8110', 'fcst', 'corrigido_{0}'.format(basin_fullname),
+            if not os.path.exists(path_out2):
+                create_path(path_out2)
+
+            name_nc = write_thiessen(aux, new_y, end_y, 'monthly', 'pet', 'echam46_hind8110', 'fcst', 'corrigido_{0}'.format(basin_fullname),
                                      init_date=start_y, output_path=path_out2)
+
+

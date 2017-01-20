@@ -18,7 +18,7 @@ import numpy as np
 import calendar
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
-from hidropy.preprocessing.utils import basin_dict
+from hidropy.utils.hidropy_utils import basin_dict
 from matplotlib import pyplot as plt
 
 scale = 'monthly'

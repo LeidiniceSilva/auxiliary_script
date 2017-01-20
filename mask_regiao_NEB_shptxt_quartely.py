@@ -2,7 +2,7 @@
 
 __author__ = "Leidinice Silva"
 __copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Leidinice Silva", "Francisco Vasconcelos Junior", "Marcelo Rodrigues", "Enzo Pinheiro"]
+__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Marcelo Rodrigues"

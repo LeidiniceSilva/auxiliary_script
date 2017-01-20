@@ -2,15 +2,12 @@
 
 __author__ = "Leidinice Silva"
 __copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Leidinice Silva", "Francisco Vasconcelos Junior", "Marcelo Rodrigues", "Enzo Pinheiro"]
+__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Marcelo Rodrigues"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = 07/11/2016
-
-
-# Plot maps
 
 # Import Datas
 import netCDF4
@@ -74,7 +71,7 @@ for ANO in range(2009, 2012 + 1):
         #Declaring variables
         name = 'esi_12WK_{0:4d}_SA.nc'.format(ANO)
         data = netCDF4.Dataset(str(path_in) + name)
-        aux_in = data.variables['esi'][dic_esi[season], :, :] # Declaring variable under study to calculate the thiessenaux_in
+        aux_in = data.variables['esi'][dic_esi[season], :, :]
         aux_in = np.expand_dims(aux_in, axis=0)
 
         lat = data.variables['latitude'][:] # Declaring latitude

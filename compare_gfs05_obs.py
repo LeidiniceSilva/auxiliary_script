@@ -84,7 +84,6 @@ for basin in basins:
                 init_y = str(init)[0:4] + str(init)[5:7] + str(init)[8:10]
                 start_y = str(start)[0:4] + str(start)[5:7] + str(start)[8:10]
                 end_y = str(end)[0:4] + str(end)[5:7] + str(end)[8:10]
-                # print init_y, start_y, end_y
 
                 arq2 = "{0}/pr_daily_gfs05_fcst_{1}00_{2}_{3}_thiessen_{4}.nc".format(link2, init_y, start_y, end_y,
                                                                                       basin_fullname)
@@ -92,15 +91,11 @@ for basin in basins:
                 data_gfs05 = netCDF4.Dataset(arq2)
                 variable_gfs05 = data_gfs05.variables[param][:]
                 time_gfs05 = data_gfs05.variables['time']
-
                 st2 = variable_gfs05[0:7]
-
                 stg.append(np.sum(st2))
 
     # Creating weekly mobile media daily data
     dates = pd.date_range('2009-01-02', '2014-12-24', freq='D')
-    print dates
-    exit()
     OBS = pd.Series(stc[:], index=dates)
     GFS05 = pd.Series(np.float64(stg), index=dates)
     obsgfs05 = pd.DataFrame({'OBS': OBS, 'GFS05': GFS05})

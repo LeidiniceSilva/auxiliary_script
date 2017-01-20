@@ -2,7 +2,7 @@
 
 __author__ = "Leidinice Silva"
 __copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Jarbinhas Camurca", "Marcelo Rodrigues", "Diogenes Fontenele", "Enzo Pinheiro"]
+__credits__ = ["Jarbas Camurca", "Diogenes Fontenele", "Enzo Pinheiro"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Jarbas Camurca"
@@ -17,10 +17,10 @@ from netCDF4 import Dataset
 from PyFuncemeClimateTools import Thiessen
 import os
 from datetime import datetime
-from hidropy.preprocessing.write_thiessen import write_thiessen
-from hidropy.preprocessing.utils import basin_dict
-from datetime import timedelta, date
+from hidropy.utils.write_thiessen import write_thiessen
+from hidropy.utils.hidropy_utils import basin_dict, create_path
 
+home = os.path.expanduser("~")
 
 # Define parameters to calculate thiessen
 scale = 'daily'
@@ -59,11 +59,7 @@ def climate(variable, time): # Setting function to calculate the climatology
         else:
             index_01_jan = netCDF4.date2index(datetime(i, 1, 1, 12), time)
             index_31_dez = netCDF4.date2index(datetime(i, 12, 31, 12), time)
-
             dummy[j, 0:365] = variable[index_01_jan:index_31_dez +1]
-
-            # print variable[index_01_jan:index_31_dez +1]
-            # print dummy[j, 0:365]
 
     clim = np.nanmean(dummy[0:54, 0:365], axis=0)
 
@@ -86,8 +82,6 @@ for basin in basins:
     variable_etp = dataetp.variables[param][:].T
     variable_etp[np.where(np.ma.getmask(variable_etp))] = np.NaN
     time_etp = dataetp.variables['time']
-    print variable_etp
-    exit()
 
     # print variable.shape
     clim = climate(variable_etp, time_etp)
@@ -110,24 +104,13 @@ for basin in basins:
                 if month == 1 and id == 29:
                     icc = icc - 1
 
-
                 ic += 1
                 icc += 1
-
-    # print np.min(variable_etp)
-    # print np.max(variable_etp)
-    # print np.min(clim)
-    # print np.max(clim)
 
     variable_etp = variable_etp.reshape((-1, 1))
     np.savetxt('climatology_{0}.asc'.format(basin_fullname), clim)
 
-
-# create_path('../../dir_data/inmet/calibration/{0}/{1}_thiessen/{2}/'.format(scale, param, basin_dict(basin)[1]))
+    local_dir = '{0}/io/inmet/calibration/{0}/{1}_thiessen/{2}/'.format(home, scale, param, basin_dict(basin)[1])
+    create_path(local_dir)
     write_thiessen(variable_etp, start_date, end_date, scale,
-                   param, 'inmet', 'obs', '{0}'.format(basin_fullname), output_path='')
-    # output_path='../../dir_data/inmet/calibration/{0}/{1}_thiessen/{2}/'.format(scale, param, basin_dict(basin)[1]))
-
-    # upload_obs_opendap(basin, 'pet', 'monthly', 'inmet', '../../dir_data')
-
-    dataetp.close()
+                   param, 'inmet', 'obs', '{0}'.format(basin_fullname), output_path=local_dir)

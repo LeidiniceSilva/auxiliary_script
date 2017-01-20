@@ -3,7 +3,7 @@
 
 __author__ = "Leidinice Silva"
 __copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Jarbinhas Camurca", "Marcelo Rodrigues", "Diogenes Fontenele", "Enzo Pinheiro"]
+__credits__ = ["Jarbas Camurca", "Diogenes Fontenele"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Jarbas Camurca"

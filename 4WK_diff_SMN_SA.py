@@ -2,7 +2,7 @@
 
 __author__ = "Leidinice Silva"
 __copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues", "Enzo Pinheiro"]
+__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Marcelo Rodrigues"
@@ -71,13 +71,10 @@ for i, ANO in enumerate(ANOS):
             print "Dados faltando. Assumindo NAN."
 
 # Making the difference
-
-# mymask_correta = np.tile(mask, (mensal.shape[0], 1, 1))
 mensal = np.ma.array(mensal, mask=mask)
 mask = mask[0:23, :, :]
 
 diff = np.full((mensal.shape[0]-1, lat.shape[0], lon.shape[0]), np.nan)
-# mymask_diff = np.tile(mask, (diff.shape[0], 1, 1))
 diff = np.ma.array(diff, mask=mask)
 
 for m in range(mensal.shape[0]-1):
@@ -162,10 +159,9 @@ for i, ANO in enumerate(ANOS):
 
             print np.nanmax(diff), np.nanmin(diff)
 
-            pm.plotmap(
-                diff[cont, :, :], lat, lon,
-                latsouthpoint=y1, latnorthpoint=y2, lonwestpoint=x1, loneastpoint=x2, ocean_mask=1,
-                fig_name=figou1, fig_title=title1, barcolor=cor1, barlevs=lev1, barinf='both', barloc='right')
+            pm.plotmap(diff[cont, :, :], lat, lon, latsouthpoint=y1, latnorthpoint=y2, lonwestpoint=x1, loneastpoint=x2,
+                       ocean_mask=1, fig_name=figou1, fig_title=title1, barcolor=cor1, barlevs=lev1, barinf='both',
+                       barloc='right')
 
             plt.close('all')
             plt.cla()

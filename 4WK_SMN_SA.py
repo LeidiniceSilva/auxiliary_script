@@ -2,7 +2,7 @@
 
 __author__ = "Leidinice Silva"
 __copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues", "Enzo Pinheiro"]
+__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Marcelo Rodrigues"
@@ -14,7 +14,7 @@ __date__ = 07/25/2016
 
 # Import Datas
 import netCDF4
-import matplotlib as mpl ; mpl.use('Agg')  # Descomente para não mostrar a janela em cada plot
+import matplotlib as mpl; mpl.use('Agg')  # Descomente para não mostrar a janela em cada plot
 import re
 import wget
 import numpy as np
@@ -30,8 +30,7 @@ def txtbox(text, xpos, ypos, fontsize, (col, lin, pos)):
     txtsp = plt.subplot(col, lin, pos)
     txt = text
     props = dict(boxstyle='round', facecolor='wheat', alpha=0)
-    txtsp.text(xpos, ypos, txt, transform=txtsp.transAxes, fontsize=fontsize,
-            verticalalignment='top', bbox=props)
+    txtsp.text(xpos, ypos, txt, transform=txtsp.transAxes, fontsize=fontsize, verticalalignment='top', bbox=props)
 
 # Directories of input and output data
 

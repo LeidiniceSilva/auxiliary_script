@@ -2,7 +2,7 @@
 
 __author__ = "Leidinice Silva"
 __copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Leidinice Silva", "Francisco Vasconcelos Junior", "Marcelo Rodrigues", "Enzo Pinheiro"]
+__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Marcelo Rodrigues"
@@ -11,7 +11,6 @@ __date__ = 07/11/2016
 
 
 # Plot maps
-
 # Import Datas
 import netCDF4
 import matplotlib as mpl ; mpl.use('Agg')  # Descomente para não mostrar a janela em cada plot
@@ -66,15 +65,10 @@ dic_esi = {'NDJ': 0, 'DJF': 1, 'JFM': 2, 'FMA': 3, 'MAM': 4, 'AMJ': 5, 'MJJ': 6,
            'SON': 10, 'OND': 11}
 
 for ANO in range(2009, 2012 + 1):
-
     for season in trim:
-
-        print season, ANO
-
-        #Declaring variables
         name = 'spi_3_{0:04d}.nc'.format(ANO)
         data = netCDF4.Dataset(str(path_in) + name)
-        aux_in = data.variables['spi'][dic_esi[season], :, :] # Declaring variable under study to calculate the thiessenaux_in
+        aux_in = data.variables['spi'][dic_esi[season], :, :]
         aux_in = np.expand_dims(aux_in, axis=0)
 
         lat = data.variables['lat'][:] # Declaring latitude
@@ -90,10 +84,9 @@ for ANO in range(2009, 2012 + 1):
 
         print 'Ploting {0} - {1}'.format(season, ANO)
 
-        pm.plotmap(
-        Dmasked[0, :, :], lat, lon,
-        latsouthpoint=y1, latnorthpoint=y2, lonwestpoint=x1, loneastpoint=x2, ocean_mask=0,
-        fig_name=figou1, fig_title=title1, barcolor=cor1, barlevs=lev1, barinf='both', barloc='right')
+        pm.plotmap(Dmasked[0, :, :], lat, lon, latsouthpoint=y1, latnorthpoint=y2, lonwestpoint=x1, loneastpoint=x2,
+                   ocean_mask=0, fig_name=figou1, fig_title=title1, barcolor=cor1, barlevs=lev1, barinf='both',
+                   barloc='right')
 
         del aux_in
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-""" Bias correction of pr_thiessen echam46 """
+""" Bias correction of flow echam46 """
 
 import os
 import requests
@@ -15,20 +15,20 @@ import scipy.stats as ss
 import plotly.plotly as py
 import plotly.tools as tls
 import netCDF4
-import math
 from netCDF4 import Dataset
 from matplotlib import pyplot as plt
 
 from hidropy.utils.hidropy_utils import basin_dict
-from hidropy.utils.write_thiessen import write_thiessen
+from hidropy.utils.write_flow import write_flow
+
 
 __author__ = "Leidinice Silva"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = "19/12/2016"
-__description__ = " Bias correction of pr_thiessen echam46 "
+__description__ = " Bias correction of flow echam46 "
 
 scale = 'monthly'
-param = 'pr'
+param = 'flow'
 period = 'calibration'
 home = os.path.expanduser("~")
 hidropy_path = "/home/leidinice/Documentos/musf"
@@ -58,29 +58,30 @@ if __name__ == '__main__':
     arguments()
 
     folders = os.listdir("{0}/hidropy/hidropy/shapes/basins/".format(hidropy_path))
-    basins = sorted(basin_dict(micro=True))  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< change here!!
+    basins = sorted(basin_dict(micro=True, basin_name='iguacu'))  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< change here!!
 
     for basin in basins:
         basin_fullname = basin_dict(basin)[2]
         macro_name = basin_dict(basin)[1]
 
         # open netcdf obs
-        st = []
+        # st = []
         st1 = []
         stc1 = []
         stc2 = []
         stc3 = []
 
-        link1 = home+"/io/inmet_ana_chirps/calibration/{0}/{1}_thiessen/{2}".format(scale, param, macro_name)
-        arq1 = "{0}/{1}_{2}_inmet_ana_chirps_obs_19610101_20141231_thiessen_{3}.nc".format(link1, param, scale, basin_fullname)
+        link1 = home+"/io/flow/smap_monthly/obs/{0}".format(macro_name)
+        arq1 = "{0}/{1}_{2}_inmet_ana_chirps_obs_19770215_20161115_smap_{3}.nc".format(link1, param, scale, basin_fullname)
         data1 = netCDF4.Dataset(arq1)
         variable1 = data1.variables[param][:].T
         time_obs = data1.variables['time']
-        st = variable1[252:603]
-        st1 = variable1[240:600]
-        stc1.append(st[0::12])
-        stc2.append(st[1::12])
-        stc3.append(st[2::12])
+
+        # st = variable1[252:603]
+        st1 = variable1[47:407]
+        stc1.append(st1[1::12])
+        stc2.append(st1[2::12])
+        stc3.append(st1[3::12])
 
         # open netcdf mod
         st2 = []
@@ -88,23 +89,11 @@ if __name__ == '__main__':
         ste2 = []
         ste3 = []
 
-        link2 = home + "/io/echam46/hind8110/dec/monthly/{0}_thiessen/{1}".format(param, macro_name)
-        for year in range(1981, 2011):
+        link2 = home + "/io/{0}/smap_monthly/echam46/jan/{1}".format(param, macro_name)
+        for year in range(1981, 2010+1):
+            arq2 = "{0}/{1}_{2}_echam46_hind8110_fcst_{3}0101_{3}0215_{3}0415_smap_{4}.nc".format(link2, param, scale,
+                                                                                              year, basin_fullname)
 
-            last_day = calendar.monthrange(year, 3)[1]
-
-            start_date = date(year, 12, 1)
-            new_year = start_date + relativedelta(months=1)
-            new_start_date = date(year, 12, last_day)
-            end_year = new_start_date + relativedelta(months=3)
-
-            new_year_y = str(new_year)[0:4] + str(new_year)[5:7] + str(new_year)[8:10]
-            end_year_y = str(end_year)[0:4] + str(end_year)[5:7] + str(end_year)[8:10]
-
-            arq2 = "{0}/{1}_{2}_echam46_hind8110_fcst_{3}1201_{4}_{5}_thiessen_{6}.nc".format(link2, param, scale,
-                                                                                                  year, new_year_y,
-                                                                                                  end_year_y,
-                                                                                                  basin_fullname)
             data_echam46 = netCDF4.Dataset(arq2)
             variable_echam46 = data_echam46.variables[param][:]
             time_echam46 = data_echam46.variables['time']
@@ -132,6 +121,14 @@ if __name__ == '__main__':
         echam_corri[30:60] = pr_corrected2
         echam_corri[60:90] = pr_corrected3
 
+        print basin_fullname
+        print len(observado), len(echam_bru), len(echam_corri)
+        print type(observado), type(echam_bru), type(echam_corri)
+        print np.min(observado), np.max(observado)
+        print np.min(echam_bru), np.max(echam_bru)
+        print np.min(echam_corri), np.max(echam_corri)
+        print observado, echam_bru, echam_corri
+
         obser = []
         for m in range(0, 30):
             obser = np.concatenate((obser, observado[m::30]), axis=0)
@@ -146,7 +143,6 @@ if __name__ == '__main__':
 
         # Ploting graphs obser x echam
         print basin_fullname
-
         data = []
         for ano in range(1981, 2011):
             for mes in range(1, 4):
@@ -154,31 +150,32 @@ if __name__ == '__main__':
 
         fig = plt.figure(figsize=(18, 6))
         plt.plot(np.array(data), obser, 'b', np.array(data), echam_b, '--k', np.array(data), echam_c, 'r')
-        plt.title(u'Pr_Thiessen - viés corrigido - Dez (JFM)\n bacia {0}'.format(basin_fullname))
-        plt.ylim(0, 700)
+        plt.title(u'Vazão - viés corrigido - Jan (FMA)\n bacia {0}'.format(basin_fullname))
+        plt.ylim(0, 5000)
         plt.ylabel(u'mm')
         plt.xlabel(u'anos')
-        legenda = ('OBS', 'ECHAM_bru', 'ECHAM46_corri')
+        legenda = ('OBS', 'VAZAO_bru', 'VAZAO_corri')
         plt.legend(legenda, frameon=False)
-        path_out1 = ('{0}/check_echam46_obs_basins/pr_thiessen/pr_thiessen_monthly_echam46_corrected/figures/dec/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
-        path_out2 = ('{0}/check_echam46_obs_basins/pr_thiessen/pr_thiessen_monthly_echam46_corrected/dec/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
-        plt.savefig(os.path.join(path_out1, 'pr_thiessen_obs_echam46_corrigido_{0}.png'.format(basin_fullname)))
+        path_out1 = ('{0}/check_echam46_obs_basins/flow_corrected/figures/jan/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
+        path_out2 = ('{0}/check_echam46_obs_basins/flow_corrected/jan/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
+        plt.savefig(os.path.join(path_out1, 'vazao_echam46_corrigido_{0}.png'.format(basin_fullname)))
         plt.close('all')
         plt.cla()
 
         # Write output thiessen in netCDF4 file
-        for k, yea in enumerate(range(1981, 2011)):
+        for k, yea in enumerate(range(1981, 2010+1)):
             aux = echam_corri[k::30]
 
-            dat1 = date(yea, 12, 1)
-            last_day_mon = calendar.monthrange(yea, 1)[1]
-            dat2 = date(yea, 12, last_day_mon)
+            inid = date(yea, 1, 1)
+            dat1 = date(yea, 1, 15)
+            dat2 = date(yea, 1, 15)
             new_start = dat1 + relativedelta(months=1)
             new_endd = dat2 + relativedelta(months=3)
 
-            start_y = str(dat1)[0:4] + str(dat1)[5:7] + str(dat1)[8:10]
+            start_y = str(inid)[0:4] + str(inid)[5:7] + str(inid)[8:10]
             new_y = str(new_start)[0:4] + str(new_start)[5:7] + str(new_start)[8:10]
             end_y = str(new_endd)[0:4] + str(new_endd)[5:7] + str(new_endd)[8:10]
 
-            name_nc = write_thiessen(aux, new_y, end_y, 'monthly', 'pr', 'echam46_hind8110', 'fcst', 'corrigido_{0}'.format(basin_fullname),
-                                     init_date=start_y, output_path=path_out2)
+            name_nc = write_flow(aux, new_y, end_y, 'monthly', 'flow', 'echam46_hind8110', 'fcst', 'corrected_{0}'.format(basin_fullname),
+                                 'smap', init_date=start_y, output_path=path_out2)
+

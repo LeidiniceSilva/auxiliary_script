@@ -2,14 +2,13 @@
 
 __author__ = "Leidinice Silva"
 __copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues", "Enzo Pinheiro"]
+__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Marcelo Rodrigues"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = 07/25/2016
 
-# Description
 # Monitoring Evaporative Stress Index
 
 # Import Datas
@@ -83,10 +82,8 @@ data = netCDF4.Dataset(str(path_in) + name)
 
 lat = data.variables['latitude'][:]  # Declaring latitude
 lon = data.variables['longitude'][:]  # Declaring longitude
-
 min_lat, min_lon, min_lat_index, min_lon_index = Dg.gridpoint(lat, lon, -20., -50.0)
 max_lat, max_lon, max_lat_index, max_lon_index = Dg.gridpoint(lat, lon, 0., -34.)
-
 lats = lat[min_lat_index:max_lat_index]
 lons = lon[min_lon_index:max_lon_index]
 
