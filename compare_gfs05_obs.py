@@ -16,11 +16,7 @@ import numpy as np
 import pandas as pd
 import os
 import calendar
-import matplotlib.gridspec as gridspec
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from pandas import Series, DataFrame
-from hidropy.preprocessing.utils import basin_dict
+from hidropy.utils.hidropy_utils import basin_dict
 from matplotlib import pyplot as plt
 
 scale = 'daily'
@@ -39,7 +35,6 @@ def txtbox(text, xpos, ypos, fontsize, (col, lin, pos)):
     txtsp.text(xpos, ypos, txt, transform=txtsp.transAxes, fontsize=fontsize, verticalalignment='top',
                bbox=props)
 
-
 folders = os.listdir("{0}/hidropy/hidropy/shapes/basins/".format(hidropy_path))
 basins = sorted(basin_dict(micro=True, basin_name='tiete'))  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< change here!!
 
@@ -52,7 +47,8 @@ for basin in basins:
 
     # open netcdf
     link1 = home+"/io/inmet_ana_chirps_merge/calibration/{0}/{1}_thiessen/{2}".format(scale, param, macro_name)
-    arq1 = "{0}/{1}_{2}_inmet_ana_chirps_merge_obs_19610101_20141231_thiessen_{3}.nc".format(link1, param, scale, basin_fullname)
+    arq1 = "{0}/{1}_{2}_inmet_ana_chirps_merge_obs_19610101_20141231_thiessen_{3}.nc".format(link1, param, scale,
+                                                                                             basin_fullname)
     data1 = netCDF4.Dataset(arq1)
     variable1 = data1.variables[param][:].T
     time_chirps = data1.variables['time']
@@ -105,7 +101,8 @@ for basin in basins:
     gfs_nan = GFS05.isnull().sum()
     obsgfs05['2009':'2014'].plot()
     txtbox(u'N° de falhas\nGFS05 = {0}\nOBS = {1}'.format(gfs_nan, obs_nan), 0.79, 0.87, 9, (1, 1, 1))
-    plt.title(u'Thiessen de precipitação semanal da bacia {0}\n Período: 02/01/2009 - 24/12/2014'.format(basin_fullname))
+    plt.title(u'Thiessen de precipitação semanal da bacia {0}\n'
+              u' Período: 02/01/2009 - 24/12/2014'.format(basin_fullname))
     plt.ylabel(u'mm')
     legenda = ('GFS05', 'OBS')
     plt.legend(legenda, frameon=False)

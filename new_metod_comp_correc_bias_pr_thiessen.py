@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-""" Bias correction of pr_thiessen echam46 by gumbel"""
+""" Bias correction of pr_thiessen echam46 by desagre gamma """
 
 import os
+import requests
 import calendar
 import argparse
 from datetime import date
@@ -31,15 +32,17 @@ hidropy_path = "/home/leidinice/Documentos/musf"
 
 def gamma_correction(hind, clim_obs, fcst):
 
-    sh_mod = np.nanstd(hind) * np.pi / np.sqrt(6)
-    sh_obs = np.nanmean(clim_obs) - 0.57721 * sh_mod
+    mod = np.sort(hind)
+    alpha_mod, loc_mod, beta_mod = ss.gamma.fit(hind, loc=0)
+    obs = np.sort(clim_obs)
+    alpha_obs, loc_obs, beta_obs = ss.gamma.fit(obs, loc=0)
 
     corrected_fcst = []
 
     for i in fcst:
 
-        prob = ss.genextreme.cdf(i, 1.5, loc=sh_mod, scale=sh_mod)
-        corrected_fcst.append(ss.genextreme.ppf(prob, 1.5, loc=sh_obs, scale=sh_obs))
+        prob = ss.gamma.cdf(i, alpha_mod, scale=beta_mod)
+        corrected_fcst.append(ss.gamma.ppf(prob, alpha_obs, scale=beta_obs))
 
     return corrected_fcst
 
@@ -66,27 +69,23 @@ if __name__ == '__main__':
         st3 = []
         st4 = []
 
-        stc_obs1 = []
-        stc_obs2 = []
-        stc_obs3 = []
+        stc_obs = []
 
         link1 = home+"/io/inmet_ana_chirps/calibration/{0}/{1}_thiessen/{2}".format(scale, param, macro_name)
-        arq1 = "{0}/{1}_{2}_inmet_ana_chirps_obs_19610101_20141231_thiessen_{3}.nc".format(link1, param, scale,
-                                                                                           basin_fullname)
+        arq1 = "{0}/{1}_{2}_inmet_ana_chirps_obs_19610101_20141231_thiessen_{3}.nc".format(link1, param, scale, basin_fullname)
         data_obs = netCDF4.Dataset(arq1)
         variable_obs = data_obs.variables[param][:].T
         time_obs = data_obs.variables['time']
         st1 = variable_obs[240:600]
         st2 = variable_obs[252:603]
         st3 = variable_obs[600:648]
-        stc_obs1.append(st1[8::12])
-        stc_obs2.append(st1[9::12])
-        stc_obs3.append(st1[10::12])
 
+        stc_obs.append(st1[8::12] + st1[9::12] + st1[10::12])
+
+        sto = []
         sto1 = []
         sto2 = []
         sto3 = []
-
         link = home + "/io/inmet_ana_chirps/operation/{0}/{1}_thiessen/{2}".format(scale, param, macro_name)
         arq = "{0}/{1}_{2}_inmet_ana_chirps_obs_20150101_20161130_thiessen_{3}.nc".format(link, param, scale,
                                                                                           basin_fullname)
@@ -94,19 +93,18 @@ if __name__ == '__main__':
         variable_obs2 = data_obs2.variables[param][:].T
         time_obs2 = data_obs2.variables['time']
         st4 = variable_obs2[0:23]
-
         observ = np.full(71, np.nan)
         observ[0:48] = st3
         observ[48:71] = st4
+
+        sto.append(observ[8::12] + observ[9::12] + observ[10::12])
+
         sto1.append(observ[8::12])
         sto2.append(observ[9::12])
         sto3.append(observ[10::12])
 
         # open netcdf hind
-        ste_hind1 = []
-        ste_hind2 = []
-        ste_hind3 = []
-
+        ste_hind = []
         link2 = home + "/io/echam46/hind8110/aug/monthly/{0}_thiessen/{1}".format(param, macro_name)
         for year2 in range(1981, 2011):
             arq2 = "{0}/{1}_{2}_echam46_hind8110_fcst_{3}0801_{3}0901_{3}1130_thiessen_{4}.nc".format(link2, param,
@@ -115,11 +113,10 @@ if __name__ == '__main__':
             data_hind = netCDF4.Dataset(arq2)
             variable_hind = data_hind.variables[param][:]
             time_hind = data_hind.variables['time']
-            ste_hind1.append(variable_hind[0::3])
-            ste_hind2.append(variable_hind[1::3])
-            ste_hind3.append(variable_hind[2::3])
+            ste_hind.append(np.sum(variable_hind))
 
         # open netcdf fcst
+        ste_fcst = []
         ste_fcst1 = []
         ste_fcst2 = []
         ste_fcst3 = []
@@ -132,30 +129,37 @@ if __name__ == '__main__':
             data_fcst = netCDF4.Dataset(arq3)
             variable_fcst = data_fcst.variables[param][:]
             time_fcst = data_fcst.variables['time']
+            ste_fcst.append(np.sum(variable_fcst))
+
             ste_fcst1.append(variable_fcst[0::3])
             ste_fcst2.append(variable_fcst[1::3])
             ste_fcst3.append(variable_fcst[2::3])
 
         # Calculate vies and pr_correction echam46
+        mon1_corr = []
+        mon2_corr = []
+        mon3_corr = []
 
-        pr_corrected1 = gamma_correction(ste_hind1, stc_obs1[0], np.squeeze(ste_fcst1))
-        pr_corrected2 = gamma_correction(ste_hind2, stc_obs2[0], np.squeeze(ste_fcst2))
-        pr_corrected3 = gamma_correction(ste_hind3, stc_obs3[0], np.squeeze(ste_fcst3))
+        pr_corrected = gamma_correction(np.squeeze(ste_hind), np.squeeze(stc_obs), np.squeeze(ste_fcst))
+
+        mon1_corr.append((np.squeeze(ste_fcst1) / np.squeeze(ste_fcst)) * pr_corrected)
+        mon2_corr.append((np.squeeze(ste_fcst2) / np.squeeze(ste_fcst)) * pr_corrected)
+        mon3_corr.append((np.squeeze(ste_fcst3) / np.squeeze(ste_fcst)) * pr_corrected)
 
         obser = np.full((18), np.nan)
-        obser[0:6] = sto1[0]
-        obser[6:12] = sto2[0]
-        obser[12:18] = sto3[0]
+        obser[0:6] = np.squeeze(sto1)
+        obser[6:12] = np.squeeze(sto2)
+        obser[12:18] = np.squeeze(sto3)
 
         echam_fcst = np.full((18), np.nan)
-        echam_fcst[0:6] = ste_fcst1
-        echam_fcst[6:12] = ste_fcst2
-        echam_fcst[12:18] = ste_fcst3
+        echam_fcst[0:6] = np.squeeze(ste_fcst1)
+        echam_fcst[6:12] = np.squeeze(ste_fcst2)
+        echam_fcst[12:18] = np.squeeze(ste_fcst3)
 
         echam_corri = np.full((18), np.nan)
-        echam_corri[0:6] = pr_corrected1
-        echam_corri[6:12] = pr_corrected2
-        echam_corri[12:18] = pr_corrected3
+        echam_corri[0:6] = np.squeeze(mon1_corr)
+        echam_corri[6:12] = np.squeeze(mon2_corr)
+        echam_corri[12:18] = np.squeeze(mon3_corr)
 
         observado = []
         for m in range(0, 6):
@@ -176,28 +180,18 @@ if __name__ == '__main__':
             for mes in range(1, 4):
                 data.append(datetime(ano, mes, 1))
 
-        obs_ini = np.full((90), np.nan)
-        obs_ini[0:30] = stc_obs1[0]
-        obs_ini[30:60] = stc_obs2[0]
-        obs_ini[60:90] = stc_obs3[0]
-
-        echam_bru = np.full((90), np.nan)
-        echam_bru[0:30] = ste_hind1
-        echam_bru[30:60] = ste_hind2
-        echam_bru[60:90] = ste_hind3
-
         fig = plt.figure(figsize=(14, 8))
-        plt.plot(np.array(data), observado, 'b', np.array(data), echam_b, '--k', np.array(data), echam_c, 'r')
-        plt.title(u'Comparação Pr_Thiessen - OBS x BRUTO x CORRIGIDO - Ago (S-O-N)\n bacia {0}'.format(basin_fullname))
+        plt.plot(np.array(data), observado, 'b', np.array(data), echam_b, 'k', np.array(data), echam_c, 'r')
+        plt.title(u'Comparação da Pr_Thiessen - OBS x BRUTO x CORRIGIDO - Ago (S-O-N)\n bacia {0}'.format(basin_fullname))
         plt.ylim(0, 700)
         plt.ylabel(u'mm')
         plt.xlabel(u'anos')
         legenda = ('OBS', 'BRUTO', 'CORRIGIDO')
         plt.legend(legenda, frameon=False)
-        path_out1 = ('{0}/check_echam46_obs_basins/pr_thiessen/pr_thiessen_monthly_echam46_corrected_operation/gumbel/'
-                     'figures/aug/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
-        path_out2 = ('{0}/check_echam46_obs_basins/pr_thiessen/pr_thiessen_monthly_echam46_corrected_operation/gumbel/'
-                     'aug/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
+        path_out1 = ('{0}/results/results_echam46_basins/pr_thiessen/monthly_corrected_operation/acc_gamma/figures/'
+                     'ago/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
+        path_out2 = ('{0}/results/results_echam46_basins/pr_thiessen/monthly_corrected_operation/acc_gamma/'
+                     'ago/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
 
         if not os.path.exists(path_out1):
             create_path(path_out1)
@@ -226,7 +220,7 @@ if __name__ == '__main__':
                 create_path(path_out2)
 
             name_nc = write_thiessen(aux, new_y, end_y, 'monthly', 'pr', 'echam46_hind8110', 'fcst',
-                                     'corrigido_{0}'.format(basin_fullname), init_date=start_y, output_path=path_out2)
+                                     'correc_{0}'.format(basin_fullname), init_date=start_y, output_path=path_out2)
 
 
 

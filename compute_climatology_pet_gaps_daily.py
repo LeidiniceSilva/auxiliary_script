@@ -13,14 +13,10 @@ __date__ = 9 / 18 / 2016
 import netCDF4
 import numpy as np
 import calendar
-from netCDF4 import Dataset
-from PyFuncemeClimateTools import Thiessen
 import os
 from datetime import datetime
 from hidropy.utils.write_thiessen import write_thiessen
 from hidropy.utils.hidropy_utils import basin_dict, create_path
-
-home = os.path.expanduser("~")
 
 # Define parameters to calculate thiessen
 scale = 'daily'
@@ -28,10 +24,11 @@ param = 'pet'
 start_date = '19610101'
 end_date = '20141231'
 hidropy_path = "/home/leidinice/Documentos/musf"
+home = os.path.expanduser("~")
+
 
 init_date = datetime.strptime(start_date, '%Y%m%d')
 final_date = datetime.strptime(start_date, '%Y%m%d')
-
 ano = range(1961, 2015)
 
 
@@ -112,5 +109,5 @@ for basin in basins:
 
     local_dir = '{0}/io/inmet/calibration/{0}/{1}_thiessen/{2}/'.format(home, scale, param, basin_dict(basin)[1])
     create_path(local_dir)
-    write_thiessen(variable_etp, start_date, end_date, scale,
-                   param, 'inmet', 'obs', '{0}'.format(basin_fullname), output_path=local_dir)
+    write_thiessen(variable_etp, start_date, end_date, scale, param, 'inmet', 'obs', '{0}'.format(basin_fullname),
+                   output_path=local_dir)

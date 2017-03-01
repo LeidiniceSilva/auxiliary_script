@@ -30,7 +30,7 @@ hidropy_path = "/home/leidinice/Documentos/musf"
 home = os.path.expanduser("~")
 
 folders = os.listdir("{0}/hidropy/hidropy/shapes/basins/".format(hidropy_path))
-basins = sorted(basin_dict(micro=True, basin_name='tocantins'))  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< change here!!
+basins = sorted(basin_dict(micro=True, basin_name='uruguai'))  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< change here!!
 
 for basin in basins:
     basin_fullname = basin_dict(basin)[2]
@@ -59,20 +59,12 @@ for basin in basins:
     ste2 = []
     ste3 = []
 
-    link2 = home + "/io/echam46/hind8110/dec/monthly/{0}_thiessen/{1}".format(param, macro_name)
+    link2 = home + "/io/echam46/hind8110/jan/monthly/{0}_thiessen/{1}".format(param, macro_name)
     for year in range(1981, 2010 + 1):
 
-        last_day = calendar.monthrange(year, 3)[1]
-        start_date = date(year, 12, 1)
-        new_year = start_date + relativedelta(months=1)
-        new_start_date = date(year, 12, last_day)
-        end_year = new_start_date + relativedelta(months=3)
-        new_y = str(new_year)[0:4] + str(new_year)[5:7] + str(new_year)[8:10]
-        end_y = str(end_year)[0:4] + str(end_year)[5:7] + str(end_year)[8:10]
+        arq2 = "{0}/{1}_{2}_echam46_hind8110_fcst_{3}0101_{3}0201_{3}0430_thiessen_{4}.nc".format(link2, param, scale,
+                                                                                          year, basin_fullname)
 
-        arq2 = "{0}/{1}_{2}_echam46_hind8110_fcst_{3}1201_{4}_{5}_thiessen_{6}.nc".format(link2, param, scale,
-                                                                                          year, new_y, end_y,
-                                                                                          basin_fullname)
         data_echam46 = netCDF4.Dataset(arq2)
         variable_echam46 = data_echam46.variables[param][:]
         time_echam46 = data_echam46.variables['time']
@@ -83,17 +75,21 @@ for basin in basins:
 
     # Calculate vies e corr pr_thiessen
     print basin_fullname
-    vies1 = np.nanmean(ste1 - stc1[0])
-    vies2 = np.nanmean(ste2 - stc2[0])
-    vies3 = np.nanmean(ste3 - stc3[0])
-
-    corr1 = numpy.corrcoef(stc1[0], np.array(ste1).squeeze())
-    corr2 = numpy.corrcoef(stc2[0], np.array(ste2).squeeze())
-    corr3 = numpy.corrcoef(stc3[0], np.array(ste3).squeeze())
-
-    print vies1, round(corr1[0][1], 3)
-    print vies2, round(corr2[0][1], 3)
-    print vies3, round(corr3[0][1], 3)
+    print ste1
+    print ste2
+    print ste3
+    # vies1 = np.nanmean(np.squeeze(ste1) - np.squeeze(stc1))
+    # vies2 = np.nanmean(np.squeeze(ste2) - np.squeeze(stc2))
+    # vies3 = np.nanmean(np.squeeze(ste3) - np.squeeze(stc3))
+    #
+    #
+    # corr1 = numpy.corrcoef(np.squeeze(stc1), np.squeeze(ste1))
+    # corr2 = numpy.corrcoef(np.squeeze(stc2), np.squeeze(ste2))
+    # corr3 = numpy.corrcoef(np.squeeze(stc3), np.squeeze(ste3))
+    #
+    # print vies1, round(corr1[0][1], 3)
+    # print vies2, round(corr2[0][1], 3)
+    # print vies3, round(corr3[0][1], 3)
 
 exit()
 

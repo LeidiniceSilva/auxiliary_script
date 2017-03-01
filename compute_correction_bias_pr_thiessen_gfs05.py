@@ -1,23 +1,17 @@
 # -*- coding: utf-8 -*-
 
-""" Bias correction of pr_thiessen gfs05 """
+""" Bias correction of pr_thiessen gfs05 by gamma """
 
 import os
 import requests
 import calendar
 import argparse
-from datetime import date, timedelta
-from dateutil.relativedelta import relativedelta
-from datetime import datetime
 
 import numpy as np
 import pandas as pd
 import scipy.stats as ss
-import plotly.plotly as py
-import plotly.tools as tls
 import netCDF4
 import math
-from netCDF4 import Dataset
 from matplotlib import pyplot as plt
 
 from hidropy.utils.hidropy_utils import basin_dict
@@ -60,7 +54,7 @@ if __name__ == '__main__':
     arguments()
 
     folders = os.listdir("{0}/hidropy/hidropy/shapes/basins/".format(hidropy_path))
-    basins = sorted(basin_dict(micro=True, basin_name='uruguai'))  # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< change here!!
+    basins = sorted(basin_dict(micro=True))
 
     bas_new = []
     for bas in basins:
@@ -118,7 +112,6 @@ if __name__ == '__main__':
                     stg.append(np.sum(variable_gfs05[0:7]))
 
         # Calculate pr_corrected of the gfs_bru
-        # print "calculate corrected"
         obser = np.full((2184), np.nan)
         obser[0:2184] = stc
 
@@ -129,7 +122,6 @@ if __name__ == '__main__':
         pr_corrected = gamma_correction((np.array(gfs_bru)), obser, (np.array(gfs_bru)))
 
         # Ploting graphs obser x echam
-        # print "ploting comparation sim x obs x corr"
         dates = pd.date_range('2009-01-02', '2014-12-25', freq='D')
         OBS = pd.Series(obser, index=dates)
         BRU = pd.Series(gfs_bru, index=dates)
@@ -137,19 +129,20 @@ if __name__ == '__main__':
         obsbrucor = pd.DataFrame({'OBS': OBS, 'BRU': BRU, 'COR': COR})
         obsbrucor['2009':'2014'].plot(figsize=(18, 6), legend=True, fontsize=12)
 
-        plt.title(u'Pr_Thiessen - viés corrigido - 02/01/2009 - 24/12/2014\n bacia {0}'.format(basin_fullname))
+        plt.title(u'Comparação Pr_Thiessen - OBS x BRUTO x CORRIGIDO - 02/01/2009 - 24/12/2014\n'
+                  u' bacia {0}'.format(basin_fullname))
         plt.ylim(0, 700)
         plt.ylabel(u'mm')
         plt.xlabel(u'anos')
-        legenda = ('OBS', 'GFS_BRU', 'GFS05_CORR')
+        legenda = ('OBS', 'BRUTO', 'CORRIGIDO')
         plt.legend(legenda, frameon=False)
-        path_out1 = ('{0}/check_gfs05_obs_basins/pr_thiessen_corrected/figuras/{1}/'.format(hidropy_path, basin_dict(basin)[1]))
-        plt.savefig(os.path.join(path_out1, 'pr_thiessen_obs_gfs05_corrigido_{0}.png'.format(basin_fullname)))
+        path_out1 = ('{0}/results/results_gfs05_basins/pr_thiessen_corrected_calib/gamma_norm/figuras/'
+                     '{1}/'.format(hidropy_path, basin_dict(basin)[1]))
+        plt.savefig(os.path.join(path_out1, 'pr_thiessen_corrigido_{0}.png'.format(basin_fullname)))
         plt.close('all')
         plt.cla()
 
         # Write output thiessen in netCDF4 file
-        # print "write file"
         m = 0
         for yea in range(2009, 2014+1):
             for mon in range(1, 12+1):
@@ -158,10 +151,8 @@ if __name__ == '__main__':
                     if yea == 2014 and mon == 12 and day == 25:
                         break
 
-                    path_out2 = ('{0}/check_gfs05_obs_basins/pr_thiessen_corrected/{1}/{2}/{3}/'.format(hidropy_path,
-                                                                                                        yea, mon,
-                                                                                                        basin_dict(
-                                                                                                            basin)[1]))
+                    path_out2 = ('{0}/results/results_gfs05_basins/pr_thiessen_corrected_calib/gamma_norm/'
+                                 '{1}/{2}/{3}/'.format(hidropy_path, yea, mon, basin_dict(basin)[1]))
                     aux = np.full((7), np.nan)
                     aux[0:1] = pr_corrected[m]
                     m += 1
@@ -174,5 +165,6 @@ if __name__ == '__main__':
                     startt_y = str(startt)[0:4] + str(startt)[5:7] + str(startt)[8:10]
                     endd_y = str(endd)[0:4] + str(endd)[5:7] + str(endd)[8:10]
 
-                    name_nc = write_thiessen(aux, startt_y, endd_y, 'daily', 'pr', 'gfs05_acc', 'fcst', 'corrigido_{0}'.format(basin_fullname),
-                                             init_date=initt_y, output_path=path_out2)
+                    name_nc = write_thiessen(aux, startt_y, endd_y, 'daily', 'pr', 'gfs05_acc', 'fcst',
+                                             'correc_{0}'.format(basin_fullname), init_date=initt_y,
+                                             output_path=path_out2)

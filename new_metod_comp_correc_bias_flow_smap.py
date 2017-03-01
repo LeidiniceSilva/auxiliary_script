@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-""" Bias correction of flow echam46 by gamma"""
+""" Bias correction of flow py desagre gamma """
 
 import os
+import requests
 import calendar
 import argparse
 from datetime import date
@@ -11,6 +12,7 @@ from datetime import datetime
 
 import numpy as np
 import scipy.stats as ss
+
 import netCDF4
 from matplotlib import pyplot as plt
 
@@ -30,18 +32,21 @@ home = os.path.expanduser("~")
 hidropy_path = "/home/leidinice/Documentos/musf"
 
 
-def gamma_correction(hind, clim_obs, model):
+def gamma_correction(hind, clim_obs, fcst):
+
     mod = np.sort(hind)
     alpha_mod, loc_mod, beta_mod = ss.gamma.fit(hind, loc=0)
     obs = np.sort(clim_obs)
     alpha_obs, loc_obs, beta_obs = ss.gamma.fit(obs, loc=0)
 
-    corrected_hind = []
-    for i in hind:
-        prob = ss.gamma.cdf(i, alpha_mod, scale=beta_mod)
-        corrected_hind.append(ss.gamma.ppf(prob, alpha_obs, scale=beta_obs))
+    corrected_fcst = []
 
-    return corrected_hind
+    for i in fcst:
+
+        prob = ss.gamma.cdf(i, alpha_mod, scale=beta_mod)
+        corrected_fcst.append(ss.gamma.ppf(prob, alpha_obs, scale=beta_obs))
+
+    return corrected_fcst
 
 
 def arguments():
@@ -66,10 +71,7 @@ if __name__ == '__main__':
         macro_name = basin_dict(basin)[1]
 
         # open netcdf obs
-        stc1 = []
-        stc2 = []
-        stc3 = []
-
+        stc = []
         sto1 = []
         sto2 = []
         sto3 = []
@@ -78,58 +80,56 @@ if __name__ == '__main__':
         arq1 = "{0}/{1}_{2}_inmet_ana_chirps_obs_19770215_20161115_smap_{3}.nc".format(link1, param, scale, basin_fullname)
         data1 = netCDF4.Dataset(arq1)
         variable1 = data1.variables[param][:].T
-        time_obs = data1.variables['time']
-
+        time1 = data1.variables['time']
         st_obs1 = variable1[47:407]
         st_obs2 = variable1[407:479]
 
-        stc1.append(st_obs1[1::12])
-        stc2.append(st_obs1[2::12])
-        stc3.append(st_obs1[3::12])
-
+        stc.append(st_obs1[1::12] + st_obs1[2::12] + st_obs1[3::12])
         sto1.append(st_obs2[1::12])
         sto2.append(st_obs2[2::12])
         sto3.append(st_obs2[3::12])
 
         # open netcdf mod
-        ste1 = []
-        ste2 = []
-        ste3 = []
+        ste = []
 
         link2 = home + "/io/{0}/smap_monthly/echam46/jan/{1}".format(param, macro_name)
         for year1 in range(1981, 2010+1):
             arq2 = "{0}/{1}_{2}_echam46_hind8110_fcst_{3}0101_{3}0215_{3}0415_smap_{4}.nc".format(link2, param, scale,
                                                                                               year1, basin_fullname)
-
             data2 = netCDF4.Dataset(arq2)
             variable2 = data2.variables[param][:]
             time2 = data2.variables['time']
+            ste.append(np.sum(variable2))
 
-            ste1.append(variable2[0::3])
-            ste2.append(variable2[1::3])
-            ste3.append(variable2[2::3])
-
-        ste_fcst1 = []
-        ste_fcst2 = []
-        ste_fcst3 = []
+        ste_fcst = []
+        ste1 = []
+        ste2 = []
+        ste3 = []
 
         link3 = home + "/io/{0}/smap_monthly/echam46/jan/{1}".format(param, macro_name)
         for year2 in range(2011, 2017):
             arq3 = "{0}/{1}_{2}_echam46_hind8110_fcst_{3}0101_{3}0215_{3}0415_smap_{4}.nc".format(link3, param,
-                                                                                                  scale, year2,
-                                                                                                  basin_fullname)
+                                                                                                      scale, year2,
+                                                                                                      basin_fullname)
             data3 = netCDF4.Dataset(arq3)
             variable3 = data3.variables[param][:]
             time3 = data3.variables['time']
+            ste_fcst.append(np.sum(variable3))
 
-            ste_fcst1.append(variable3[0::3])
-            ste_fcst2.append(variable3[1::3])
-            ste_fcst3.append(variable3[2::3])
+            ste1.append(variable3[0::3])
+            ste2.append(variable3[1::3])
+            ste3.append(variable3[2::3])
 
         # Calculate vies and pr_correction echam46
-        pr_corrected1 = gamma_correction(np.squeeze(ste1), np.squeeze(stc1), np.squeeze(ste_fcst1))
-        pr_corrected2 = gamma_correction(np.squeeze(ste2), np.squeeze(stc2), np.squeeze(ste_fcst2))
-        pr_corrected3 = gamma_correction(np.squeeze(ste3), np.squeeze(stc3), np.squeeze(ste_fcst3))
+        mon1_corr = []
+        mon2_corr = []
+        mon3_corr = []
+
+        pr_corrected = gamma_correction(np.squeeze(ste), np.squeeze(stc), np.squeeze(ste_fcst))
+
+        mon1_corr.append((np.squeeze(ste1) / np.squeeze(ste_fcst)) * pr_corrected)
+        mon2_corr.append((np.squeeze(ste2) / np.squeeze(ste_fcst)) * pr_corrected)
+        mon3_corr.append((np.squeeze(ste3) / np.squeeze(ste_fcst)) * pr_corrected)
 
         obser = np.full((18), np.nan)
         obser[0:6] = np.squeeze(sto1)
@@ -142,9 +142,22 @@ if __name__ == '__main__':
         echam_fcst[12:18] = np.squeeze(ste3)
 
         echam_corri = np.full((18), np.nan)
-        echam_corri[0:6] = np.squeeze(pr_corrected1)
-        echam_corri[6:12] = np.squeeze(pr_corrected2)
-        echam_corri[12:18] = np.squeeze(pr_corrected2)
+        echam_corri[0:6] = np.squeeze(mon1_corr)
+        echam_corri[6:12] = np.squeeze(mon2_corr)
+        echam_corri[12:18] = np.squeeze(mon3_corr)
+
+        # print basin_fullname
+        # print len(obser)
+        # print type(obser)
+        # print obser
+        #
+        # print len(echam_fcst)
+        # print type(echam_fcst)
+        # print echam_fcst
+        #
+        # print len(echam_corri)
+        # print type(echam_corri)
+        # print echam_corri
 
         observado = []
         for m in range(0, 6):
