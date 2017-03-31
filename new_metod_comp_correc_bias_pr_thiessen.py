@@ -27,7 +27,7 @@ scale = 'monthly'
 param = 'pr'
 period = 'calibration'
 home = os.path.expanduser("~")
-hidropy_path = "/home/leidinice/Documentos/musf"
+hidropy_path = "/home/leidinice/documentos/projetos_git_funceme"
 
 
 def gamma_correction(hind, clim_obs, fcst):
@@ -72,14 +72,14 @@ if __name__ == '__main__':
         stc_obs = []
 
         link1 = home+"/io/inmet_ana_chirps/calibration/{0}/{1}_thiessen/{2}".format(scale, param, macro_name)
-        arq1 = "{0}/{1}_{2}_inmet_ana_chirps_obs_19610101_20141231_thiessen_{3}.nc".format(link1, param, scale, basin_fullname)
+        arq1 = "{0}/{1}_{2}_inmet_ana_chirps_obs_19610101_20141231_thiessen_{3}.nc".format(link1, param, scale,
+                                                                                           basin_fullname)
         data_obs = netCDF4.Dataset(arq1)
         variable_obs = data_obs.variables[param][:].T
         time_obs = data_obs.variables['time']
         st1 = variable_obs[240:600]
         st2 = variable_obs[252:603]
         st3 = variable_obs[600:648]
-
         stc_obs.append(st1[8::12] + st1[9::12] + st1[10::12])
 
         sto = []
@@ -96,12 +96,10 @@ if __name__ == '__main__':
         observ = np.full(71, np.nan)
         observ[0:48] = st3
         observ[48:71] = st4
-
-        sto.append(observ[8::12] + observ[9::12] + observ[10::12])
-
         sto1.append(observ[8::12])
         sto2.append(observ[9::12])
         sto3.append(observ[10::12])
+        sto.append(observ[8::12] + observ[9::12] + observ[10::12])
 
         # open netcdf hind
         ste_hind = []
@@ -120,7 +118,6 @@ if __name__ == '__main__':
         ste_fcst1 = []
         ste_fcst2 = []
         ste_fcst3 = []
-
         link3 = home + "/io/echam46/hind8110/aug/monthly/{0}_thiessen/{1}".format(param, macro_name)
         for year3 in range(2011, 2017):
             arq3 = "{0}/{1}_{2}_echam46_hind8110_fcst_{3}0801_{3}0901_{3}1130_thiessen_{4}.nc".format(link3, param,
@@ -129,11 +126,10 @@ if __name__ == '__main__':
             data_fcst = netCDF4.Dataset(arq3)
             variable_fcst = data_fcst.variables[param][:]
             time_fcst = data_fcst.variables['time']
-            ste_fcst.append(np.sum(variable_fcst))
-
             ste_fcst1.append(variable_fcst[0::3])
             ste_fcst2.append(variable_fcst[1::3])
             ste_fcst3.append(variable_fcst[2::3])
+            ste_fcst.append(np.sum(variable_fcst))
 
         # Calculate vies and pr_correction echam46
         mon1_corr = []
@@ -182,7 +178,8 @@ if __name__ == '__main__':
 
         fig = plt.figure(figsize=(14, 8))
         plt.plot(np.array(data), observado, 'b', np.array(data), echam_b, 'k', np.array(data), echam_c, 'r')
-        plt.title(u'Comparação da Pr_Thiessen - OBS x BRUTO x CORRIGIDO - Ago (S-O-N)\n bacia {0}'.format(basin_fullname))
+        plt.title(u'Comparação da Pr_Thiessen - OBS x BRUTO x CORRIGIDO - Ago (S-O-N)'
+                  u'\n bacia {0}'.format(basin_fullname))
         plt.ylim(0, 700)
         plt.ylabel(u'mm')
         plt.xlabel(u'anos')

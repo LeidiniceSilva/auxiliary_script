@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 
-__author__ = "Leidinice Silva"
-__copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues", "Enzo Pinheiro"]
-__license__ = "GPL"
-__version__ = "1.0.1"
-__maintainer__ = "Marcelo Rodrigues"
-__email__ = "leidinice.silvae@funceme.br"
-__date__ = 20/9/2016
+""" Verification of the precipitation ability of ECHAM46 model. """
 
-# skill echam
+__author__ = "Leidinice Silva"
+__email__ = "leidinice.silvae@funceme.br"
+__date__ = "20/09/2016"
+__description__ = "Verification of the precipitation ability of ECHAM46 models"
 
 import netCDF4
 import os
@@ -111,7 +107,6 @@ for basin in basins:
     plt.cla()
 
     print vies, corr[0][1]
-
 exit()
 
 

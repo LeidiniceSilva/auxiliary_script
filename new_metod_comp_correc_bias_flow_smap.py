@@ -29,7 +29,7 @@ scale = 'monthly'
 param = 'flow'
 period = 'calibration'
 home = os.path.expanduser("~")
-hidropy_path = "/home/leidinice/Documentos/musf"
+hidropy_path = "/home/leidinice/documentos/projetos_git_funceme"
 
 
 def gamma_correction(hind, clim_obs, fcst):

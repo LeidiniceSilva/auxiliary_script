@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
+""" Write pr_thiessen. """
+
 __author__ = "Leidinice Silva"
-__copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Francisco Vasconcelos Junior", "Diogenes Fontenele"]
-__license__ = "GPL"
-__version__ = "1.0.1"
-__maintainer__ = "Marcelo Rodrigues"
-__email__ = "leidinice.silva@funceme.br"
-__date__ = 8/17/2016
+__email__ = "leidinice.silvae@funceme.br"
+__date__ = "17/08/2016"
+__description__ = "Write pr_thiessen"
 
 # Import data
 import requests
