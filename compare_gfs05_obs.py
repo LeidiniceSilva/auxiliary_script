@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Comparison between Thiessen computed by different databases."""
+
+""" Comparison between Thiessen computed by different databases. """
 
 __author__ = "Leidinice Silva"
-__copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Jarbinhas Camurca", "Marcelo Rodrigues", "Diogenes Fontenele", "Enzo Pinheiro"]
-__license__ = "GPL"
-__version__ = "1.0.1"
-__maintainer__ = "Jarbas Camurca"
 __email__ = "leidinice.silva@funceme.br"
-__date__ = 9 / 18 / 2016
+__date__ = "09/18/2016"
+__description__ = " Comparison between Thiessen computed by different databases "
 
 # Import datas
 import netCDF4
@@ -116,6 +113,6 @@ for basin in basins:
     plt.ylim(0, 500)
     plt.title(u'Dispersão do Thiessen de precipitação \n Período: 02/01/2009 - 24/12/2014')
     plt.savefig('scatter_pr_thiessen_obs_gfs05_{0}.png'.format(basin_fullname))
-exit()
-
+    plt.show()
+    exit()
 

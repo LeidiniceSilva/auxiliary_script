@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-""" Bias correction of pr_thiessen echam46 by gumbel"""
+""" Bias correction of pr_thiessen echam46 by gumbel / Gamma. """
 
 import os
 import calendar
@@ -26,10 +26,10 @@ scale = 'monthly'
 param = 'pr'
 period = 'calibration'
 home = os.path.expanduser("~")
-hidropy_path = "/home/leidinice/Documentos/musf"
+hidropy_path = "/home/leidinice/documentos/projetos_git_funceme"
 
 
-def gamma_correction(hind, clim_obs, fcst):
+def gamma_correction(hind, clim_obs, fcst):  # Função Gumbel para correção de viés
 
     sh_mod = np.nanstd(hind) * np.pi / np.sqrt(6)
     sh_obs = np.nanmean(clim_obs) - 0.57721 * sh_mod
@@ -40,6 +40,23 @@ def gamma_correction(hind, clim_obs, fcst):
 
         prob = ss.genextreme.cdf(i, 1.5, loc=sh_mod, scale=sh_mod)
         corrected_fcst.append(ss.genextreme.ppf(prob, 1.5, loc=sh_obs, scale=sh_obs))
+
+    return corrected_fcst
+
+
+def gamma_correction(hind, clim_obs, fcst):  # Função Gamma para correção de viés
+
+    mod = np.sort(hind)
+    alpha_mod, loc_mod, beta_mod = ss.gamma.fit(hind, loc=0)
+    obs = np.sort(clim_obs)
+    alpha_obs, loc_obs, beta_obs = ss.gamma.fit(obs, loc=0)
+
+    corrected_fcst = []
+
+    for i in fcst:
+
+        prob = ss.gamma.cdf(i, alpha_mod, scale=beta_mod)
+        corrected_fcst.append(ss.gamma.ppf(prob, alpha_obs, scale=beta_obs))
 
     return corrected_fcst
 
