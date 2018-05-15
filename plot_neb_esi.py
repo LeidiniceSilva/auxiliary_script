@@ -2,7 +2,7 @@
 
 __author__ = "Leidinice Silva"
 __copyright__ = "Copyright 2016, Funceme Hydropy Project"
-__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues"]
+__credits__ = ["Francisco Vasconcelos Junior", "Marcelo Rodrigues", "Enzo Pinheiro"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Marcelo Rodrigues"
@@ -96,6 +96,7 @@ for i, season in enumerate(mes):
         name = 'esi_4WK_SMN_{0:4d}_SA.nc'.format(ANO)
         data = netCDF4.Dataset(str(path_in) + name)
         aux_in = data.variables['esi'][dic_esi[season], :, :]
+        aux_in = np.expand_dims(aux_in, axis=0)
 
         lat = data.variables['latitude'][:] # Declaring latitude
         lon = data.variables['longitude'][:] # Declaring longitude
