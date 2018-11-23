@@ -1,0 +1,133 @@
+#todas
+dados=read.table("dados_area_antigo.txt",head=TRUE,dec=".",sep="\t") # ctrl r para rodar ou f5
+names(dados)
+colnames <-c ("H_Obs","H_Exp_SC","H_Exp_EN","LE_Obs","LE_Exp_SC","LE_Exp_EN","GPP_Obs","GPP_Exp_SC","GPP_Exp_EN")
+jpeg("fig_todas.jpeg",width=28,height=18,units="cm",res=600)
+par(mfrow = c(2, 2))
+H_Obs=c(dados[,1])
+H_Exp_SC=c(dados[,2]) 
+H_Exp_EN=c(dados[,3])
+LE_Obs=c(dados[,4])
+LE_Exp_SC=c(dados[,5]) 
+LE_Exp_EN=c(dados[,6]) 
+GPP_Obs=c(dados[,7])
+GPP_Exp_SC=c(dados[,8]) 
+GPP_Exp_EN=c(dados[,9]) 
+ 
+taylor.diagram(H_Obs,H_Exp_SC,pos.cor=T,show.gamma=TRUE,gamma.col="black",ngamma=3,sd.arcs=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,ref.sd =TRUE,col="red",pch=19,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9),xlab="", ylab="SD(Normalized)",cex = 1,main ="H",mar=c(3.5,5,2.5,4),oma = c(4, 4, 0, 0), mgp = c(2, 0.6, 0))#mar=c (1-abaixo; 2-esquerda; 3-acima; 4-direita) 
+taylor.diagram(H_Obs,H_Exp_EN,add=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,col="red",pch=15,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9))
+legend("bottomright",c("H_Exp_SC","H_Exp_EN"),col=c("red","red"),
+       pch=c(19,15),cex=0.8)
+ oldpar<-taylor.diagram(LE_Obs,LE_Exp_SC,pos.cor=T,show.gamma=TRUE,gamma.col="black",ngamma=3,sd.arcs=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,ref.sd =TRUE,col="blue",pch=19,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9),xlab="", ylab="SD(Normalized)",main ="LE",cex = 1,mar=c(3.5,5,2.5,4),oma = c(4, 4, 0, 0), mgp = c(2, 0.6, 0))#mar=c (1-abaixo; 2-esquerda; 3-acima; 4-direita) 
+taylor.diagram(LE_Obs,LE_Exp_EN,add=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,col="blue",pch=15,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9))
+legend("bottomright",c("LE_Exp_SC","LE_Exp_EN"),col=c("blue","blue"),
+       pch=c(19,15),cex=0.8)
+ oldpar<-taylor.diagram(GPP_Obs,GPP_Exp_SC,pos.cor=T,show.gamma=TRUE,gamma.col="black",ngamma=3,sd.arcs=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,ref.sd =TRUE,col="green",pch=19,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9),xlab="", ylab="SD(Normalized)",main ="GPP",cex = 1,mar=c(3.5,5,2.5,4),oma = c(4, 4, 0, 0), mgp = c(2, 0.6, 0))#mar=c (1-abaixo; 2-esquerda; 3-acima; 4-direita) 
+taylor.diagram(GPP_Obs,GPP_Exp_EN,add=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,col="green",pch=15,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9))
+ 
+legend("bottomright",c("GPP_Exp_SC","GPP_Exp_EN"),col=c("green","green"),
+       pch=c(19,15),cex=0.8)
+
+dev.off()
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#todas
+dados=read.table("dados_todas.txt",head=TRUE,dec=".",sep="\t") # ctrl r para rodar ou f5
+names(dados)
+colnames <-c ("H_Obs","H_Exp_SC","H_Exp_EN","LE_Obs","LE_Exp_SC","LE_Exp_EN","GPP_Obs","GPP_Exp_SC","GPP_Exp_EN")
+jpeg("fig_todas.jpeg",width=28,height=18,units="cm",res=600)
+par(mfrow = c(2, 2))
+H_Obs=c(dados[,1])
+H_Exp_SC=c(dados[,2]) 
+H_Exp_EN=c(dados[,3])
+LE_Obs=c(dados[,4])
+LE_Exp_SC=c(dados[,5]) 
+LE_Exp_EN=c(dados[,6]) 
+GPP_Obs=c(dados[,7])
+GPP_Exp_SC=c(dados[,8]) 
+GPP_Exp_EN=c(dados[,9]) 
+ 
+taylor.diagram(H_Obs,H_Exp_SC,pos.cor=T,show.gamma=TRUE,gamma.col="black",ngamma=3,sd.arcs=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,ref.sd =TRUE,col="red",pch=19,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9),xlab="", ylab="SD(Normalized)",cex = 1,main ="H",mar=c(3.5,5,2.5,4),oma = c(4, 4, 0, 0), mgp = c(2, 0.6, 0))#mar=c (1-abaixo; 2-esquerda; 3-acima; 4-direita) 
+taylor.diagram(H_Obs,H_Exp_EN,add=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,col="red",pch=15,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9))
+legend(locator(1), xpd=TRUE, ncol=2,legend=c("H_Exp_SC","H_Exp_EN"),col=c("red","red"),
+       pch=c(19,15),cex=0.8)
+ oldpar<-taylor.diagram(LE_Obs,LE_Exp_SC,pos.cor=T,show.gamma=TRUE,gamma.col="black",ngamma=3,sd.arcs=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,ref.sd =TRUE,col="blue",pch=19,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9),xlab="", ylab="SD(Normalized)",main ="LE",cex = 1,mar=c(3.5,5,2.5,4),oma = c(4, 4, 0, 0), mgp = c(2, 0.6, 0))#mar=c (1-abaixo; 2-esquerda; 3-acima; 4-direita) 
+taylor.diagram(LE_Obs,LE_Exp_EN,add=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,col="blue",pch=15,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9))
+legend(locator(1), xpd=TRUE, ncol=2,legend=c("LE_Exp_SC","LE_Exp_EN"),col=c("blue","blue"),
+       pch=c(19,15),cex=0.8)
+ oldpar<-taylor.diagram(GPP_Obs,GPP_Exp_SC,pos.cor=T,show.gamma=TRUE,gamma.col="black",ngamma=3,sd.arcs=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,ref.sd =TRUE,col="green",pch=19,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9),xlab="", ylab="SD(Normalized)",main ="GPP",cex = 1,mar=c(3.5,5,2.5,4),oma = c(4, 4, 0, 0), mgp = c(2, 0.6, 0))#mar=c (1-abaixo; 2-esquerda; 3-acima; 4-direita) 
+taylor.diagram(GPP_Obs,GPP_Exp_EN,add=TRUE,pcex=1.8,normalize=TRUE,sd.method=TRUE,col="green",pch=15,grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9))
+ 
+legend(locator(1), xpd=TRUE, ncol=2,legend=c("GPP_Exp_SC","GPP_Exp_EN"),col=c("green","green"),
+       pch=c(19,15),cex=0.8)
+
+dev.off()
+
+
+
+
+
+
+
+
+
+#H
+dados=read.table("dados_H.txt",head=TRUE,dec=".",sep="\t") # ctrl r para rodar ou f5
+names(dados)
+colnames <-c ("Obs","Exp_SC","Exp_EN")
+jpeg("figH.jpeg",width=28,height=18,units="cm",res=600)
+par(mfrow = c(1, 1))
+Obs=c(dados[,1])
+Exp_SC=c(dados[,2]) 
+Exp_EN=c(dados[,3]) 
+
+taylor.diagram(Obs,Exp_SC,pos.cor=T,show.gamma=TRUE,gamma.col="black",ngamma=3,sd.arcs=TRUE,pcex=1,normalize=TRUE,sd.method=TRUE,ref.sd =TRUE,col="red",pch="1",main ="H",grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9),xlab="", ylab="SD(Normalized)",cex = 1,mar=c(3.5,8,2.5,5),oma = c(4, 4, 0, 0.5), mgp = c(2, 0.6, 0))#mar=c (1-abaixo; 2-esquerda; 3-acima; 4-direita) 
+taylor.diagram(Obs,Exp_EN,add=TRUE,pcex=1,normalize=TRUE,sd.method=TRUE,col="blue",pch="2",grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9))
+ dev.off()
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#LE
+dados=read.table("dados_LE.txt",head=TRUE,dec=".",sep="\t") # ctrl r para rodar ou f5
+names(dados)
+colnames <-c ("Obs","Exp_SC","Exp_EN")
+jpeg("figle.jpeg",width=28,height=18,units="cm",res=600)
+par(mfrow = c(1, 1))
+Obs=c(dados[,1])
+Exp_SC=c(dados[,2]) 
+Exp_EN=c(dados[,3]) 
+
+taylor.diagram(Obs,Exp_SC,pos.cor=T,show.gamma=TRUE,gamma.col="black",ngamma=3,sd.arcs=TRUE,pcex=1,normalize=TRUE,sd.method=TRUE,ref.sd =TRUE,col="red",pch="1",main ="LE",grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9),xlab="", ylab="SD(Normalized)",cex = 1,mar=c(3.5,8,2.5,5),oma = c(4, 4, 0, 0.5), mgp = c(2, 0.6, 0))#mar=c (1-abaixo; 2-esquerda; 3-acima; 4-direita) 
+taylor.diagram(Obs,Exp_EN,add=TRUE,pcex=1,normalize=TRUE,sd.method=TRUE,col="blue",pch="2",grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9))
+ dev.off()
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#GPP
+dados=read.table("dados_gpp.txt",head=TRUE,dec=".",sep="\t") # ctrl r para rodar ou f5
+names(dados)
+colnames <-c ("Obs","Exp_SC","Exp_EN")
+jpeg("figgpp.jpeg",width=28,height=18,units="cm",res=600)
+par(mfrow = c(1, 1))
+Obs=c(dados[,1])
+Exp_SC=c(dados[,2]) 
+Exp_EN=c(dados[,3]) 
+
+taylor.diagram(Obs,Exp_SC,pos.cor=T,show.gamma=TRUE,gamma.col="black",ngamma=3,sd.arcs=TRUE,pcex=1,normalize=TRUE,sd.method=TRUE,ref.sd =TRUE,col="red",pch="1",main ="GPP",grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9),xlab="", ylab="SD(Normalized)",cex = 1,mar=c(3.5,8,2.5,5),oma = c(4, 4, 0, 0.5), mgp = c(2, 0.6, 0))#mar=c (1-abaixo; 2-esquerda; 3-acima; 4-direita) 
+taylor.diagram(Obs,Exp_EN,add=TRUE,pcex=1,normalize=TRUE,sd.method=TRUE,col="blue",pch="2",grad.corr.lines=c(0.2,0.4,0.6,0.8,0.9))
+ dev.off()
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+
+
+
+
+
