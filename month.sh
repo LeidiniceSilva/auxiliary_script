@@ -19,11 +19,7 @@ for AAAA in `seq 2003 2015` ; do
 			cdo timmean prec_${AAAA}${m}.nc prec_mon_${AAAA}${m}.nc
 
 		done
-	
-
 	cd ..
-
-
 done
 
 
