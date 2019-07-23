@@ -98,7 +98,7 @@ bar = fig.colorbar(plot_maps, spacing='uniform', ticks=levs, drawedges=True)
 path_out = home + "/Documents/ufrn/papers/olam/results/"
 if not os.path.exists(path_out):
 	create_path(path_out)
-plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=300)
+plt.savefig(os.path.join(path_out, 'mapa_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=300)
 exit()
 
 
