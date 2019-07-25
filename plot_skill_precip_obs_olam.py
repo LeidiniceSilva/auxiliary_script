@@ -285,60 +285,49 @@ print(r2)
 print(nse2)
 print()
 
-# Plot climatology obs x model
-fig = plt.figure(1, figsize=(34, 24))
-plt.subplot(211)
+#~ # Plot climatology obs x model
+#~ fig = plt.figure(1)
+#~ plt.subplot(211)
 
-time = np.arange(0.5, 12 + 0.5)
-a = plt.plot(time, clim_exp1, time, clim_obs1)
+#~ time = np.arange(0.5, 12 + 0.5)
+#~ a = plt.plot(time, clim_exp1, time, clim_obs1)
 
-plt.fill_between(time, clim_exp1, clim_obs1, facecolor='slategray', alpha=0.2, interpolate=True)
-l1, l2 = a
-plt.setp(l1, linewidth=4, markeredgewidth=4, marker='+', color='blue')
-plt.setp(l2, linewidth=4, markeredgewidth=4, marker='+', color='red')
+#~ plt.fill_between(time, clim_exp1, clim_obs1, facecolor='slategray', alpha=0.2, interpolate=True)
+#~ l1, l2 = a
+#~ plt.setp(l1, linewidth=2, markeredgewidth=2, marker='+', color='blue')
+#~ plt.setp(l2, linewidth=2, markeredgewidth=2, marker='+', color='red')
+#~ plt.title(u'Climatologia de Precipitação 1982-2012', fontweight='bold')
+#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
+#~ plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
+#~ plt.yticks(np.arange(0, 220, 20))
+#~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
+#~ plt.legend([u'OLAMv.3.3_Chen', u'CRU'], loc='best', ncol=2)
+#~ plt.grid()
 
-plt.title(u'Climatologia de Precipitação \n OLAMv.3.3_g2_Chen x CRU - 1982_2012', fontsize=34, fontweight='bold')
-plt.ylabel(u'Precipitação (mm/mês)', fontsize=34, fontweight='bold')
+#~ plt.subplot(212)
+#~ time = np.arange(0.5, 12 + 0.5)
+#~ a = plt.plot(time, clim_exp2, time, clim_obs1)
 
-objects = [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez']
-plt.xticks(time, objects, fontsize=34)
-plt.yticks(np.arange(0, 220, 20), fontsize=34)
-plt.tick_params(axis='both', which='major', labelsize=34, length=4, width=2, pad=4, labelcolor='k')
-plt.grid()
+#~ plt.fill_between(time, clim_exp2, clim_obs1, facecolor='slategray', alpha=0.2, interpolate=True)
+#~ l1, l2 = a
+#~ plt.setp(l1, linewidth=2, markeredgewidth=2, marker='+', color='green')
+#~ plt.setp(l2, linewidth=2, markeredgewidth=2, marker='+', color='red')
+#~ plt.xlabel(u'Meses', fontweight='bold')
+#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
+#~ plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
+#~ plt.yticks(np.arange(0, 220, 20))
+#~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
+#~ plt.legend([u'OLAMv.3.3_Harr', u'CRU'], loc='best', ncol=2)
+#~ plt.grid()
 
-font = FontProperties(size=34)
-plt.legend([u'OLAMv.3.3_Chen', u'CRU'], loc='best', ncol=2, prop=font)
-
-plt.subplot(212)
-time = np.arange(0.5, 12 + 0.5)
-a = plt.plot(time, clim_exp2, time, clim_obs1)
-
-plt.fill_between(time, clim_exp2, clim_obs1, facecolor='slategray', alpha=0.2, interpolate=True)
-l1, l2 = a
-plt.setp(l1, linewidth=4, markeredgewidth=4, marker='+', color='green')
-plt.setp(l2, linewidth=4, markeredgewidth=4, marker='+', color='red')
-
-plt.title(u'OLAMv.3.3_g2_Harr x CRU - 1982_2012', fontsize=34, fontweight='bold')
-plt.xlabel(u'Meses', fontsize=34, fontweight='bold')
-plt.ylabel(u'Precipitação (mm/mês)', fontsize=34, fontweight='bold')
-
-objects = [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez']
-plt.xticks(time, objects, fontsize=34)
-plt.yticks(np.arange(0, 220, 20), fontsize=34)
-plt.tick_params(axis='both', which='major', labelsize=34, length=4, width=2, pad=4, labelcolor='k')
-plt.grid()
-
-font = FontProperties(size=34)
-plt.legend([u'OLAMv.3.3_Harr', u'CRU'], loc='best', ncol=2, prop=font)
-
-path_out = home + "/Documents/ufrn/papers/olam/results/"
-if not os.path.exists(path_out):
-	create_path(path_out)
-plt.savefig(os.path.join(path_out, 'climatologia_chen_harr_cru.png'), bbox_inches='tight', dpi=300)
-exit()
+#~ path_out = home + "/Documents/ufrn/papers/olam/results/"
+#~ if not os.path.exists(path_out):
+	#~ create_path(path_out)
+#~ plt.savefig(os.path.join(path_out, 'clim_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+#~ exit()
 
 # Boxplot anual cicle obs x model
-fig = plt.figure(1, figsize=(34, 24))
+fig = plt.figure()
 
 plt.subplot(211)
 time = np.arange(1, 32)
@@ -349,11 +338,11 @@ plt_bp = plt.boxplot(annual_exp1, patch_artist=True, bootstrap=10000, vert=1)
 # Change outline and fill color
 for box in plt_bp['boxes']:
     box.set( color='black', linewidth=2)
-    box.set( facecolor = 'blue' )
+    box.set( facecolor = 'gray' )
 
 # Change color and linewidth of the whiskers
 for whisker in plt_bp['whiskers']:
-    whisker.set(color='black', linewidth=2)
+    whisker.set(color='blue', linewidth=2)
 
 # Change color and linewidth of the caps
 for cap in plt_bp['caps']:
@@ -367,37 +356,36 @@ for median in plt_bp['medians']:
 for flier in plt_bp['fliers']:
     flier.set(marker='+', color='black', alpha=1)
 
-plt.title(u'Boxplot anual de precipitação \n OLAMv.3.3_g2_Chen x CRU  - 1982_2012', fontsize=34, fontweight='bold')
-plt.ylabel(u'Precipitação mensal (mm)', fontsize=34, fontweight='bold')
-
-objects = [u'1982', u'1983', u'1984', u'1985', u'1986', u'1987', u'1988', u'1989', u'1990', u'1991', u'1992', u'1993',
-           u'1994', u'1995', u'1996', u'1997', u'1998', u'1999', u'2000', u'2001', u'2002', u'2003', u'2004', u'2005',
-           u'2006', u'2007', u'2008', u'2009', u'2010', u'2011', u'2012']
-plt.xticks(time, objects)
-plt.yticks(np.arange(0, 220, 20), fontsize=34)
-plt.tick_params(axis='both', which='major', labelsize=20, length=4, width=2, pad=4, labelcolor='k')
-font = FontProperties(size=34)
-plt.legend(a, [u'CRU'], loc='best', ncol=1, prop=font)
+plt.title(u'Boxplot de precipitação anual 1982-2012', fontweight='bold')
+plt.ylabel(u'Precipitação (mm)', fontweight='bold')
+objects = [u'1982', u'1984', u'1986', u'1988', u'1990', u'1992', 
+           u'1994', u'1996', u'1998', u'2000', u'2002', u'2004',
+           u'2006', u'2008', u'2010', u'2012']
+plt.xticks(np.arange(1, 32, 2), objects)
+plt.yticks(np.arange(0, 220, 20))
+plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
+plt.legend([u'CRU', u'OLAMv.3.3_Chen'], loc='best', ncol=2)
 plt.grid()
 
 plt.subplot(212)
 time = np.arange(1, 32)
 a = plt.plot(time, annual_obs1)
 plt.setp(a, linewidth=2, markeredgewidth=2, marker='+', color='red')
+b = plt.xlim([1, 32])
 
 plt_bp = plt.boxplot(annual_exp2, patch_artist=True, bootstrap=10000, vert=1)
 # Change outline and fill color
 for box in plt_bp['boxes']:
     box.set( color='black', linewidth=2)
-    box.set( facecolor = 'green' )
+    box.set( facecolor = 'gray' )
 
 # Change color and linewidth of the whiskers
 for whisker in plt_bp['whiskers']:
-    whisker.set(color='black', linewidth=2)
+    whisker.set(color='green', linewidth=2)
 
 # Change color and linewidth of the caps
 for cap in plt_bp['caps']:
-    cap.set(color='black', linewidth=2)
+    cap.set(color='green', linewidth=2)
 
 # Change color and linewidth of the medians
 for median in plt_bp['medians']:
@@ -405,26 +393,23 @@ for median in plt_bp['medians']:
 
 # Change the style of fliers and their fill
 for flier in plt_bp['fliers']:
-    flier.set(marker='o', color='black', alpha=1)
-    
-plt.title(u'OLAMv.3.3_g2_Harr x CRU  - 1982_2012', fontsize=34, fontweight='bold')
-plt.xlabel(u'Anos', fontsize=34, fontweight='bold')
-plt.ylabel(u'Precipitação mensal (mm)', fontsize=34, fontweight='bold')
+    flier.set(marker='o', color='green', alpha=1)
 
-objects = [u'1982', u'1983', u'1984', u'1985', u'1986', u'1987', u'1988', u'1989', u'1990', u'1991', u'1992', u'1993',
-           u'1994', u'1995', u'1996', u'1997', u'1998', u'1999', u'2000', u'2001', u'2002', u'2003', u'2004', u'2005',
-           u'2006', u'2007', u'2008', u'2009', u'2010', u'2011', u'2012']
-plt.xticks(time, objects, fontsize=34)
-plt.yticks(np.arange(0, 220, 20), fontsize=34)
-plt.tick_params(axis='both', which='major', labelsize=20, length=4, width=2, pad=4, labelcolor='k')
-font = FontProperties(size=34)
-plt.legend(a, [u'CRU'], loc='best', ncol=1, prop=font)
+plt.xlabel(u'Anos', fontweight='bold')    
+plt.ylabel(u'Precipitação (mm)', fontweight='bold')
+objects = [u'1982', u'1984', u'1986', u'1988', u'1990', u'1992', 
+           u'1994', u'1996', u'1998', u'2000', u'2002', u'2004',
+           u'2006', u'2008', u'2010', u'2012']
+plt.xticks(np.arange(1, 32, 2), objects)
+plt.yticks(np.arange(0, 220, 20))
+plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
+plt.legend([u'CRU', u'OLAMv.3.3_Harr'], loc='best', ncol=2)
 plt.grid()
 
 path_out = home + "/Documents/ufrn/papers/olam/results/"
 if not os.path.exists(path_out):
 	create_path(path_out)
-plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=300)
+plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
 exit()
 
 
