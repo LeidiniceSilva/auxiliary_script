@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as st
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 from sklearn import metrics
 from matplotlib import pyplot
@@ -117,7 +118,7 @@ def import_sim(path, exp):
 	vinte_seis_sim, vinte_sete_sim, vinte_oito_sim, vinte_nove_sim, trinta_sim,
 	trinta_um_sim]
 	
-	return clim_exp, djf_exp, mam_exp, jja_exp, son_exp, annual_exp
+	return value, clim_exp, djf_exp, mam_exp, jja_exp, son_exp, annual_exp
 
 
 def import_obs(path):
@@ -177,20 +178,20 @@ def import_obs(path):
 	dezenove_obs, vinte_obs, vinte_um_obs, vinte_dois_obs, vinte_tres_obs, vinte_quatro_obs, vinte_cinco_obs,
 	vinte_seis_obs, vinte_sete_obs, vinte_oito_obs, vinte_nove_obs, trinta_obs, trinta_um_obs]
 	
-	return clim_obs, djf_obs, mam_obs, jja_obs, son_obs, annual_obs
+	return value, clim_obs, djf_obs, mam_obs, jja_obs, son_obs, annual_obs
 	
 
 # Import exp model end obs database 
 home = os.path.expanduser("~")
-path = home + "/Documents/ufrn/papers/olam/datas"
+path = home + "/Documentos/ufrn/papers/olam/datas"
+
+x, clim_obs1, djf_obs1, mam_obs1, jja_obs1, son_obs1, annual_obs1 = import_obs(path)
 
 exp1  = u'chen'
-clim_exp1, djf_exp1, mam_exp1, jja_exp1, son_exp1, annual_exp1 = import_sim(path, exp1)
+y, clim_exp1, djf_exp1, mam_exp1, jja_exp1, son_exp1, annual_exp1 = import_sim(path, exp1)
 		
 exp2  = u'harr'
-clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2, annual_exp2 = import_sim(path, exp2)
-
-clim_obs1, djf_obs1, mam_obs1, jja_obs1, son_obs1, annual_obs1 = import_obs(path)
+z, clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2, annual_exp2 = import_sim(path, exp2)
 
 # Calculate statistic index - Chen
 pc_bias_djf1 = pc_bias(djf_exp1, djf_obs1)
@@ -268,22 +269,56 @@ rmse2 = np.array([rmse_djf2, rmse_mam2, rmse_jja2, rmse_son2])
 r2 = np.array([r_djf2, r_mam2, r_jja2, r_son2])
 nse2 = np.array([nse_djf2, nse_mam2, nse_jja2, nse_son2])
 
-# Print statistic index (Chen and Harr)
-print(pc_bias1)
-print(mbe1)
-print(mae1)
-print(rmse1)
-print(r1)
-print(nse1)
-print()
+#~ # Print statistic index (Chen and Harr)
+#~ print(pc_bias1)
+#~ print(mbe1)
+#~ print(mae1)
+#~ print(rmse1)
+#~ print(r1)
+#~ print(nse1)
+#~ print()
 
-print(pc_bias2)
-print(mbe2)
-print(mae2)
-print(rmse2)
-print(r2)
-print(nse2)
-print()
+#~ print(pc_bias2)
+#~ print(mbe2)
+#~ print(mae2)
+#~ print(rmse2)
+#~ print(r2)
+#~ print(nse2)
+#~ print()
+
+# Plot histogram and scatter obs x model
+fig = plt.figure(figsize=(7,7))
+
+gs = gridspec.GridSpec(3, 3)
+ax_main = plt.subplot(gs[1:3, :2])
+ax_xDist = plt.subplot(gs[0, :2],sharex=ax_main)
+ax_yDist = plt.subplot(gs[1:3, 2],sharey=ax_main)
+
+ax_main.scatter(x,y,marker='.')
+ax_main.set(xlabel="CRU - Rainfall (mm)", ylabel="OLAMv.3.3_Harr - Rainfall (mm)")
+plt.title(u'B)', fontweight='bold')
+
+ax_xDist.hist(x,bins=100,align='mid')
+ax_xDist.set(ylabel='count')
+ax_xCumDist = ax_xDist.twinx()
+ax_xCumDist.hist(x,bins=100,cumulative=True,histtype='step',normed=True,color='r',align='mid')
+ax_xCumDist.tick_params('CRU', colors='r')
+ax_xCumDist.set_ylabel('cumulative',color='r')
+
+ax_yDist.hist(z,bins=100,orientation='horizontal',align='mid')
+ax_yDist.set(xlabel='count')
+ax_yCumDist = ax_yDist.twiny()
+ax_yCumDist.hist(z,bins=100,cumulative=True,histtype='step',normed=True,color='r',align='mid',orientation='horizontal')
+ax_yCumDist.tick_params('OLAMv.3.3_harr', colors='r')
+ax_yCumDist.set_xlabel('cumulative',color='r')
+
+path_out = home + "/Documentos/ufrn/papers/olam/results/"
+if not os.path.exists(path_out):
+	create_path(path_out)
+plt.savefig(os.path.join(path_out, 'scatter_harr_cru.png'), dpi=600, bbox_inches='tight')
+plt.show()
+exit()
+
 
 #~ # Plot climatology obs x model
 #~ fig = plt.figure(1)
@@ -326,91 +361,92 @@ print()
 #~ plt.savefig(os.path.join(path_out, 'clim_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
 #~ exit()
 
+
 # Boxplot anual cicle obs x model
-fig = plt.figure()
+#~ fig = plt.figure()
 
-plt.subplot(211)
-time = np.arange(1, 32)
-a = plt.plot(time, annual_obs1)
-plt.setp(a, linewidth=2, markeredgewidth=2, marker='+', color='red')
+#~ plt.subplot(211)
+#~ time = np.arange(1, 32)
+#~ a = plt.plot(time, annual_obs1)
+#~ plt.setp(a, linewidth=2, markeredgewidth=2, marker='+', color='red')
 
-plt_bp = plt.boxplot(annual_exp1, patch_artist=True, bootstrap=10000, vert=1)
-# Change outline and fill color
-for box in plt_bp['boxes']:
-    box.set( color='black', linewidth=2)
-    box.set( facecolor = 'gray' )
+#~ plt_bp = plt.boxplot(annual_exp1, patch_artist=True, bootstrap=10000, vert=1)
+#~ # Change outline and fill color
+#~ for box in plt_bp['boxes']:
+    #~ box.set( color='black', linewidth=2)
+    #~ box.set( facecolor = 'gray' )
 
-# Change color and linewidth of the whiskers
-for whisker in plt_bp['whiskers']:
-    whisker.set(color='blue', linewidth=2)
+#~ # Change color and linewidth of the whiskers
+#~ for whisker in plt_bp['whiskers']:
+    #~ whisker.set(color='blue', linewidth=2)
 
-# Change color and linewidth of the caps
-for cap in plt_bp['caps']:
-    cap.set(color='black', linewidth=2)
+#~ # Change color and linewidth of the caps
+#~ for cap in plt_bp['caps']:
+    #~ cap.set(color='black', linewidth=2)
 
-# Change color and linewidth of the medians
-for median in plt_bp['medians']:
-    median.set(color='black', linewidth=2)
+#~ # Change color and linewidth of the medians
+#~ for median in plt_bp['medians']:
+    #~ median.set(color='black', linewidth=2)
 
-# Change the style of fliers and their fill
-for flier in plt_bp['fliers']:
-    flier.set(marker='+', color='black', alpha=1)
+#~ # Change the style of fliers and their fill
+#~ for flier in plt_bp['fliers']:
+    #~ flier.set(marker='+', color='black', alpha=1)
 
-plt.title(u'Boxplot de precipitação anual 1982-2012', fontweight='bold')
-plt.ylabel(u'Precipitação (mm)', fontweight='bold')
-objects = [u'1982', u'1984', u'1986', u'1988', u'1990', u'1992', 
-           u'1994', u'1996', u'1998', u'2000', u'2002', u'2004',
-           u'2006', u'2008', u'2010', u'2012']
-plt.xticks(np.arange(1, 32, 2), objects)
-plt.yticks(np.arange(0, 220, 20))
-plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
-plt.legend([u'CRU', u'OLAMv.3.3_Chen'], loc='best', ncol=2)
-plt.grid()
+#~ plt.title(u'Boxplot de precipitação anual 1982-2012', fontweight='bold')
+#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
+#~ objects = [u'1982', u'1984', u'1986', u'1988', u'1990', u'1992', 
+           #~ u'1994', u'1996', u'1998', u'2000', u'2002', u'2004',
+           #~ u'2006', u'2008', u'2010', u'2012']
+#~ plt.xticks(np.arange(1, 32, 2), objects)
+#~ plt.yticks(np.arange(0, 220, 20))
+#~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
+#~ plt.legend([u'CRU', u'OLAMv.3.3_Chen'], loc='best', ncol=2)
+#~ plt.grid()
 
-plt.subplot(212)
-time = np.arange(1, 32)
-a = plt.plot(time, annual_obs1)
-plt.setp(a, linewidth=2, markeredgewidth=2, marker='+', color='red')
-b = plt.xlim([1, 32])
+#~ plt.subplot(212)
+#~ time = np.arange(1, 32)
+#~ a = plt.plot(time, annual_obs1)
+#~ plt.setp(a, linewidth=2, markeredgewidth=2, marker='+', color='red')
+#~ b = plt.xlim([1, 32])
 
-plt_bp = plt.boxplot(annual_exp2, patch_artist=True, bootstrap=10000, vert=1)
-# Change outline and fill color
-for box in plt_bp['boxes']:
-    box.set( color='black', linewidth=2)
-    box.set( facecolor = 'gray' )
+#~ plt_bp = plt.boxplot(annual_exp2, patch_artist=True, bootstrap=10000, vert=1)
+#~ # Change outline and fill color
+#~ for box in plt_bp['boxes']:
+    #~ box.set( color='black', linewidth=2)
+    #~ box.set( facecolor = 'gray' )
 
-# Change color and linewidth of the whiskers
-for whisker in plt_bp['whiskers']:
-    whisker.set(color='green', linewidth=2)
+#~ # Change color and linewidth of the whiskers
+#~ for whisker in plt_bp['whiskers']:
+    #~ whisker.set(color='green', linewidth=2)
 
-# Change color and linewidth of the caps
-for cap in plt_bp['caps']:
-    cap.set(color='green', linewidth=2)
+#~ # Change color and linewidth of the caps
+#~ for cap in plt_bp['caps']:
+    #~ cap.set(color='green', linewidth=2)
 
-# Change color and linewidth of the medians
-for median in plt_bp['medians']:
-    median.set(color='black', linewidth=2)
+#~ # Change color and linewidth of the medians
+#~ for median in plt_bp['medians']:
+    #~ median.set(color='black', linewidth=2)
 
-# Change the style of fliers and their fill
-for flier in plt_bp['fliers']:
-    flier.set(marker='o', color='green', alpha=1)
+#~ # Change the style of fliers and their fill
+#~ for flier in plt_bp['fliers']:
+    #~ flier.set(marker='o', color='green', alpha=1)
 
-plt.xlabel(u'Anos', fontweight='bold')    
-plt.ylabel(u'Precipitação (mm)', fontweight='bold')
-objects = [u'1982', u'1984', u'1986', u'1988', u'1990', u'1992', 
-           u'1994', u'1996', u'1998', u'2000', u'2002', u'2004',
-           u'2006', u'2008', u'2010', u'2012']
-plt.xticks(np.arange(1, 32, 2), objects)
-plt.yticks(np.arange(0, 220, 20))
-plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
-plt.legend([u'CRU', u'OLAMv.3.3_Harr'], loc='best', ncol=2)
-plt.grid()
+#~ plt.xlabel(u'Anos', fontweight='bold')    
+#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
+#~ objects = [u'1982', u'1984', u'1986', u'1988', u'1990', u'1992', 
+           #~ u'1994', u'1996', u'1998', u'2000', u'2002', u'2004',
+           #~ u'2006', u'2008', u'2010', u'2012']
+#~ plt.xticks(np.arange(1, 32, 2), objects)
+#~ plt.yticks(np.arange(0, 220, 20))
+#~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
+#~ plt.legend([u'CRU', u'OLAMv.3.3_Harr'], loc='best', ncol=2)
+#~ plt.grid()
 
-path_out = home + "/Documents/ufrn/papers/olam/results/"
-if not os.path.exists(path_out):
-	create_path(path_out)
-plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
-exit()
+#~ path_out = home + "/Documents/ufrn/papers/olam/results/"
+#~ if not os.path.exists(path_out):
+	#~ create_path(path_out)
+#~ plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+#~ exit()
 
 
 
