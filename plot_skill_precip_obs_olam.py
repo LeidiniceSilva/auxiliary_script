@@ -18,6 +18,9 @@ from sklearn import metrics
 from matplotlib import pyplot
 from matplotlib.font_manager import FontProperties
 
+import sys
+
+
 
 def filter_nan(s, o):
     data = np.array([s.flatten(), o.flatten()])
@@ -67,8 +70,8 @@ def import_sim(path, exp):
 	var  = data.variables['precip'][:]
 	lat  = data.variables['lat'][:]
 	lon  = data.variables['lon'][:]
-	
 	value = np.nanmean(np.nanmean(var[:][:,:,:], axis=1), axis=1)
+	
 	clim_exp = []
 	for mon in range(1, 12 + 1):
 		exp = np.nanmean(value[mon::12], axis=0)
@@ -79,46 +82,8 @@ def import_sim(path, exp):
 	jja_exp = seasonal[1:120:4]
 	son_exp = seasonal[2:120:4]
 	djf_exp = seasonal[3:120:4]
-
-	um_sim = (value[0:12])
-	dois_sim = (value[12:24])
-	tres_sim = (value[24:36])
-	quatro_sim = (value[36:48])
-	cinco_sim = (value[48:60])
-	seis_sim = (value[60:72])
-	sete_sim = (value[72:84])
-	oito_sim = (value[84:96])
-	nove_sim = (value[96:108])
-	dez_sim = (value[108:120])
-	onze_sim = (value[120:132])
-	doze_sim = (value[132:144])
-	treze_sim = (value[144:156])
-	quatorze_sim = (value[156:168])
-	quize_sim = (value[168:180])
-	dezeseis_sim = (value[180:192])
-	dezesete_sim = (value[192:204])
-	dezoito_sim = (value[204:216])
-	dezenove_sim = (value[216:228])
-	vinte_sim = (value[228:240])
-	vinte_um_sim = (value[240:252])
-	vinte_dois_sim = (value[252:264])
-	vinte_tres_sim = (value[264:276])
-	vinte_quatro_sim = (value[276:288])
-	vinte_cinco_sim = (value[288:300])
-	vinte_seis_sim = (value[300:312])
-	vinte_sete_sim = (value[312:324])
-	vinte_oito_sim = (value[324:336])
-	vinte_nove_sim = (value[336:348])
-	trinta_sim = (value[348:360])
-	trinta_um_sim = (value[360:372])
 	
-	annual_exp = [um_sim, dois_sim, tres_sim, quatro_sim, cinco_sim, seis_sim, sete_sim, oito_sim, nove_sim, 
-	dez_sim, onze_sim, doze_sim, treze_sim, quatorze_sim, quize_sim, dezeseis_sim, dezesete_sim, dezoito_sim,
-	dezenove_sim, vinte_sim, vinte_um_sim, vinte_dois_sim, vinte_tres_sim, vinte_quatro_sim,vinte_cinco_sim,
-	vinte_seis_sim, vinte_sete_sim, vinte_oito_sim, vinte_nove_sim, trinta_sim,
-	trinta_um_sim]
-	
-	return value, clim_exp, djf_exp, mam_exp, jja_exp, son_exp, annual_exp
+	return value, clim_exp, djf_exp, mam_exp, jja_exp, son_exp
 
 
 def import_obs(path):
@@ -141,57 +106,20 @@ def import_obs(path):
 	son_obs = seasonal[2:120:4]
 	djf_obs = seasonal[3:120:4]
 	
-	um_obs = np.nanmean(value[0:12])
-	dois_obs = np.nanmean(value[12:24])
-	tres_obs = np.nanmean(value[24:36])
-	quatro_obs = np.nanmean(value[36:48])
-	cinco_obs = np.nanmean(value[48:60])
-	seis_obs = np.nanmean(value[60:72])
-	sete_obs = np.nanmean(value[72:84])
-	oito_obs = np.nanmean(value[84:96])
-	nove_obs = np.nanmean(value[96:108])
-	dez_obs = np.nanmean(value[108:120])
-	onze_obs = np.nanmean(value[120:132])
-	doze_obs = np.nanmean(value[132:144])
-	treze_obs = np.nanmean(value[144:156])
-	quatorze_obs = np.nanmean(value[156:168])
-	quize_obs = np.nanmean(value[168:180])
-	dezeseis_obs = np.nanmean(value[180:192])
-	dezesete_obs = np.nanmean(value[192:204])
-	dezoito_obs = np.nanmean(value[204:216])
-	dezenove_obs = np.nanmean(value[216:228])
-	vinte_obs = np.nanmean(value[228:240])
-	vinte_um_obs = np.nanmean(value[240:252])
-	vinte_dois_obs = np.nanmean(value[252:264])
-	vinte_tres_obs = np.nanmean(value[264:276])
-	vinte_quatro_obs = np.nanmean(value[276:288])
-	vinte_cinco_obs = np.nanmean(value[288:300])
-	vinte_seis_obs = np.nanmean(value[300:312])
-	vinte_sete_obs = np.nanmean(value[312:324])
-	vinte_oito_obs = np.nanmean(value[324:336])
-	vinte_nove_obs = np.nanmean(value[336:348])
-	trinta_obs = np.nanmean(value[348:360])
-	trinta_um_obs = np.nanmean(value[360:372])
-	
-	annual_obs = [um_obs, dois_obs, tres_obs, quatro_obs, cinco_obs, seis_obs, sete_obs, oito_obs, nove_obs,
-	dez_obs, onze_obs, doze_obs, treze_obs, quatorze_obs, quize_obs, dezeseis_obs, dezesete_obs, dezoito_obs,
-	dezenove_obs, vinte_obs, vinte_um_obs, vinte_dois_obs, vinte_tres_obs, vinte_quatro_obs, vinte_cinco_obs,
-	vinte_seis_obs, vinte_sete_obs, vinte_oito_obs, vinte_nove_obs, trinta_obs, trinta_um_obs]
-	
-	return value, clim_obs, djf_obs, mam_obs, jja_obs, son_obs, annual_obs
+	return value, clim_obs, djf_obs, mam_obs, jja_obs, son_obs
 	
 
 # Import exp model end obs database 
 home = os.path.expanduser("~")
 path = home + "/Documentos/ufrn/papers/olam/datas"
 
-x, clim_obs1, djf_obs1, mam_obs1, jja_obs1, son_obs1, annual_obs1 = import_obs(path)
+x, clim_obs1, djf_obs1, mam_obs1, jja_obs1, son_obs1 = import_obs(path)
 
 exp1  = u'chen'
-y, clim_exp1, djf_exp1, mam_exp1, jja_exp1, son_exp1, annual_exp1 = import_sim(path, exp1)
+y, clim_exp1, djf_exp1, mam_exp1, jja_exp1, son_exp1 = import_sim(path, exp1)
 		
 exp2  = u'harr'
-z, clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2, annual_exp2 = import_sim(path, exp2)
+z, clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2 = import_sim(path, exp2)
 
 # Calculate statistic index - Chen
 pc_bias_djf1 = pc_bias(djf_exp1, djf_obs1)
@@ -286,42 +214,89 @@ nse2 = np.array([nse_djf2, nse_mam2, nse_jja2, nse_son2])
 #~ print(nse2)
 #~ print()
 
-# Plot histogram and scatter obs x model
-fig = plt.figure(figsize=(7,7))
+#~ # Plot histogram and scatter obs x model
+#~ fig = plt.figure()
 
-gs = gridspec.GridSpec(3, 3)
-ax_main = plt.subplot(gs[1:3, :2])
-ax_xDist = plt.subplot(gs[0, :2],sharex=ax_main)
-ax_yDist = plt.subplot(gs[1:3, 2],sharey=ax_main)
+#~ # First subplot
+#~ ax1 = fig.add_subplot(311)
+#~ ax1.hist(x, color='gray', edgecolor='black')
+#~ ax1.set_title(u'Histograma de Precipitação Mensal (1982-2012)', fontweight='bold')
+#~ ax1.yaxis.tick_left()
+#~ ax1.yaxis.set_label_position('left')
+#~ ax1.set_ylim(0,150)
 
-ax_main.scatter(x,y,marker='.')
-ax_main.set(xlabel="CRU - Rainfall (mm)", ylabel="OLAMv.3.3_Harr - Rainfall (mm)")
-plt.title(u'B)', fontweight='bold')
+#~ mu = x.mean()
+#~ median = np.median(x)
+#~ sigma = x.std()
+#~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
+#~ ax1.text(280.,120., 'A) CRU', fontweight='bold', size=8)
+#~ ax1.text(280.,60., textstr, size=8)
 
-ax_xDist.hist(x,bins=100,align='mid')
-ax_xDist.set(ylabel='count')
-ax_xCumDist = ax_xDist.twinx()
-ax_xCumDist.hist(x,bins=100,cumulative=True,histtype='step',normed=True,color='r',align='mid')
-ax_xCumDist.tick_params('CRU', colors='r')
-ax_xCumDist.set_ylabel('cumulative',color='r')
+#~ ax2 = fig.add_subplot(311, sharex=ax1, frameon=False)
+#~ sortedtime = np.sort(x)
+#~ p = 1. * np.arange(len(x))/(len(x) - 1)
+#~ ax2.plot(sortedtime, p, color='red')
+#~ ax2.tick_params(axis="y", labelcolor="r")
+#~ ax2.yaxis.tick_right()
+#~ ax2.yaxis.set_label_position('right')
+        
+#~ # Second subplot
+#~ ax1 = fig.add_subplot(312)
+#~ ax1.hist(y, color='gray', edgecolor='black')
+#~ ax1.yaxis.tick_left()
+#~ ax1.yaxis.set_label_position('left')
+#~ ax1.set_ylabel('Frequência', fontweight='bold')
+#~ ax1.set_ylim(0,150)
 
-ax_yDist.hist(z,bins=100,orientation='horizontal',align='mid')
-ax_yDist.set(xlabel='count')
-ax_yCumDist = ax_yDist.twiny()
-ax_yCumDist.hist(z,bins=100,cumulative=True,histtype='step',normed=True,color='r',align='mid',orientation='horizontal')
-ax_yCumDist.tick_params('OLAMv.3.3_harr', colors='r')
-ax_yCumDist.set_xlabel('cumulative',color='r')
+#~ mu = y.mean()
+#~ median = np.median(y)
+#~ sigma = y.std()
+#~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
+#~ ax1.text(10.,130., 'B) OLAMv.3.3_Chen', fontweight='bold', size=8)
+#~ ax1.text(10.,70., textstr, size=8)
 
-path_out = home + "/Documentos/ufrn/papers/olam/results/"
-if not os.path.exists(path_out):
-	create_path(path_out)
-plt.savefig(os.path.join(path_out, 'scatter_harr_cru.png'), dpi=600, bbox_inches='tight')
-plt.show()
-exit()
+#~ ax2 = fig.add_subplot(312, sharex=ax1, frameon=False)
+#~ sortedtime = np.sort(y)
+#~ p = 1. * np.arange(len(y))/(len(y) - 1)
+#~ ax2.plot(sortedtime, p, color='red')
+#~ ax2.tick_params(axis="y", labelcolor="r")
+#~ ax2.yaxis.tick_right()
+#~ ax2.yaxis.set_label_position('right')
+#~ ax2.set_ylabel('Função de Distribuição Cumulativa', color='red', fontweight='bold')
+
+#~ # Thirth subplot
+#~ ax1 = fig.add_subplot(313)
+#~ ax1.hist(z, color='gray', edgecolor='black')
+#~ ax1.yaxis.tick_left()
+#~ ax1.yaxis.set_label_position('left')
+#~ ax1.set_ylim(0,150)
+
+#~ mu = z.mean()
+#~ median = np.median(z)
+#~ sigma = z.std()
+#~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
+#~ ax1.text(120.,120., 'C) OLAMv.3.3_Harr', fontweight='bold', size=8)
+#~ ax1.text(120.,60., textstr, size=8)
+
+#~ ax2 = fig.add_subplot(313, sharex=ax1, frameon=False)
+#~ sortedtime = np.sort(z)
+#~ p = 1. * np.arange(len(z))/(len(z) - 1)
+#~ ax2.plot(sortedtime, p, color='red')
+#~ ax2.tick_params(axis="y", labelcolor="r")
+#~ ax2.yaxis.tick_right()
+#~ ax2.yaxis.set_label_position('right')
+#~ ax2.set_xlabel('Precipitação (mm)', fontweight='bold')
+
+#~ path_out = home + "/Documentos/ufrn/papers/olam/results/"
+#~ if not os.path.exists(path_out):
+	#~ create_path(path_out)
+#~ plt.savefig(os.path.join(path_out, 'hist_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+#~ plt.show()
+#~ exit()
 
 
 #~ # Plot climatology obs x model
-#~ fig = plt.figure(1)
+#~ fig = plt.figure()
 #~ plt.subplot(211)
 
 #~ time = np.arange(0.5, 12 + 0.5)
@@ -331,12 +306,13 @@ exit()
 #~ l1, l2 = a
 #~ plt.setp(l1, linewidth=2, markeredgewidth=2, marker='+', color='blue')
 #~ plt.setp(l2, linewidth=2, markeredgewidth=2, marker='+', color='red')
-#~ plt.title(u'Climatologia de Precipitação 1982-2012', fontweight='bold')
+#~ plt.title(u'Climatologia de Precipitação (1982-2012)', fontweight='bold')
 #~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
 #~ plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
 #~ plt.yticks(np.arange(0, 220, 20))
 #~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
-#~ plt.legend([u'OLAMv.3.3_Chen', u'CRU'], loc='best', ncol=2)
+#~ plt.legend([u'OLAMv.3.3_Chen', u'CRU'], loc='best', ncol=1)
+#~ plt.text(0.5, 180., 'A)', fontweight='bold', size=8)
 #~ plt.grid()
 
 #~ plt.subplot(212)
@@ -352,101 +328,62 @@ exit()
 #~ plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
 #~ plt.yticks(np.arange(0, 220, 20))
 #~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
-#~ plt.legend([u'OLAMv.3.3_Harr', u'CRU'], loc='best', ncol=2)
+#~ plt.legend([u'OLAMv.3.3_Harr', u'CRU'], loc='best', ncol=1)
+#~ plt.text(0.5, 180., 'B)', fontweight='bold', size=8)
 #~ plt.grid()
 
-#~ path_out = home + "/Documents/ufrn/papers/olam/results/"
+#~ path_out = home + "/Documentos/ufrn/papers/olam/results/"
 #~ if not os.path.exists(path_out):
 	#~ create_path(path_out)
 #~ plt.savefig(os.path.join(path_out, 'clim_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+#~ plt.show()
 #~ exit()
 
 
-# Boxplot anual cicle obs x model
+#~ # Boxplot anual cicle obs x model
 #~ fig = plt.figure()
+#~ time = np.arange(1, 4)
+#~ data = [x, y, z]
+	
+#~ plt_box = plt.boxplot(data, patch_artist=True, bootstrap=10000, vert=1)
 
-#~ plt.subplot(211)
-#~ time = np.arange(1, 32)
-#~ a = plt.plot(time, annual_obs1)
-#~ plt.setp(a, linewidth=2, markeredgewidth=2, marker='+', color='red')
-
-#~ plt_bp = plt.boxplot(annual_exp1, patch_artist=True, bootstrap=10000, vert=1)
 #~ # Change outline and fill color
-#~ for box in plt_bp['boxes']:
+#~ for box in plt_box['boxes']:
     #~ box.set( color='black', linewidth=2)
     #~ box.set( facecolor = 'gray' )
 
 #~ # Change color and linewidth of the whiskers
-#~ for whisker in plt_bp['whiskers']:
-    #~ whisker.set(color='blue', linewidth=2)
+#~ for whisker in plt_box['whiskers']:
+    #~ whisker.set(color='black', linewidth=2)
 
 #~ # Change color and linewidth of the caps
-#~ for cap in plt_bp['caps']:
+#~ for cap in plt_box['caps']:
     #~ cap.set(color='black', linewidth=2)
 
 #~ # Change color and linewidth of the medians
-#~ for median in plt_bp['medians']:
-    #~ median.set(color='black', linewidth=2)
+#~ for median in plt_box['medians']:
+    #~ median.set(color='red', linewidth=2)
 
 #~ # Change the style of fliers and their fill
-#~ for flier in plt_bp['fliers']:
-    #~ flier.set(marker='+', color='black', alpha=1)
-
-#~ plt.title(u'Boxplot de precipitação anual 1982-2012', fontweight='bold')
+#~ for flier in plt_box['fliers']:
+    #~ flier.set(marker='+', color='black', alpha=4)
+    
+#~ plt.title(u'Boxplot de Precipitação Anual (1982-2012)', fontweight='bold')
+#~ plt.xlabel(u'Observação e Experimentos', fontweight='bold')	
 #~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
-#~ objects = [u'1982', u'1984', u'1986', u'1988', u'1990', u'1992', 
-           #~ u'1994', u'1996', u'1998', u'2000', u'2002', u'2004',
-           #~ u'2006', u'2008', u'2010', u'2012']
-#~ plt.xticks(np.arange(1, 32, 2), objects)
-#~ plt.yticks(np.arange(0, 220, 20))
-#~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
-#~ plt.legend([u'CRU', u'OLAMv.3.3_Chen'], loc='best', ncol=2)
+#~ plt.yticks(np.arange(0, 450, 50))
+#~ plt.xticks(time, [u'CRU', u'OLAMv.3.3_Chen', u'OLAMv.3.3_Harr'])
+#~ plt.tick_params(axis='both', which='major', length=5, width=1.5, pad=5, labelcolor='black')
 #~ plt.grid()
 
-#~ plt.subplot(212)
-#~ time = np.arange(1, 32)
-#~ a = plt.plot(time, annual_obs1)
-#~ plt.setp(a, linewidth=2, markeredgewidth=2, marker='+', color='red')
-#~ b = plt.xlim([1, 32])
-
-#~ plt_bp = plt.boxplot(annual_exp2, patch_artist=True, bootstrap=10000, vert=1)
-#~ # Change outline and fill color
-#~ for box in plt_bp['boxes']:
-    #~ box.set( color='black', linewidth=2)
-    #~ box.set( facecolor = 'gray' )
-
-#~ # Change color and linewidth of the whiskers
-#~ for whisker in plt_bp['whiskers']:
-    #~ whisker.set(color='green', linewidth=2)
-
-#~ # Change color and linewidth of the caps
-#~ for cap in plt_bp['caps']:
-    #~ cap.set(color='green', linewidth=2)
-
-#~ # Change color and linewidth of the medians
-#~ for median in plt_bp['medians']:
-    #~ median.set(color='black', linewidth=2)
-
-#~ # Change the style of fliers and their fill
-#~ for flier in plt_bp['fliers']:
-    #~ flier.set(marker='o', color='green', alpha=1)
-
-#~ plt.xlabel(u'Anos', fontweight='bold')    
-#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
-#~ objects = [u'1982', u'1984', u'1986', u'1988', u'1990', u'1992', 
-           #~ u'1994', u'1996', u'1998', u'2000', u'2002', u'2004',
-           #~ u'2006', u'2008', u'2010', u'2012']
-#~ plt.xticks(np.arange(1, 32, 2), objects)
-#~ plt.yticks(np.arange(0, 220, 20))
-#~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
-#~ plt.legend([u'CRU', u'OLAMv.3.3_Harr'], loc='best', ncol=2)
-#~ plt.grid()
-
-#~ path_out = home + "/Documents/ufrn/papers/olam/results/"
+#~ path_out = home + "/Documentos/ufrn/papers/olam/results/"
 #~ if not os.path.exists(path_out):
 	#~ create_path(path_out)
 #~ plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
-#~ exit()
+#~ plt.show()
+#~ exit()    
+
+
 
 
 
