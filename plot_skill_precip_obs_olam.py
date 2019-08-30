@@ -18,9 +18,6 @@ from sklearn import metrics
 from matplotlib import pyplot
 from matplotlib.font_manager import FontProperties
 
-import sys
-
-
 
 def filter_nan(s, o):
     data = np.array([s.flatten(), o.flatten()])
