@@ -134,11 +134,14 @@ def import_obs(path):
 		obs = np.nanmean(value[mon::12], axis=0)
 		clim_obs.append(obs)
 
-	seasonal = np.nanmean(np.nanmean(var[:][2:372:3,:,:], axis=1), axis=1)
+	seasonal = add(add(var[:][2:372:3,:,:], axis=1), axis=1)
 	mam_obs = seasonal[0:120:4]
 	jja_obs = seasonal[1:120:4]
 	son_obs = seasonal[2:120:4]
 	djf_obs = seasonal[3:120:4]
+	print(mam_obs)
+	print(jja_obs)
+	exit()
 	
 	um_obs = np.nanmean(value[0:12])
 	dois_obs = np.nanmean(value[12:24])
