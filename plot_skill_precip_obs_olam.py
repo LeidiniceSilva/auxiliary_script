@@ -62,7 +62,7 @@ def nse(s, o):
 
 def import_sim(path, exp):
 
-	arq  = '{0}/precip_controle_1982_2012_{1}_g2_neb_new_REAL_ok_full_negcor_monsum_noocean.nc'.format(path, exp)
+	arq  = '{0}/precip_controle_1982_2012_{1}_g2_neb_new_REAL_ok_full_negcor_yearsum_noocean.nc'.format(path, exp)
 	data = netCDF4.Dataset(arq)
 	var  = data.variables['precip'][:]
 	lat  = data.variables['lat'][:]
@@ -75,6 +75,7 @@ def import_sim(path, exp):
 		clim_exp.append(exp)
 
 	seasonal = np.nanmean(np.nanmean(var[:][2:372:3,:,:], axis=1), axis=1)
+
 	mam_exp = seasonal[0:120:4]
 	jja_exp = seasonal[1:120:4]
 	son_exp = seasonal[2:120:4]
@@ -85,7 +86,7 @@ def import_sim(path, exp):
 
 def import_obs(path):
 
-	arq  = '{0}/pr_Amon_CRU-TS3.22_observation_198201-201212_new_mmm_neb.nc'.format(path)
+	arq  = '{0}/pr_Amon_CRU-TS3.22_observation_198201-201212_new_mma_neb.nc'.format(path)
 	data = netCDF4.Dataset(arq)
 	var  = data.variables['pr'][:]
 	lat  = data.variables['lat'][:]
@@ -97,14 +98,11 @@ def import_obs(path):
 		obs = np.nanmean(value[mon::12], axis=0)
 		clim_obs.append(obs)
 
-	seasonal = add(add(var[:][2:372:3,:,:], axis=1), axis=1)
+	seasonal = np.nanmean(np.nanmean(var[:][2:372:3,:,:], axis=1), axis=1)
 	mam_obs = seasonal[0:120:4]
 	jja_obs = seasonal[1:120:4]
 	son_obs = seasonal[2:120:4]
 	djf_obs = seasonal[3:120:4]
-	print(mam_obs)
-	print(jja_obs)
-	exit()
 	
 	return value, clim_obs, djf_obs, mam_obs, jja_obs, son_obs
 	
@@ -339,49 +337,135 @@ nse2 = np.array([nse_djf2, nse_mam2, nse_jja2, nse_son2])
 #~ plt.show()
 #~ exit()
 
+#~ # Plot time siries whit bar erro
+#~ City_A=x
+#~ City_B=y
 
-#~ # Boxplot anual cicle obs x model
-#~ fig = plt.figure()
-#~ time = np.arange(1, 4)
-#~ data = [x, y, z]
-	
-#~ plt_box = plt.boxplot(data, patch_artist=True, bootstrap=10000, vert=1)
+#~ Mean_City_A=np.mean(x)
+#~ Mean_City_B=np.mean(y)
 
-#~ # Change outline and fill color
-#~ for box in plt_box['boxes']:
-    #~ box.set( color='black', linewidth=2)
-    #~ box.set( facecolor = 'gray' )
+#~ STDV_City_A=np.std(x)
+#~ STDV_City_B=np.std(y)
 
-#~ # Change color and linewidth of the whiskers
-#~ for whisker in plt_box['whiskers']:
-    #~ whisker.set(color='black', linewidth=2)
+#~ # Create a figure with customized size
+#~ fig = plt.figure(figsize=(12, 6))
+#~ ax = fig.add_subplot(111)
 
-#~ # Change color and linewidth of the caps
-#~ for cap in plt_box['caps']:
-    #~ cap.set(color='black', linewidth=2)
+#~ # Set the axis lables
+#~ ax.set_xlabel('Anos')
+#~ ax.set_ylabel('Precipitação (mm)')
 
-#~ # Change color and linewidth of the medians
-#~ for median in plt_box['medians']:
-    #~ median.set(color='red', linewidth=2)
+#~ # X axis is day numbers from 1 to 15
+#~ xaxis = np.array(range(1,32))
 
-#~ # Change the style of fliers and their fill
-#~ for flier in plt_box['fliers']:
-    #~ flier.set(marker='+', color='black', alpha=4)
-    
-#~ plt.title(u'Boxplot de Precipitação Anual (1982-2012)', fontweight='bold')
-#~ plt.xlabel(u'Observação e Experimentos', fontweight='bold')	
-#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
-#~ plt.yticks(np.arange(0, 450, 50))
-#~ plt.xticks(time, [u'CRU', u'OLAMv.3.3_Chen', u'OLAMv.3.3_Harr'])
-#~ plt.tick_params(axis='both', which='major', length=5, width=1.5, pad=5, labelcolor='black')
-#~ plt.grid()
+#~ # Line color for error bar
+#~ color_City_A = 'red'
+#~ color_City_B = 'darkblue'
 
-#~ path_out = home + "/Documentos/ufrn/papers/olam/results/"
-#~ if not os.path.exists(path_out):
-	#~ create_path(path_out)
-#~ plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+#~ # Line style for each dataset
+#~ lineStyle_City_A={"linestyle":"--", "linewidth":2, "markeredgewidth":2, "elinewidth":2, "capsize":3}
+#~ lineStyle_City_B={"linestyle":"-", "linewidth":2, "markeredgewidth":2, "elinewidth":2, "capsize":3}
+
+#~ # Create an error bar for each dataset
+#~ line_City_A=ax.errorbar(xaxis, City_A, yerr=STDV_City_A, **lineStyle_City_A, color=color_City_A, label='CRU')
+#~ line_City_B=ax.errorbar(xaxis, City_B, yerr=STDV_City_B, **lineStyle_City_A, color=color_City_B, label='OLAM_CHEN')
+
+#~ # Label each dataset on the graph, xytext is the label's position 
+#~ for i, txt in enumerate(City_A):
+        #~ ax.annotate(txt, xy=(xaxis[i], City_A[i]), xytext=(xaxis[i]+0.03, City_A[i]+0.3),color=color_City_A)
+
+#~ for i, txt in enumerate(City_B):
+        #~ ax.annotate(txt, xy=(xaxis[i], City_B[i]), xytext=(xaxis[i]+0.03, City_B[i]+0.3),color=color_City_B)
+        
+
+#~ # Draw a legend bar
+#~ plt.legend(handles=[line_City_A, line_City_B], loc='upper right')
+
+#~ # Customize the tickes on the graph
+#~ plt.xticks(xaxis)               
+#~ plt.yticks(np.arange(200, 2200, 100))
+
+#~ # Customize the legend font and handle length
+#~ params = {'legend.fontsize': 12,
+          #~ 'legend.handlelength': 2}
+#~ plt.rcParams.update(params)
+
+#~ # Customize the font
+#~ font = {'family' : 'Arial',
+        #~ 'weight':'bold',
+        #~ 'size'   : 12}
+#~ plt.rc('font', **font)
+
+#~ # Draw a grid for the graph
+#~ ax.grid(color='lightgrey', linestyle='-')
+#~ ax.set_facecolor('w')
 #~ plt.show()
-#~ exit()    
+#~ exit()
+
+# Boxplot anual cicle obs x model
+fig = plt.figure()
+time = np.arange(1, 4)
+data = [x, y, z]
+
+
+plt_box = plt.boxplot(data, patch_artist=True, bootstrap=10000, vert=1)
+
+# Change outline and fill color
+for box in plt_box['boxes']:
+    box.set( color='black', linewidth=2)
+    box.set( facecolor = 'gray' )
+
+# Change color and linewidth of the whiskers
+for whisker in plt_box['whiskers']:
+    whisker.set(color='black', linewidth=2)
+
+# Change color and linewidth of the caps
+for cap in plt_box['caps']:
+    cap.set(color='black', linewidth=2)
+
+# Change color and linewidth of the medians
+for median in plt_box['medians']:
+    median.set(color='red', linewidth=2)
+
+# Change the style of fliers and their fill
+for flier in plt_box['fliers']:
+    flier.set(marker='+', color='black', alpha=4)
+
+mux = x.mean()
+medianx = np.median(x)
+sigmax = x.std()
+textstrx = '\n'.join((r'$\mu=%.2f$' % (mux, ), r'$\mathrm{median}=%.2f$' % (medianx, ), r'$\sigma=%.2f$' % (sigmax, )))
+plt.text(.75,1600., 'A) CRU', fontweight='bold')
+plt.text(.75,1400., textstrx)
+
+muy = y.mean()
+mediany = np.median(y)
+sigmay = y.std()
+textstry = '\n'.join((r'$\mu=%.2f$' % (muy, ), r'$\mathrm{median}=%.2f$' % (mediany, ), r'$\sigma=%.2f$' % (sigmay, )))
+plt.text(1.75,1300., 'B) OLAMv.3.3_Chen', fontweight='bold')
+plt.text(1.75,1100., textstry)
+
+muz = z.mean()
+medianz = np.median(z)
+sigmaz = z.std()
+textstrz = '\n'.join((r'$\mu=%.2f$' % (muz, ), r'$\mathrm{median}=%.2f$' % (medianz, ), r'$\sigma=%.2f$' % (sigmaz, )))
+plt.text(2.55,1000., 'C) OLAMv.3.3_Harr', fontweight='bold')
+plt.text(2.55,800., textstrz)
+	    
+plt.title(u'Boxplot de Precipitação Anual (1982-2012)', fontweight='bold')
+plt.xlabel(u'Observação e Experimentos', fontweight='bold')	
+plt.ylabel(u'Precipitação (mm)', fontweight='bold')
+plt.yticks(np.arange(350, 1850, 100))
+plt.xticks(time, [u'CRU', u'OLAMv.3.3_Chen', u'OLAMv.3.3_Harr'])
+plt.tick_params(axis='both', which='major', length=5, width=1.5, pad=5, labelcolor='black')
+plt.grid()
+
+path_out = home + "/Documentos/ufrn/papers/olam/results/"
+if not os.path.exists(path_out):
+	create_path(path_out)
+plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+plt.show()
+exit()    
 
 
 
