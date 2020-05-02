@@ -62,9 +62,9 @@ def nse(s, o):
 
 def import_sim(path, exp):
 
-	arq  = '{0}/precip_controle_1982_2012_{1}_g2_neb_new_REAL_ok_full_negcor_yearsum_noocean.nc'.format(path, exp)
+	arq  = '{0}/rol_controle_{1}_g2_mon_1982-2012_r720x360_neb.nc'.format(path, exp)
 	data = netCDF4.Dataset(arq)
-	var  = data.variables['precip'][:]
+	var  = data.variables['olr_top'][:]
 	lat  = data.variables['lat'][:]
 	lon  = data.variables['lon'][:]
 	value = np.nanmean(np.nanmean(var[:][:,:,:], axis=1), axis=1)
@@ -86,9 +86,9 @@ def import_sim(path, exp):
 
 def import_obs(path):
 
-	arq  = '{0}/pr_Amon_CRU-TS3.22_observation_198201-201212_new_mma_neb.nc'.format(path)
+	arq  = '{0}/rol_noaa_mon_1982-2012_r720x360_neb.nc'.format(path)
 	data = netCDF4.Dataset(arq)
-	var  = data.variables['pr'][:]
+	var  = data.variables['olr'][:]
 	lat  = data.variables['lat'][:]
 	lon  = data.variables['lon'][:]
 	value = np.nanmean(np.nanmean(var[:][:,:,:], axis=1), axis=1)
@@ -109,7 +109,7 @@ def import_obs(path):
 
 # Import exp model end obs database 
 home = os.path.expanduser("~")
-path = home + "/Documentos/ufrn/papers/olam/datas"
+path = home + "/Documents/ufrn/papers/olam/datas"
 
 x, clim_obs1, djf_obs1, mam_obs1, jja_obs1, son_obs1 = import_obs(path)
 
@@ -195,22 +195,24 @@ rmse2 = np.array([rmse_djf2, rmse_mam2, rmse_jja2, rmse_son2])
 r2 = np.array([r_djf2, r_mam2, r_jja2, r_son2])
 nse2 = np.array([nse_djf2, nse_mam2, nse_jja2, nse_son2])
 
-#~ # Print statistic index (Chen and Harr)
-#~ print(pc_bias1)
-#~ print(mbe1)
-#~ print(mae1)
-#~ print(rmse1)
-#~ print(r1)
-#~ print(nse1)
-#~ print()
+# Print statistic index (Chen and Harr)
+print(pc_bias1)
+print(mbe1)
+print(mae1)
+print(rmse1)
+print(r1)
+print(nse1)
+print()
 
-#~ print(pc_bias2)
-#~ print(mbe2)
-#~ print(mae2)
-#~ print(rmse2)
-#~ print(r2)
-#~ print(nse2)
-#~ print()
+print(pc_bias2)
+print(mbe2)
+print(mae2)
+print(rmse2)
+print(r2)
+print(nse2)
+print()
+
+exit()
 
 #~ # Plot histogram and scatter obs x model
 #~ fig = plt.figure()
@@ -402,70 +404,70 @@ nse2 = np.array([nse_djf2, nse_mam2, nse_jja2, nse_son2])
 #~ plt.show()
 #~ exit()
 
-# Boxplot anual cicle obs x model
-fig = plt.figure()
-time = np.arange(1, 4)
-data = [x, y, z]
+#~ # Boxplot anual cicle obs x model
+#~ fig = plt.figure()
+#~ time = np.arange(1, 4)
+#~ data = [x, y, z]
 
 
-plt_box = plt.boxplot(data, patch_artist=True, bootstrap=10000, vert=1)
+#~ plt_box = plt.boxplot(data, patch_artist=True, bootstrap=10000, vert=1)
 
-# Change outline and fill color
-for box in plt_box['boxes']:
-    box.set( color='black', linewidth=2)
-    box.set( facecolor = 'gray' )
+#~ # Change outline and fill color
+#~ for box in plt_box['boxes']:
+    #~ box.set( color='black', linewidth=2)
+    #~ box.set( facecolor = 'gray' )
 
-# Change color and linewidth of the whiskers
-for whisker in plt_box['whiskers']:
-    whisker.set(color='black', linewidth=2)
+#~ # Change color and linewidth of the whiskers
+#~ for whisker in plt_box['whiskers']:
+    #~ whisker.set(color='black', linewidth=2)
 
-# Change color and linewidth of the caps
-for cap in plt_box['caps']:
-    cap.set(color='black', linewidth=2)
+#~ # Change color and linewidth of the caps
+#~ for cap in plt_box['caps']:
+    #~ cap.set(color='black', linewidth=2)
 
-# Change color and linewidth of the medians
-for median in plt_box['medians']:
-    median.set(color='red', linewidth=2)
+#~ # Change color and linewidth of the medians
+#~ for median in plt_box['medians']:
+    #~ median.set(color='red', linewidth=2)
 
-# Change the style of fliers and their fill
-for flier in plt_box['fliers']:
-    flier.set(marker='+', color='black', alpha=4)
+#~ # Change the style of fliers and their fill
+#~ for flier in plt_box['fliers']:
+    #~ flier.set(marker='+', color='black', alpha=4)
 
-mux = x.mean()
-medianx = np.median(x)
-sigmax = x.std()
-textstrx = '\n'.join((r'$\mu=%.2f$' % (mux, ), r'$\mathrm{median}=%.2f$' % (medianx, ), r'$\sigma=%.2f$' % (sigmax, )))
-plt.text(.75,1600., 'A) CRU', fontweight='bold')
-plt.text(.75,1400., textstrx)
+#~ mux = x.mean()
+#~ medianx = np.median(x)
+#~ sigmax = x.std()
+#~ textstrx = '\n'.join((r'$\mu=%.2f$' % (mux, ), r'$\mathrm{median}=%.2f$' % (medianx, ), r'$\sigma=%.2f$' % (sigmax, )))
+#~ plt.text(.75,1600., 'A) CRU', fontweight='bold')
+#~ plt.text(.75,1400., textstrx)
 
-muy = y.mean()
-mediany = np.median(y)
-sigmay = y.std()
-textstry = '\n'.join((r'$\mu=%.2f$' % (muy, ), r'$\mathrm{median}=%.2f$' % (mediany, ), r'$\sigma=%.2f$' % (sigmay, )))
-plt.text(1.75,1300., 'B) OLAMv.3.3_Chen', fontweight='bold')
-plt.text(1.75,1100., textstry)
+#~ muy = y.mean()
+#~ mediany = np.median(y)
+#~ sigmay = y.std()
+#~ textstry = '\n'.join((r'$\mu=%.2f$' % (muy, ), r'$\mathrm{median}=%.2f$' % (mediany, ), r'$\sigma=%.2f$' % (sigmay, )))
+#~ plt.text(1.75,1300., 'B) OLAMv.3.3_Chen', fontweight='bold')
+#~ plt.text(1.75,1100., textstry)
 
-muz = z.mean()
-medianz = np.median(z)
-sigmaz = z.std()
-textstrz = '\n'.join((r'$\mu=%.2f$' % (muz, ), r'$\mathrm{median}=%.2f$' % (medianz, ), r'$\sigma=%.2f$' % (sigmaz, )))
-plt.text(2.55,1000., 'C) OLAMv.3.3_Harr', fontweight='bold')
-plt.text(2.55,800., textstrz)
+#~ muz = z.mean()
+#~ medianz = np.median(z)
+#~ sigmaz = z.std()
+#~ textstrz = '\n'.join((r'$\mu=%.2f$' % (muz, ), r'$\mathrm{median}=%.2f$' % (medianz, ), r'$\sigma=%.2f$' % (sigmaz, )))
+#~ plt.text(2.55,1000., 'C) OLAMv.3.3_Harr', fontweight='bold')
+#~ plt.text(2.55,800., textstrz)
 	    
-plt.title(u'Boxplot de Precipitação Anual (1982-2012)', fontweight='bold')
-plt.xlabel(u'Observação e Experimentos', fontweight='bold')	
-plt.ylabel(u'Precipitação (mm)', fontweight='bold')
-plt.yticks(np.arange(350, 1850, 100))
-plt.xticks(time, [u'CRU', u'OLAMv.3.3_Chen', u'OLAMv.3.3_Harr'])
-plt.tick_params(axis='both', which='major', length=5, width=1.5, pad=5, labelcolor='black')
-plt.grid()
+#~ plt.title(u'Boxplot de Precipitação Anual (1982-2012)', fontweight='bold')
+#~ plt.xlabel(u'Observação e Experimentos', fontweight='bold')	
+#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
+#~ plt.yticks(np.arange(350, 1850, 100))
+#~ plt.xticks(time, [u'CRU', u'OLAMv.3.3_Chen', u'OLAMv.3.3_Harr'])
+#~ plt.tick_params(axis='both', which='major', length=5, width=1.5, pad=5, labelcolor='black')
+#~ plt.grid()
 
-path_out = home + "/Documentos/ufrn/papers/olam/results/"
-if not os.path.exists(path_out):
-	create_path(path_out)
-plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
-plt.show()
-exit()    
+#~ path_out = home + "/Documentos/ufrn/papers/olam/results/"
+#~ if not os.path.exists(path_out):
+	#~ create_path(path_out)
+#~ plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+#~ plt.show()
+#~ exit()    
 
 
 
