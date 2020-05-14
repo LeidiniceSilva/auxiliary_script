@@ -16,7 +16,7 @@
 'set parea 1 3.5 6 8'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 1 8.2 A)'
+'draw string 1 8.2 A'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -45,7 +45,7 @@
 'define jja1=(jun1+jul1+aug1)/(3)'
 'define son1=(sep1+oct1+nov1)/(3)'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
 'd djf1'
 'draw title DJF'
 'draw ylab CRU'
@@ -56,7 +56,7 @@
 'set parea 3.5 6 6 8'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 3.5 8.2 B)'
+'draw string 3.5 8.2 B'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -67,7 +67,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
 'd mam1'
 'draw title MAM'
 
@@ -77,7 +77,7 @@
 'set parea 6 8.5 6 8'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 6 8.2 C)'
+'draw string 6 8.2 C'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -88,7 +88,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
 'd jja1'
 'draw title JJA'
 
@@ -98,7 +98,7 @@
 'set parea 8.5 10.95 6 8'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 8.5 8.2 D)'
+'draw string 8.5 8.2 D'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -109,7 +109,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
 'd son1'
 'draw title SON'
 'close 1'
@@ -124,7 +124,7 @@
 'set parea 1 3.5 3.5 5.5'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 1 5.7 E)'
+'draw string 1 5.7 E'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -153,7 +153,7 @@
 'define jja2=(jun2+jul2+aug2)/(3)'
 'define son2=(sep2+oct2+nov2)/(3)'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
 'd djf2'
 'draw ylab OLAMv.3.3_Chen'
 
@@ -163,7 +163,7 @@
 'set parea 3.5 6 3.5 5.5'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 3.5 5.7 F)'
+'draw string 3.5 5.7 F'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -174,7 +174,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 5 10 15 20 25 30 35 40 45 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 5 10 15 20 25 30 35 40 45 50 60 70 80 100 150 200'
 'd mam2'
 
 **************
@@ -183,7 +183,7 @@
 'set parea 6 8.5 3.5 5.5'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 6 5.7 G)'
+'draw string 6 5.7 G'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -194,7 +194,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 5 10 15 20 25 30 35 40 45 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 5 10 15 20 25 30 35 40 45 50 60 70 80 100 150 200'
 'd jja2'
 
 **************
@@ -203,7 +203,7 @@
 'set parea 8.5 10.95 3.5 5.5'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 8.5 5.7 H)'
+'draw string 8.5 5.7 H'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -214,7 +214,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 5 10 15 20 25 30 35 40 45 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 5 10 15 20 25 30 35 40 45 50 60 70 80 100 150 200'
 'd son2'
 'close 1'
 
@@ -227,7 +227,7 @@
 'set parea 1 3.5 1 3'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 1 3.2 I)'
+'draw string 1 3.2 I'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -256,7 +256,7 @@
 'define jja3=(jun3+jul3+aug3)/(3)'
 'define son3=(sep3+oct3+nov3)/(3)'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
 'd djf3'
 'draw ylab OLAMv.3.3_Harr'
 
@@ -266,7 +266,7 @@
 'set parea 3.5 6 1 3'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 3.5 3.2 J)'
+'draw string 3.5 3.2 J'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -277,7 +277,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
 'd mam3'
 
 **************
@@ -286,7 +286,7 @@
 'set parea 6 8.5 1 3'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 6 3.2 L)'
+'draw string 6 3.2 L'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -297,7 +297,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
 'd jja3'
 
 **************
@@ -306,7 +306,7 @@
 'set parea 8.5 10.95 1 3'
 'set strsiz 0.20'
 'set string 1 l 8'
-'draw string 8.5 3.2 M)'
+'draw string 8.5 3.2 M'
 'set grads off'
 'set grid off'
 'set gxout shaded'
@@ -317,7 +317,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rainbow -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
 'd son3'
 
 'run xcbar 1 10 0.35 0.55 -fw 0.12 -fh 0.18 -line on'

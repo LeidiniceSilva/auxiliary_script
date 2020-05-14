@@ -62,9 +62,9 @@ def nse(s, o):
 
 def import_sim(path, exp):
 
-	arq  = '{0}/rol_controle_{1}_g2_mon_1982-2012_r720x360_neb.nc'.format(path, exp)
+	arq  = '{0}/precip_controle_1982_2012_{1}_g2_neb_new_REAL_ok_full_negcor_monsum_noocean.nc'.format(path, exp)
 	data = netCDF4.Dataset(arq)
-	var  = data.variables['olr_top'][:]
+	var  = data.variables['precip'][:]
 	lat  = data.variables['lat'][:]
 	lon  = data.variables['lon'][:]
 	value = np.nanmean(np.nanmean(var[:][:,:,:], axis=1), axis=1)
@@ -86,9 +86,9 @@ def import_sim(path, exp):
 
 def import_obs(path):
 
-	arq  = '{0}/rol_noaa_mon_1982-2012_r720x360_neb.nc'.format(path)
+	arq  = '{0}/pr_Amon_CRU-TS3.22_observation_198201-201212_new_mmm_neb.nc'.format(path)
 	data = netCDF4.Dataset(arq)
-	var  = data.variables['olr'][:]
+	var  = data.variables['pr'][:]
 	lat  = data.variables['lat'][:]
 	lon  = data.variables['lon'][:]
 	value = np.nanmean(np.nanmean(var[:][:,:,:], axis=1), axis=1)
@@ -119,100 +119,127 @@ y, clim_exp1, djf_exp1, mam_exp1, jja_exp1, son_exp1 = import_sim(path, exp1)
 exp2  = u'harr'
 z, clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2 = import_sim(path, exp2)
 
-# Calculate statistic index - Chen
-pc_bias_djf1 = pc_bias(djf_exp1, djf_obs1)
-pc_bias_mam1 = pc_bias(mam_exp1, mam_obs1)
-pc_bias_jja1 = pc_bias(jja_exp1, jja_obs1)
-pc_bias_son1 = pc_bias(son_exp1, son_obs1)
 
-mbe_djf1 = mbe(djf_exp1, djf_obs1)
-mbe_mam1 = mbe(mam_exp1, mam_obs1)
-mbe_jja1 = mbe(jja_exp1, jja_obs1)
-mbe_son1 = mbe(son_exp1, son_obs1)
+# Plot climatology obs x model
+fig = plt.figure(figsize=(9, 5))
+plt.subplot(111)
 
-mae_djf1 = mae(djf_exp1, djf_obs1)
-mae_mam1 = mae(mam_exp1, mam_obs1)
-mae_jja1 = mae(jja_exp1, jja_obs1)
-mae_son1 = mae(son_exp1, son_obs1)
+time = np.arange(0.5, 12 + 0.5)
+a = plt.plot(time, clim_exp1, time, clim_exp2, time, clim_obs1)
 
-rmse_djf1 = rmse(djf_exp1, djf_obs1)
-rmse_mam1 = rmse(mam_exp1, mam_obs1)
-rmse_jja1 = rmse(jja_exp1, jja_obs1)
-rmse_son1 = rmse(son_exp1, son_obs1)
+l1, l2, l3 = a
+plt.setp(l1, linewidth=2, markeredgewidth=2, marker='+', color='blue')
+plt.setp(l2, linewidth=2, markeredgewidth=2, marker='+', color='red')
+plt.setp(l3, linewidth=2, markeredgewidth=2, marker='+', color='black')
+plt.title(u'Climatologia de Precipitação (1982-2012)', fontweight='bold')
+plt.xlabel(u'Meses', fontweight='bold')
+plt.ylabel(u'Precipitação (mm/mês)', fontweight='bold')
+plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
+plt.yticks(np.arange(0, 220, 20))
+plt.tick_params(axis='both', which='major', labelsize=10, length=5, width=1.5, pad=5, labelcolor='k')
+plt.legend([u'OLAMv.3.3_Chen', 'OLAMv.3.3_Harr', u'CRU'], loc='best', ncol=1, prop=FontProperties(size=10))
+plt.grid()
 
-r_djf1 = r(djf_exp1, djf_obs1)
-r_mam1 = r(mam_exp1, mam_obs1)
-r_jja1 = r(jja_exp1, jja_obs1)
-r_son1 = r(son_exp1, son_obs1)
-
-nse_djf1 = nse(djf_exp1, djf_obs1)
-nse_mam1 = nse(mam_exp1, mam_obs1)
-nse_jja1 = nse(jja_exp1, jja_obs1)
-nse_son1 = nse(son_exp1, son_obs1)
-
-pc_bias1 = np.array([pc_bias_djf1, pc_bias_mam1, pc_bias_jja1, pc_bias_son1])
-mbe1 = np.array([mbe_djf1, mbe_mam1, mbe_jja1, mbe_son1])
-mae1 = np.array([mae_djf1, mae_mam1, mae_jja1, mae_son1])
-rmse1 = np.array([rmse_djf1, rmse_mam1, rmse_jja1, rmse_son1])
-r1 = np.array([r_djf1, r_mam1, r_jja1, r_son1])
-nse1 = np.array([nse_djf1, nse_mam1, nse_jja1, nse_son1])
-
-# Calculate statistic index - Chen
-pc_bias_djf2 = pc_bias(djf_exp2, djf_obs1)
-pc_bias_mam2 = pc_bias(mam_exp2, mam_obs1)
-pc_bias_jja2 = pc_bias(jja_exp2, jja_obs1)
-pc_bias_son2 = pc_bias(son_exp2, son_obs1)
-
-mbe_djf2 = mbe(djf_exp2, djf_obs1)
-mbe_mam2 = mbe(mam_exp2, mam_obs1)
-mbe_jja2 = mbe(jja_exp2, jja_obs1)
-mbe_son2 = mbe(son_exp2, son_obs1)
-
-mae_djf2 = mae(djf_exp2, djf_obs1)
-mae_mam2 = mae(mam_exp2, mam_obs1)
-mae_jja2 = mae(jja_exp2, jja_obs1)
-mae_son2 = mae(son_exp2, son_obs1)
-
-rmse_djf2 = rmse(djf_exp2, djf_obs1)
-rmse_mam2 = rmse(mam_exp2, mam_obs1)
-rmse_jja2 = rmse(jja_exp2, jja_obs1)
-rmse_son2 = rmse(son_exp2, son_obs1)
-
-r_djf2 = r(djf_exp2, djf_obs1)
-r_mam2 = r(mam_exp2, mam_obs1)
-r_jja2 = r(jja_exp2, jja_obs1)
-r_son2 = r(son_exp2, son_obs1)
-
-nse_djf2 = nse(djf_exp2, djf_obs1)
-nse_mam2 = nse(mam_exp2, mam_obs1)
-nse_jja2 = nse(jja_exp2, jja_obs1)
-nse_son2 = nse(son_exp2, son_obs1)
-
-pc_bias2 = np.array([pc_bias_djf2, pc_bias_mam2, pc_bias_jja2, pc_bias_son2])
-mbe2 = np.array([mbe_djf2, mbe_mam2, mbe_jja2, mbe_son2])
-mae2 = np.array([mae_djf2, mae_mam2, mae_jja2, mae_son2])
-rmse2 = np.array([rmse_djf2, rmse_mam2, rmse_jja2, rmse_son2])
-r2 = np.array([r_djf2, r_mam2, r_jja2, r_son2])
-nse2 = np.array([nse_djf2, nse_mam2, nse_jja2, nse_son2])
-
-# Print statistic index (Chen and Harr)
-print(pc_bias1)
-print(mbe1)
-print(mae1)
-print(rmse1)
-print(r1)
-print(nse1)
-print()
-
-print(pc_bias2)
-print(mbe2)
-print(mae2)
-print(rmse2)
-print(r2)
-print(nse2)
-print()
-
+path_out = home + "/Downloads"
+if not os.path.exists(path_out):
+	create_path(path_out)
+plt.savefig(os.path.join(path_out, 'clim_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+plt.show()
 exit()
+
+#~ # Calculate statistic index - Chen
+#~ pc_bias_djf1 = pc_bias(djf_exp1, djf_obs1)
+#~ pc_bias_mam1 = pc_bias(mam_exp1, mam_obs1)
+#~ pc_bias_jja1 = pc_bias(jja_exp1, jja_obs1)
+#~ pc_bias_son1 = pc_bias(son_exp1, son_obs1)
+
+#~ mbe_djf1 = mbe(djf_exp1, djf_obs1)
+#~ mbe_mam1 = mbe(mam_exp1, mam_obs1)
+#~ mbe_jja1 = mbe(jja_exp1, jja_obs1)
+#~ mbe_son1 = mbe(son_exp1, son_obs1)
+
+#~ mae_djf1 = mae(djf_exp1, djf_obs1)
+#~ mae_mam1 = mae(mam_exp1, mam_obs1)
+#~ mae_jja1 = mae(jja_exp1, jja_obs1)
+#~ mae_son1 = mae(son_exp1, son_obs1)
+
+#~ rmse_djf1 = rmse(djf_exp1, djf_obs1)
+#~ rmse_mam1 = rmse(mam_exp1, mam_obs1)
+#~ rmse_jja1 = rmse(jja_exp1, jja_obs1)
+#~ rmse_son1 = rmse(son_exp1, son_obs1)
+
+#~ r_djf1 = r(djf_exp1, djf_obs1)
+#~ r_mam1 = r(mam_exp1, mam_obs1)
+#~ r_jja1 = r(jja_exp1, jja_obs1)
+#~ r_son1 = r(son_exp1, son_obs1)
+
+#~ nse_djf1 = nse(djf_exp1, djf_obs1)
+#~ nse_mam1 = nse(mam_exp1, mam_obs1)
+#~ nse_jja1 = nse(jja_exp1, jja_obs1)
+#~ nse_son1 = nse(son_exp1, son_obs1)
+
+#~ pc_bias1 = np.array([pc_bias_djf1, pc_bias_mam1, pc_bias_jja1, pc_bias_son1])
+#~ mbe1 = np.array([mbe_djf1, mbe_mam1, mbe_jja1, mbe_son1])
+#~ mae1 = np.array([mae_djf1, mae_mam1, mae_jja1, mae_son1])
+#~ rmse1 = np.array([rmse_djf1, rmse_mam1, rmse_jja1, rmse_son1])
+#~ r1 = np.array([r_djf1, r_mam1, r_jja1, r_son1])
+#~ nse1 = np.array([nse_djf1, nse_mam1, nse_jja1, nse_son1])
+
+#~ # Calculate statistic index - Chen
+#~ pc_bias_djf2 = pc_bias(djf_exp2, djf_obs1)
+#~ pc_bias_mam2 = pc_bias(mam_exp2, mam_obs1)
+#~ pc_bias_jja2 = pc_bias(jja_exp2, jja_obs1)
+#~ pc_bias_son2 = pc_bias(son_exp2, son_obs1)
+
+#~ mbe_djf2 = mbe(djf_exp2, djf_obs1)
+#~ mbe_mam2 = mbe(mam_exp2, mam_obs1)
+#~ mbe_jja2 = mbe(jja_exp2, jja_obs1)
+#~ mbe_son2 = mbe(son_exp2, son_obs1)
+
+#~ mae_djf2 = mae(djf_exp2, djf_obs1)
+#~ mae_mam2 = mae(mam_exp2, mam_obs1)
+#~ mae_jja2 = mae(jja_exp2, jja_obs1)
+#~ mae_son2 = mae(son_exp2, son_obs1)
+
+#~ rmse_djf2 = rmse(djf_exp2, djf_obs1)
+#~ rmse_mam2 = rmse(mam_exp2, mam_obs1)
+#~ rmse_jja2 = rmse(jja_exp2, jja_obs1)
+#~ rmse_son2 = rmse(son_exp2, son_obs1)
+
+#~ r_djf2 = r(djf_exp2, djf_obs1)
+#~ r_mam2 = r(mam_exp2, mam_obs1)
+#~ r_jja2 = r(jja_exp2, jja_obs1)
+#~ r_son2 = r(son_exp2, son_obs1)
+
+#~ nse_djf2 = nse(djf_exp2, djf_obs1)
+#~ nse_mam2 = nse(mam_exp2, mam_obs1)
+#~ nse_jja2 = nse(jja_exp2, jja_obs1)
+#~ nse_son2 = nse(son_exp2, son_obs1)
+
+#~ pc_bias2 = np.array([pc_bias_djf2, pc_bias_mam2, pc_bias_jja2, pc_bias_son2])
+#~ mbe2 = np.array([mbe_djf2, mbe_mam2, mbe_jja2, mbe_son2])
+#~ mae2 = np.array([mae_djf2, mae_mam2, mae_jja2, mae_son2])
+#~ rmse2 = np.array([rmse_djf2, rmse_mam2, rmse_jja2, rmse_son2])
+#~ r2 = np.array([r_djf2, r_mam2, r_jja2, r_son2])
+#~ nse2 = np.array([nse_djf2, nse_mam2, nse_jja2, nse_son2])
+
+#~ # Print statistic index (Chen and Harr)
+#~ print(pc_bias1)
+#~ print(mbe1)
+#~ print(mae1)
+#~ print(rmse1)
+#~ print(r1)
+#~ print(nse1)
+#~ print()
+
+#~ print(pc_bias2)
+#~ print(mbe2)
+#~ print(mae2)
+#~ print(rmse2)
+#~ print(r2)
+#~ print(nse2)
+#~ print()
+#~ exit()
 
 #~ # Plot histogram and scatter obs x model
 #~ fig = plt.figure()
