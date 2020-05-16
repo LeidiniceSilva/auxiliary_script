@@ -62,7 +62,7 @@ def nse(s, o):
 
 def import_sim(path, exp):
 
-	arq  = '{0}/precip_controle_1982_2012_{1}_g2_neb_new_REAL_ok_full_negcor_monsum_noocean.nc'.format(path, exp)
+	arq  = '{0}/precip_controle_1982_2012_{1}_g2_neb_new_REAL_ok_full_negcor_yearsum_noocean.nc'.format(path, exp)
 	data = netCDF4.Dataset(arq)
 	var  = data.variables['precip'][:]
 	lat  = data.variables['lat'][:]
@@ -86,7 +86,7 @@ def import_sim(path, exp):
 
 def import_obs(path):
 
-	arq  = '{0}/pr_Amon_CRU-TS3.22_observation_198201-201212_new_mmm_neb.nc'.format(path)
+	arq  = '{0}/pr_Amon_CRU-TS3.22_observation_198201-201212_new_mma_neb.nc'.format(path)
 	data = netCDF4.Dataset(arq)
 	var  = data.variables['pr'][:]
 	lat  = data.variables['lat'][:]
@@ -120,32 +120,32 @@ exp2  = u'harr'
 z, clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2 = import_sim(path, exp2)
 
 
-# Plot climatology obs x model
-fig = plt.figure(figsize=(9, 5))
-plt.subplot(111)
+#~ # Plot climatology obs x model
+#~ fig = plt.figure(figsize=(9, 5))
+#~ plt.subplot(111)
 
-time = np.arange(0.5, 12 + 0.5)
-a = plt.plot(time, clim_exp1, time, clim_exp2, time, clim_obs1)
+#~ time = np.arange(0.5, 12 + 0.5)
+#~ a = plt.plot(time, clim_exp1, time, clim_exp2, time, clim_obs1)
 
-l1, l2, l3 = a
-plt.setp(l1, linewidth=2, markeredgewidth=2, marker='+', color='blue')
-plt.setp(l2, linewidth=2, markeredgewidth=2, marker='+', color='red')
-plt.setp(l3, linewidth=2, markeredgewidth=2, marker='+', color='black')
-plt.title(u'Climatologia de Precipitação (1982-2012)', fontweight='bold')
-plt.xlabel(u'Meses', fontweight='bold')
-plt.ylabel(u'Precipitação (mm/mês)', fontweight='bold')
-plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
-plt.yticks(np.arange(0, 220, 20))
-plt.tick_params(axis='both', which='major', labelsize=10, length=5, width=1.5, pad=5, labelcolor='k')
-plt.legend([u'OLAMv.3.3_Chen', 'OLAMv.3.3_Harr', u'CRU'], loc='best', ncol=1, prop=FontProperties(size=10))
-plt.grid()
+#~ l1, l2, l3 = a
+#~ plt.setp(l1, linewidth=2, markeredgewidth=2, marker='+', color='blue')
+#~ plt.setp(l2, linewidth=2, markeredgewidth=2, marker='+', color='red')
+#~ plt.setp(l3, linewidth=2, markeredgewidth=2, marker='+', color='black')
+#~ plt.title(u'Climatologia de Precipitação (1982-2012)', fontweight='bold')
+#~ plt.xlabel(u'Meses', fontweight='bold')
+#~ plt.ylabel(u'Precipitação (mm/mês)', fontweight='bold')
+#~ plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
+#~ plt.yticks(np.arange(0, 220, 20))
+#~ plt.tick_params(axis='both', which='major', labelsize=10, length=5, width=1.5, pad=5, labelcolor='k')
+#~ plt.legend([u'OLAMv.3.3_Chen', 'OLAMv.3.3_Harr', u'CRU'], loc='best', ncol=1, prop=FontProperties(size=10))
+#~ plt.grid()
 
-path_out = home + "/Downloads"
-if not os.path.exists(path_out):
-	create_path(path_out)
-plt.savefig(os.path.join(path_out, 'clim_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
-plt.show()
-exit()
+#~ path_out = home + "/Downloads"
+#~ if not os.path.exists(path_out):
+	#~ create_path(path_out)
+#~ plt.savefig(os.path.join(path_out, 'clim_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+#~ plt.show()
+#~ exit()
 
 #~ # Calculate statistic index - Chen
 #~ pc_bias_djf1 = pc_bias(djf_exp1, djf_obs1)
@@ -256,7 +256,7 @@ exit()
 #~ median = np.median(x)
 #~ sigma = x.std()
 #~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
-#~ ax1.text(280.,120., 'A) CRU', fontweight='bold', size=8)
+#~ ax1.text(280.,120., 'A CRU', fontweight='bold', size=8)
 #~ ax1.text(280.,60., textstr, size=8)
 
 #~ ax2 = fig.add_subplot(311, sharex=ax1, frameon=False)
@@ -279,7 +279,7 @@ exit()
 #~ median = np.median(y)
 #~ sigma = y.std()
 #~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
-#~ ax1.text(10.,130., 'B) OLAMv.3.3_Chen', fontweight='bold', size=8)
+#~ ax1.text(10.,130., 'B OLAMv.3.3_Chen', fontweight='bold', size=8)
 #~ ax1.text(10.,70., textstr, size=8)
 
 #~ ax2 = fig.add_subplot(312, sharex=ax1, frameon=False)
@@ -302,7 +302,7 @@ exit()
 #~ median = np.median(z)
 #~ sigma = z.std()
 #~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
-#~ ax1.text(120.,120., 'C) OLAMv.3.3_Harr', fontweight='bold', size=8)
+#~ ax1.text(120.,120., 'C OLAMv.3.3_Harr', fontweight='bold', size=8)
 #~ ax1.text(120.,60., textstr, size=8)
 
 #~ ax2 = fig.add_subplot(313, sharex=ax1, frameon=False)
@@ -312,9 +312,9 @@ exit()
 #~ ax2.tick_params(axis="y", labelcolor="r")
 #~ ax2.yaxis.tick_right()
 #~ ax2.yaxis.set_label_position('right')
-#~ ax2.set_xlabel('Precipitação (mm)', fontweight='bold')
+#~ ax2.set_xlabel('Precipitação (mm/mês)', fontweight='bold')
 
-#~ path_out = home + "/Documentos/ufrn/papers/olam/results/"
+#~ path_out = home + "/Downloads"
 #~ if not os.path.exists(path_out):
 	#~ create_path(path_out)
 #~ plt.savefig(os.path.join(path_out, 'hist_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
@@ -483,13 +483,13 @@ exit()
 	    
 #~ plt.title(u'Boxplot de Precipitação Anual (1982-2012)', fontweight='bold')
 #~ plt.xlabel(u'Observação e Experimentos', fontweight='bold')	
-#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
+#~ plt.ylabel(u'Precipitação (mm/ano)', fontweight='bold')
 #~ plt.yticks(np.arange(350, 1850, 100))
 #~ plt.xticks(time, [u'CRU', u'OLAMv.3.3_Chen', u'OLAMv.3.3_Harr'])
 #~ plt.tick_params(axis='both', which='major', length=5, width=1.5, pad=5, labelcolor='black')
 #~ plt.grid()
 
-#~ path_out = home + "/Documentos/ufrn/papers/olam/results/"
+#~ path_out = home + "/Downloads"
 #~ if not os.path.exists(path_out):
 	#~ create_path(path_out)
 #~ plt.savefig(os.path.join(path_out, 'boxplot_anual_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
