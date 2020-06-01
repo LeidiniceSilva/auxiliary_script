@@ -62,7 +62,7 @@ def nse(s, o):
 
 def import_sim(path, exp):
 
-	arq  = '{0}/precip_controle_1982_2012_{1}_g2_neb_new_REAL_ok_full_negcor_yearsum_noocean.nc'.format(path, exp)
+	arq  = '{0}/precip_controle_1982_2012_{1}_g2_neb_new_REAL_ok_full_negcor_monsum_noocean.nc'.format(path, exp)
 	data = netCDF4.Dataset(arq)
 	var  = data.variables['precip'][:]
 	lat  = data.variables['lat'][:]
@@ -86,7 +86,7 @@ def import_sim(path, exp):
 
 def import_obs(path):
 
-	arq  = '{0}/pr_Amon_CRU-TS3.22_observation_198201-201212_new_mma_neb.nc'.format(path)
+	arq  = '{0}/pr_Amon_CRU-TS3.22_observation_198201-201212_new_mmm_neb.nc'.format(path)
 	data = netCDF4.Dataset(arq)
 	var  = data.variables['pr'][:]
 	lat  = data.variables['lat'][:]
@@ -241,193 +241,31 @@ z, clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2 = import_sim(path, exp2)
 #~ print()
 #~ exit()
 
-#~ # Plot histogram and scatter obs x model
+#~ # Plot climatology obs x model
 #~ fig = plt.figure()
+#~ plt.subplot(111)
 
-#~ # First subplot
-#~ ax1 = fig.add_subplot(311)
-#~ ax1.hist(x, color='gray', edgecolor='black')
-#~ ax1.set_title(u'Histograma de Precipitação Mensal (1982-2012)', fontweight='bold')
-#~ ax1.yaxis.tick_left()
-#~ ax1.yaxis.set_label_position('left')
-#~ ax1.set_ylim(0,150)
+#~ time = np.arange(0.5, 12 + 0.5)
+#~ a = plt.plot(time, clim_obs1, time, clim_exp1, time, clim_exp2)
 
-#~ mu = x.mean()
-#~ median = np.median(x)
-#~ sigma = x.std()
-#~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
-#~ ax1.text(280.,120., 'A CRU', fontweight='bold', size=8)
-#~ ax1.text(280.,60., textstr, size=8)
+#~ l1, l2, l3 = a
+#~ plt.setp(l1, linewidth=2, markeredgewidth=2, marker='+', color='black')
+#~ plt.setp(l2, linewidth=2, markeredgewidth=2, marker='+', color='blue')
+#~ plt.setp(l3, linewidth=2, markeredgewidth=2, marker='+', color='red')
 
-#~ ax2 = fig.add_subplot(311, sharex=ax1, frameon=False)
-#~ sortedtime = np.sort(x)
-#~ p = 1. * np.arange(len(x))/(len(x) - 1)
-#~ ax2.plot(sortedtime, p, color='red')
-#~ ax2.tick_params(axis="y", labelcolor="r")
-#~ ax2.yaxis.tick_right()
-#~ ax2.yaxis.set_label_position('right')
-        
-#~ # Second subplot
-#~ ax1 = fig.add_subplot(312)
-#~ ax1.hist(y, color='gray', edgecolor='black')
-#~ ax1.yaxis.tick_left()
-#~ ax1.yaxis.set_label_position('left')
-#~ ax1.set_ylabel('Frequência', fontweight='bold')
-#~ ax1.set_ylim(0,150)
-
-#~ mu = y.mean()
-#~ median = np.median(y)
-#~ sigma = y.std()
-#~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
-#~ ax1.text(10.,130., 'B OLAMv.3.3_Chen', fontweight='bold', size=8)
-#~ ax1.text(10.,70., textstr, size=8)
-
-#~ ax2 = fig.add_subplot(312, sharex=ax1, frameon=False)
-#~ sortedtime = np.sort(y)
-#~ p = 1. * np.arange(len(y))/(len(y) - 1)
-#~ ax2.plot(sortedtime, p, color='red')
-#~ ax2.tick_params(axis="y", labelcolor="r")
-#~ ax2.yaxis.tick_right()
-#~ ax2.yaxis.set_label_position('right')
-#~ ax2.set_ylabel('Função de Distribuição Cumulativa', color='red', fontweight='bold')
-
-#~ # Thirth subplot
-#~ ax1 = fig.add_subplot(313)
-#~ ax1.hist(z, color='gray', edgecolor='black')
-#~ ax1.yaxis.tick_left()
-#~ ax1.yaxis.set_label_position('left')
-#~ ax1.set_ylim(0,150)
-
-#~ mu = z.mean()
-#~ median = np.median(z)
-#~ sigma = z.std()
-#~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
-#~ ax1.text(120.,120., 'C OLAMv.3.3_Harr', fontweight='bold', size=8)
-#~ ax1.text(120.,60., textstr, size=8)
-
-#~ ax2 = fig.add_subplot(313, sharex=ax1, frameon=False)
-#~ sortedtime = np.sort(z)
-#~ p = 1. * np.arange(len(z))/(len(z) - 1)
-#~ ax2.plot(sortedtime, p, color='red')
-#~ ax2.tick_params(axis="y", labelcolor="r")
-#~ ax2.yaxis.tick_right()
-#~ ax2.yaxis.set_label_position('right')
-#~ ax2.set_xlabel('Precipitação (mm/mês)', fontweight='bold')
+#~ plt.title(u'Climatologia de Precipitação (1982-2012)', fontweight='bold')
+#~ plt.ylabel(u'Precipitação (mm/mês)', fontweight='bold')
+#~ plt.ylabel(u'Meses', fontweight='bold')
+#~ plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
+#~ plt.yticks(np.arange(0, 220, 20))
+#~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
+#~ plt.legend([u'CRU', 'Chen', u'Harr'], loc='best', ncol=1)
+#~ plt.grid()
 
 #~ path_out = home + "/Downloads"
 #~ if not os.path.exists(path_out):
 	#~ create_path(path_out)
-#~ plt.savefig(os.path.join(path_out, 'hist_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
-#~ plt.show()
-#~ exit()
-
-
-#~ # Plot climatology obs x model
-#~ fig = plt.figure()
-#~ plt.subplot(211)
-
-#~ time = np.arange(0.5, 12 + 0.5)
-#~ a = plt.plot(time, clim_exp1, time, clim_obs1)
-
-#~ plt.fill_between(time, clim_exp1, clim_obs1, facecolor='slategray', alpha=0.2, interpolate=True)
-#~ l1, l2 = a
-#~ plt.setp(l1, linewidth=2, markeredgewidth=2, marker='+', color='blue')
-#~ plt.setp(l2, linewidth=2, markeredgewidth=2, marker='+', color='red')
-#~ plt.title(u'Climatologia de Precipitação (1982-2012)', fontweight='bold')
-#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
-#~ plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
-#~ plt.yticks(np.arange(0, 220, 20))
-#~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
-#~ plt.legend([u'OLAMv.3.3_Chen', u'CRU'], loc='best', ncol=1)
-#~ plt.text(0.5, 180., 'A)', fontweight='bold', size=8)
-#~ plt.grid()
-
-#~ plt.subplot(212)
-#~ time = np.arange(0.5, 12 + 0.5)
-#~ a = plt.plot(time, clim_exp2, time, clim_obs1)
-
-#~ plt.fill_between(time, clim_exp2, clim_obs1, facecolor='slategray', alpha=0.2, interpolate=True)
-#~ l1, l2 = a
-#~ plt.setp(l1, linewidth=2, markeredgewidth=2, marker='+', color='green')
-#~ plt.setp(l2, linewidth=2, markeredgewidth=2, marker='+', color='red')
-#~ plt.xlabel(u'Meses', fontweight='bold')
-#~ plt.ylabel(u'Precipitação (mm)', fontweight='bold')
-#~ plt.xticks(time, [u'Jan', u'Fev', u'Mar', u'Abr', u'Mai', u'Jun', u'Jul', u'Ago', u'Set', u'Out', u'Nov', u'Dez'])
-#~ plt.yticks(np.arange(0, 220, 20))
-#~ plt.tick_params(axis='both', which='major', labelsize=8, length=5, width=1.5, pad=5, labelcolor='k')
-#~ plt.legend([u'OLAMv.3.3_Harr', u'CRU'], loc='best', ncol=1)
-#~ plt.text(0.5, 180., 'B)', fontweight='bold', size=8)
-#~ plt.grid()
-
-#~ path_out = home + "/Documentos/ufrn/papers/olam/results/"
-#~ if not os.path.exists(path_out):
-	#~ create_path(path_out)
 #~ plt.savefig(os.path.join(path_out, 'clim_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
-#~ plt.show()
-#~ exit()
-
-#~ # Plot time siries whit bar erro
-#~ City_A=x
-#~ City_B=y
-
-#~ Mean_City_A=np.mean(x)
-#~ Mean_City_B=np.mean(y)
-
-#~ STDV_City_A=np.std(x)
-#~ STDV_City_B=np.std(y)
-
-#~ # Create a figure with customized size
-#~ fig = plt.figure(figsize=(12, 6))
-#~ ax = fig.add_subplot(111)
-
-#~ # Set the axis lables
-#~ ax.set_xlabel('Anos')
-#~ ax.set_ylabel('Precipitação (mm)')
-
-#~ # X axis is day numbers from 1 to 15
-#~ xaxis = np.array(range(1,32))
-
-#~ # Line color for error bar
-#~ color_City_A = 'red'
-#~ color_City_B = 'darkblue'
-
-#~ # Line style for each dataset
-#~ lineStyle_City_A={"linestyle":"--", "linewidth":2, "markeredgewidth":2, "elinewidth":2, "capsize":3}
-#~ lineStyle_City_B={"linestyle":"-", "linewidth":2, "markeredgewidth":2, "elinewidth":2, "capsize":3}
-
-#~ # Create an error bar for each dataset
-#~ line_City_A=ax.errorbar(xaxis, City_A, yerr=STDV_City_A, **lineStyle_City_A, color=color_City_A, label='CRU')
-#~ line_City_B=ax.errorbar(xaxis, City_B, yerr=STDV_City_B, **lineStyle_City_A, color=color_City_B, label='OLAM_CHEN')
-
-#~ # Label each dataset on the graph, xytext is the label's position 
-#~ for i, txt in enumerate(City_A):
-        #~ ax.annotate(txt, xy=(xaxis[i], City_A[i]), xytext=(xaxis[i]+0.03, City_A[i]+0.3),color=color_City_A)
-
-#~ for i, txt in enumerate(City_B):
-        #~ ax.annotate(txt, xy=(xaxis[i], City_B[i]), xytext=(xaxis[i]+0.03, City_B[i]+0.3),color=color_City_B)
-        
-
-#~ # Draw a legend bar
-#~ plt.legend(handles=[line_City_A, line_City_B], loc='upper right')
-
-#~ # Customize the tickes on the graph
-#~ plt.xticks(xaxis)               
-#~ plt.yticks(np.arange(200, 2200, 100))
-
-#~ # Customize the legend font and handle length
-#~ params = {'legend.fontsize': 12,
-          #~ 'legend.handlelength': 2}
-#~ plt.rcParams.update(params)
-
-#~ # Customize the font
-#~ font = {'family' : 'Arial',
-        #~ 'weight':'bold',
-        #~ 'size'   : 12}
-#~ plt.rc('font', **font)
-
-#~ # Draw a grid for the graph
-#~ ax.grid(color='lightgrey', linestyle='-')
-#~ ax.set_facecolor('w')
 #~ plt.show()
 #~ exit()
 
@@ -435,7 +273,6 @@ z, clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2 = import_sim(path, exp2)
 #~ fig = plt.figure()
 #~ time = np.arange(1, 4)
 #~ data = [x, y, z]
-
 
 #~ plt_box = plt.boxplot(data, patch_artist=True, bootstrap=10000, vert=1)
 
@@ -485,7 +322,7 @@ z, clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2 = import_sim(path, exp2)
 #~ plt.xlabel(u'Observação e Experimentos', fontweight='bold')	
 #~ plt.ylabel(u'Precipitação (mm/ano)', fontweight='bold')
 #~ plt.yticks(np.arange(350, 1850, 100))
-#~ plt.xticks(time, [u'CRU', u'OLAMv.3.3_Chen', u'OLAMv.3.3_Harr'])
+#~ plt.xticks(time, [u'CRU', 'Chen', u'Harr'])
 #~ plt.tick_params(axis='both', which='major', length=5, width=1.5, pad=5, labelcolor='black')
 #~ plt.grid()
 
@@ -496,7 +333,88 @@ z, clim_exp2, djf_exp2, mam_exp2, jja_exp2, son_exp2 = import_sim(path, exp2)
 #~ plt.show()
 #~ exit()    
 
+#~ # Plot histogram and scatter obs x model
+#~ fig = plt.figure()
 
+#~ # First subplot
+#~ ax1 = fig.add_subplot(311)
+#~ ax1.hist(x, color='gray', edgecolor='black')
+#~ ax1.set_title(u'Histograma de Precipitação Mensal (1982-2012)', fontweight='bold')
+#~ ax1.yaxis.tick_left()
+#~ ax1.yaxis.set_label_position('left')
+#~ ax1.set_ylim(0,150)
+#~ ax1.set_xlim(0,330)
+
+#~ mu = x.mean()
+#~ median = np.median(x)
+#~ sigma = x.std()
+#~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
+#~ ax1.text(260.,120., 'A CRU', fontweight='bold', size=8)
+#~ ax1.text(260.,60., textstr, size=8)
+
+#~ ax2 = fig.add_subplot(311, sharex=ax1, frameon=False)
+#~ sortedtime = np.sort(x)
+#~ p = 1. * np.arange(len(x))/(len(x) - 1)
+#~ ax2.plot(sortedtime, p, color='red')
+#~ ax2.tick_params(axis="y", labelcolor="r")
+#~ ax2.yaxis.tick_right()
+#~ ax2.yaxis.set_label_position('right')
+        
+#~ # Second subplot
+#~ ax1 = fig.add_subplot(312)
+#~ ax1.hist(y, color='gray', edgecolor='black')
+#~ ax1.yaxis.tick_left()
+#~ ax1.yaxis.set_label_position('left')
+#~ ax1.set_ylabel('Frequência', fontweight='bold')
+#~ ax1.set_ylim(0,150)
+#~ ax1.set_xlim(0,330)
+
+#~ mu = y.mean()
+#~ median = np.median(y)
+#~ sigma = y.std()
+#~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
+#~ ax1.text(260.,120., 'B Chen', fontweight='bold', size=8)
+#~ ax1.text(260.,60., textstr, size=8)
+
+#~ ax2 = fig.add_subplot(312, sharex=ax1, frameon=False)
+#~ sortedtime = np.sort(y)
+#~ p = 1. * np.arange(len(y))/(len(y) - 1)
+#~ ax2.plot(sortedtime, p, color='red')
+#~ ax2.tick_params(axis="y", labelcolor="r")
+#~ ax2.yaxis.tick_right()
+#~ ax2.yaxis.set_label_position('right')
+#~ ax2.set_ylabel('Função de Distribuição Cumulativa', color='red', fontweight='bold')
+
+#~ # Thirth subplot
+#~ ax1 = fig.add_subplot(313)
+#~ ax1.hist(z, color='gray', edgecolor='black')
+#~ ax1.yaxis.tick_left()
+#~ ax1.yaxis.set_label_position('left')
+#~ ax1.set_ylim(0,150)
+#~ ax1.set_xlim(0,330)
+
+#~ mu = z.mean()
+#~ median = np.median(z)
+#~ sigma = z.std()
+#~ textstr = '\n'.join((r'$\mu=%.2f$' % (mu, ), r'$\mathrm{median}=%.2f$' % (median, ), r'$\sigma=%.2f$' % (sigma, )))
+#~ ax1.text(260.,120., 'C Harr', fontweight='bold', size=8)
+#~ ax1.text(260.,60., textstr, size=8)
+
+#~ ax2 = fig.add_subplot(313, sharex=ax1, frameon=False)
+#~ sortedtime = np.sort(z)
+#~ p = 1. * np.arange(len(z))/(len(z) - 1)
+#~ ax2.plot(sortedtime, p, color='red')
+#~ ax2.tick_params(axis="y", labelcolor="r")
+#~ ax2.yaxis.tick_right()
+#~ ax2.yaxis.set_label_position('right')
+#~ ax2.set_xlabel('Precipitação (mm/mês)', fontweight='bold')
+
+#~ path_out = home + "/Downloads"
+#~ if not os.path.exists(path_out):
+	#~ create_path(path_out)
+#~ plt.savefig(os.path.join(path_out, 'hist_chen_harr_cru.png'), bbox_inches='tight', dpi=400)
+#~ plt.show()
+#~ exit()
 
 
 
