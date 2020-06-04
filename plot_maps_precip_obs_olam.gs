@@ -45,7 +45,8 @@
 'define jja1=(jun1+jul1+aug1)/(3)'
 'define son1=(sep1+oct1+nov1)/(3)'
 
-'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
+
 'd djf1'
 'draw title DJF'
 'draw ylab CRU'
@@ -67,7 +68,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd mam1'
 'draw title MAM'
 
@@ -88,7 +89,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd jja1'
 'draw title JJA'
 
@@ -109,13 +110,12 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd son1'
 'draw title SON'
 'close 1'
 
 **************
-
 'sdfopen precip_controle_1982_2012_chen_g2_neb_new_REAL_ok_full_negcor_monsum_noocean.nc'
 'set mpdset mresbr'
 'set mproj scaled'
@@ -153,7 +153,7 @@
 'define jja2=(jun2+jul2+aug2)/(3)'
 'define son2=(sep2+oct2+nov2)/(3)'
 
-'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd djf2'
 'draw ylab OLAMv.3.3_Chen'
 
@@ -174,7 +174,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rain -levs 5 10 15 20 25 30 35 40 45 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd mam2'
 
 **************
@@ -194,7 +194,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rain -levs 5 10 15 20 25 30 35 40 45 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd jja2'
 
 **************
@@ -214,7 +214,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rain -levs 5 10 15 20 25 30 35 40 45 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd son2'
 'close 1'
 
@@ -256,7 +256,7 @@
 'define jja3=(jun3+jul3+aug3)/(3)'
 'define son3=(sep3+oct3+nov3)/(3)'
 
-'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd djf3'
 'draw ylab OLAMv.3.3_Harr'
 
@@ -277,7 +277,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd mam3'
 
 **************
@@ -297,7 +297,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd jja3'
 
 **************
@@ -317,7 +317,7 @@
 'set ylint 3'
 'set xlint 3'
 
-'color.gs -gxout shaded -kind white->rain -levs 0 5 10 15 20 25 30 35 40 50 60 70 80 100 150 200'
+'color.gs -gxout shaded -kind white->rain -levs 0 20 40 60 80 100 120 140 160 180 200 250'
 'd son3'
 
 'run xcbar 1 10 0.35 0.55 -fw 0.12 -fh 0.18 -line on'
