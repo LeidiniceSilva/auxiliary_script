@@ -12,6 +12,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings ; warnings.filterwarnings("ignore")
 import matplotlib.cm as cm
+import numpy.ma as ma
+import scipy.stats as stats
 
 conda_file_dir = conda.__file__
 conda_dir = conda_file_dir.split('lib')[0]
@@ -21,6 +23,7 @@ os.environ["PROJ_LIB"] = proj_lib
 from matplotlib.path import Path
 from mpl_toolkits.basemap import Basemap
 from matplotlib.patches import PathPatch
+from scipy.stats import t
 
 
 def import_era5(var):
@@ -29,7 +32,8 @@ def import_era5(var):
 	u'tmin': u'mn2t',
 	u'pre': u'tp', 
 	u'rad': u'mtnlwrf'}
-	
+
+	print('Open data')
 	path = '/home/nice/Downloads'
 	arq  = '{0}/{1}_era5_br_day_2011-2020.nc'.format(path, var)	
 	data = netCDF4.Dataset(arq)
@@ -37,13 +41,36 @@ def import_era5(var):
 	lat  = data.variables['latitude'][:]
 	lon  = data.variables['longitude'][:]
 	
+	dataset = var[:][:,:,:]
+	
 	D  = np.nanmean(var[:][2495:2616,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
 	DO = np.nanmean(var[:][2525:2646,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
 	DI = np.nanmean(var[:][2565:2676,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	
+	#~ D  = np.nanmean(var[:][3225:3345,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ DO = np.nanmean(var[:][3255:3361,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ DI = np.nanmean(var[:][3285:3305,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+			
+	return lat, lon, dataset, D, DO, DI
+
+	
+def ttest(variable, composite):
+
+	# Standard error
+	std = np.std(variable, axis=0)
+
+	# Calculate t statistics
+	t = (composite * np.sqrt(121))/std
+	print(variable.shape)
+	print(composite.shape)
+	print(std.shape)
+
+	# Calculate p value
+	p_value = 1 - stats.t.cdf(t, df=121)
+	
+	return p_value
+	
 		
-	return lat, lon, D, DO, DI
-	
-	
 def basemap(lat, lon):
 	
 	aux_lon1 = []
@@ -84,13 +111,15 @@ def basemap(lat, lon):
 	return map, xx, yy
 	
 	
-# Import regcm exp and cru databases 	
-lat, lon, D_mx2t, DO_mx2t, DI_mx2t = import_era5('tmax')   
-lat, lon, D_mn2t, DO_mn2t, DI_mn2t = import_era5('tmin')   
-lat, lon, D_pre, DO_pre, DI_pre = import_era5('pre')   
-lat, lon, D_rad, DO_rad, DI_rad = import_era5('rad')   
+# Import era5 database
+print('Import database')
+lat, lon, var_mx2t, D_mx2t, DO_mx2t, DI_mx2t = import_era5('tmax')   
+lat, lon, var_mn2t, D_mn2t, DO_mn2t, DI_mn2t = import_era5('tmin')   
+lat, lon, var_pre, D_pre, DO_pre, DI_pre = import_era5('pre')   
+lat, lon, var_rad, D_rad, DO_rad, DI_rad = import_era5('rad')   
 
 # Plot maps with the function
+print('Plot maps with the function')
 fig = plt.figure(figsize=(5, 7))
 levs1 = [-3, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3]
 levs2 = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
@@ -99,12 +128,18 @@ levs3 = [-40, -30, -20, -10, -5, 0, 5, 10, 20, 30, 40]
 ax = fig.add_subplot(4, 3, 1)
 map, xx, yy = basemap(lat, lon)
 plt.title(u'A) Evento de OC (D-1) \n Tmax (°C)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, D_mx2t, levels=levs1, latlon=True, cmap=cm.bwr)
-	
+map.contourf(xx, yy, D_mx2t, levels=levs1, latlon=True, cmap=cm.bwr)	
+p_value = ttest(var_mx2t, D_mx2t)
+p_value = ma.masked_where(p_value >= 0.5, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
+
 ax = fig.add_subplot(4, 3, 2)
 map, xx, yy = basemap(lat, lon)
 plt.title(u'B) Evento de OC (D0) \n Tmax (°C)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, DO_mx2t, levels=levs1, latlon=True, cmap=cm.bwr)
+p_value = ttest(var_mx2t, DO_mx2t)
+p_value = ma.masked_where(p_value >= 0.5, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 3)
 map, xx, yy = basemap(lat, lon)
@@ -112,16 +147,25 @@ plt.title(u'C) Evento de OC (D+1) \n Tmax (°C)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, DI_mx2t, levels=levs1, latlon=True, cmap=cm.bwr) 
 cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
 cbar.ax.tick_params(labelsize=6) 
+p_value = ttest(var_mx2t, DI_mx2t)
+p_value = ma.masked_where(p_value >= 0.5, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 4)
 map, xx, yy = basemap(lat, lon)
 plt.title(u'D) Evento de OC (D-1) \n Tmin (°C)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, D_mn2t, levels=levs1, latlon=True, cmap=cm.bwr)
+p_value = ttest(var_mn2t, D_mn2t)
+p_value = ma.masked_where(p_value >= 0.5, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 5)
 map, xx, yy = basemap(lat, lon)
 plt.title(u'E) Evento de OC (D0) \n Tmin (°C)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, DO_mn2t, levels=levs1, latlon=True, cmap=cm.bwr) 
+p_value = ttest(var_mn2t, DO_mn2t)
+p_value = ma.masked_where(p_value >= 0.5, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 6)
 map, xx, yy = basemap(lat, lon)
@@ -129,42 +173,64 @@ plt.title(u'F) Evento de OC (D+1) \n Tmin (°C)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, DI_mn2t, levels=levs1, latlon=True, cmap=cm.bwr)
 cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
 cbar.ax.tick_params(labelsize=6) 
+p_value = ttest(var_mn2t, DI_mn2t)
+p_value = ma.masked_where(p_value >= 0.5, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 7)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'G) Evento de OC (D-1) \n Pre (mm)', fontsize=6, fontweight='bold')
+plt.title(u'G) Evento de OC (D-1) \n Pre (mm d⁻¹)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, D_pre, levels=levs2, latlon=True, cmap=cm.BrBG) 
+p_value = ttest(var_pre, D_pre)
+p_value = ma.masked_where(p_value >= 0.45, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 8)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'H) Evento de OC (D0) \n Pre (mm)', fontsize=6, fontweight='bold')
+plt.title(u'H) Evento de OC (D0) \n Pre (mm d⁻¹)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, DO_pre, levels=levs2, latlon=True, cmap=cm.BrBG)
+p_value = ttest(var_pre, DO_pre)
+p_value = ma.masked_where(p_value >= 0.45, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 9)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'I) Evento de OC (D+1) \n Pre (mm)', fontsize=6, fontweight='bold')
+plt.title(u'I) Evento de OC (D+1) \n Pre (mm d⁻¹)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, DI_pre, levels=levs2, latlon=True, cmap=cm.BrBG)
 cbar = map.colorbar(ticks=levs2, drawedges=True, ax=ax)
 cbar.ax.tick_params(labelsize=6) 
+p_value = ttest(var_pre, DI_pre)
+p_value = ma.masked_where(p_value >= 0.45, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 10) 
 map, xx, yy = basemap(lat, lon)
-plt.title(u'J) Evento de OC (D-1) \n Rad (W m⁻²)', fontsize=6, fontweight='bold')
+plt.title(u'J) Evento de OC (D-1) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, D_rad, levels=levs3, latlon=True, cmap=cm.bwr)
+p_value = ttest(var_rad, D_rad)
+p_value = ma.masked_where(p_value >= 0.5, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 11)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'K) Evento de OC (D0) \n Rad (W m⁻²)', fontsize=6, fontweight='bold')
+plt.title(u'K) Evento de OC (D0) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, DO_rad, levels=levs3, latlon=True, cmap=cm.bwr) 
+p_value = ttest(var_rad, DO_rad)
+p_value = ma.masked_where(p_value >= 0.5, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 ax = fig.add_subplot(4, 3, 12)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'L) Evento de OC (D+1) \n Rad (W m⁻²)', fontsize=6, fontweight='bold')
+plt.title(u'L) Evento de OC (D+1) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
 map.contourf(xx, yy, DI_rad, levels=levs3, latlon=True, cmap=cm.bwr) 
 cbar = map.colorbar(ticks=levs3, drawedges=True, ax=ax)
 cbar.ax.tick_params(labelsize=6) 
+p_value = ttest(var_rad, DI_rad)
+p_value = ma.masked_where(p_value >= 0.5, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
 
 # Path out to save bias figure
+print('Path out to save bias figure')
 path_out = '/home/nice/Downloads'
 name_out = 'pyplt_maps_composites_oc_era5.png'
 if not os.path.exists(path_out):
