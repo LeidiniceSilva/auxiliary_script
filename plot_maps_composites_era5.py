@@ -28,10 +28,13 @@ from scipy.stats import t
 
 def import_era5(var):
 
-	dict_var = {u'tmax': u'mx2t', 
-	u'tmin': u'mn2t',
-	u'pre': u'tp', 
-	u'rad': u'mtnlwrf'}
+	dict_var = {u'pre': u'pre', 
+	u'tmax': u'mx2t',
+	u'mspl': u'mspl',
+	u'uv10m': u'uv10m',
+	u'rol': u'rol',
+	u'r': u'r',
+	u'z': u'z'}
 
 	print('Open data')
 	path = '/home/nice/Downloads'
