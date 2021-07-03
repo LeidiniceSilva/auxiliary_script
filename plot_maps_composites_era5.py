@@ -9,11 +9,11 @@ import os
 import conda
 import netCDF4
 import numpy as np
+import numpy.ma as ma
+import matplotlib.cm as cm
+import scipy.stats as stats
 import matplotlib.pyplot as plt
 import warnings ; warnings.filterwarnings("ignore")
-import matplotlib.cm as cm
-import numpy.ma as ma
-import scipy.stats as stats
 
 conda_file_dir = conda.__file__
 conda_dir = conda_file_dir.split('lib')[0]
@@ -28,47 +28,38 @@ from scipy.stats import t
 
 def import_era5(var):
 
-	dict_var = {u'pre': u'pre', 
-	u'tmax': u'mx2t',
-	u'mspl': u'mspl',
-	u'uv10m': u'uv10m',
-	u'rol': u'rol',
-	u'r': u'r',
-	u'z': u'z'}
+	dict_var = {u'msl': u'msl'}
 
 	print('Open data')
-	path = '/home/nice/Downloads'
+	
+	path = '/home/nice/Documents/era5'
 	arq  = '{0}/{1}_era5_br_day_2011-2020.nc'.format(path, var)	
-	data = netCDF4.Dataset(arq)
+	data = netCDF4.Dataset(arq)		
 	var  = data.variables[dict_var[var]][:]
 	lat  = data.variables['latitude'][:]
 	lon  = data.variables['longitude'][:]
+	dataset = var[:][:,:,:]	
 	
-	dataset = var[:][:,:,:]
-	
-	D  = np.nanmean(var[:][2495:2616,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	DO = np.nanmean(var[:][2525:2646,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	DI = np.nanmean(var[:][2565:2676,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	
-	#~ D  = np.nanmean(var[:][3225:3345,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ DO = np.nanmean(var[:][3255:3361,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ DI = np.nanmean(var[:][3285:3305,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-			
-	return lat, lon, dataset, D, DO, DI
+	D_ii  = np.mean(var[:][1766:1886,:,:], axis=0) - np.mean(var[:][:,:,:], axis=0)
+	D_i   = np.mean(var[:][1781:1901,:,:], axis=0) - np.mean(var[:][:,:,:], axis=0)
+	D     = np.mean(var[:][1795:1916,:,:], axis=0) - np.mean(var[:][:,:,:], axis=0)
+	Di    = np.mean(var[:][1810:1930,:,:], axis=0) - np.mean(var[:][:,:,:], axis=0)
+	Dii   = np.mean(var[:][1825:1945,:,:], axis=0) - np.mean(var[:][:,:,:], axis=0)
+
+	return lat, lon, dataset, D_ii, D_i, D, Di, Dii
 
 	
 def ttest(variable, composite):
 
-	# Standard error
+	print('Compute ttest')
+
+	# Standard error	
 	std = np.std(variable, axis=0)
-
-	# Calculate t statistics
+	
+	# Compute t statistics
 	t = (composite * np.sqrt(121))/std
-	print(variable.shape)
-	print(composite.shape)
-	print(std.shape)
 
-	# Calculate p value
+	# Compute p value
 	p_value = 1 - stats.t.cdf(t, df=121)
 	
 	return p_value
@@ -89,160 +80,95 @@ def basemap(lat, lon):
 	new_lon = lon[::-1]
 	
 	map = Basemap(projection='cyl', llcrnrlat=-40, urcrnrlat=10, llcrnrlon=-80, urcrnrlon=-30, resolution=None, suppress_ticks=True, lon_0=0, celestial=False)
-	map.drawmapboundary(color='white')
- 
 	lons, lats = np.meshgrid(new_lon, new_lat)
-
 	xx, yy = map(lons,lats)
+	xin = np.linspace(map.xmin,map.xmax,10) 
+	yin = np.linspace(map.ymin,map.ymax,10) 
+	lons = np.arange(-80.,-30.,0.25) 
+	lats = np.arange(-40.,10.,-0.25) 
 
-	# Import shapefile from word and matopiba 
-	map.readshapefile('/home/nice/Documents/github_projects/shp/shp_world/world', 'world', drawbounds=True, color='white')
-	map.readshapefile('/home/nice/Documents/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed', drawbounds=True, color='black')
-	x0, x1 = plt.xlim()
-	y0, y1 = plt.ylim()
-	map_edges = np.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
-	polys = [map_edges]
-	map.readshapefile('/home/nice/Documents/github_projects/shp/lim_unid_fed/lim_unid_fed', 'lim_unid_fed2', drawbounds=False)
-	polys = polys + getattr(map, 'lim_unid_fed2')
-	codes = [[Path.MOVETO] + [Path.LINETO for p in p[1:]] for p in polys] # creating a PathPatch
-	polys_lin = [v for p in polys for v in p]
-	codes_lin = [cdg for cdgs in codes for cdg in cdgs]
-	path  = Path(polys_lin, codes_lin)
-	patch = PathPatch(path, facecolor='white', lw=0)
-	plt.gca().add_patch(patch)
+	path = '/home/nice/Documents/github_projects/shp'
+	map.readshapefile('{0}/shp_world/world'.format(path), 'world', drawbounds=True, color='gray', linewidth=.5)
+	map.readshapefile('{0}/lim_unid_fed/lim_unid_fed'.format(path), 'lim_unid_fed', drawbounds=True, color='black', linewidth=.5)
 	
 	return map, xx, yy
 	
 	
 # Import era5 database
 print('Import database')
-lat, lon, var_mx2t, D_mx2t, DO_mx2t, DI_mx2t = import_era5('tmax')   
-lat, lon, var_mn2t, D_mn2t, DO_mn2t, DI_mn2t = import_era5('tmin')   
-lat, lon, var_pre, D_pre, DO_pre, DI_pre = import_era5('pre')   
-lat, lon, var_rad, D_rad, DO_rad, DI_rad = import_era5('rad')   
+lat, lon, var, D_ii, D_i, D, Di, Dii = import_era5('msl')   
 
 # Plot maps with the function
 print('Plot maps with the function')
-fig = plt.figure(figsize=(5, 7))
-levs1 = [-3, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3]
-levs2 = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-levs3 = [-40, -30, -20, -10, -5, 0, 5, 10, 20, 30, 40]
+fig = plt.figure(figsize=(8, 2))
 
-ax = fig.add_subplot(4, 3, 1)
-map, xx, yy = basemap(lat, lon)
-plt.title(u'A) Evento de OC (D-1) \n Tmax (°C)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, D_mx2t, levels=levs1, latlon=True, cmap=cm.bwr)	
-p_value = ttest(var_mx2t, D_mx2t)
-p_value = ma.masked_where(p_value >= 0.5, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
+levs1 = [-4, -3, -2, -1, 1, 2, 3, 4]
+#~ levs1 = [-20, -15, -10, -5, 5, 10, 15, 20]
+#~ levs1 = [-40, -30, -20, -10, 10, 20, 30, 40]
 
-ax = fig.add_subplot(4, 3, 2)
+ax = fig.add_subplot(1, 5, 1)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'B) Evento de OC (D0) \n Tmax (°C)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, DO_mx2t, levels=levs1, latlon=True, cmap=cm.bwr)
-p_value = ttest(var_mx2t, DO_mx2t)
-p_value = ma.masked_where(p_value >= 0.5, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
+plt.title(u'K) Evento de OC (D-2) \n PNMM (hPa)', fontsize=6, fontweight='bold')
+map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cm.PuOr)	
+map.drawmeridians(np.arange(-80.,-30.,10.), size=6, labels=[0,0,0,1], linewidth=0.4, color='black')
+map.drawparallels(np.arange(-40.,10.,10.), size=6, labels=[1,0,0,0], linewidth=0.4, color='black')
+p_value = ttest(var, D_ii)
+p_value = ma.masked_where(p_value >= 0.01, p_value) 
+plt.rcParams['hatch.linewidth'] = 0.1
+map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
-ax = fig.add_subplot(4, 3, 3)
+ax = fig.add_subplot(1, 5, 2)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'C) Evento de OC (D+1) \n Tmax (°C)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, DI_mx2t, levels=levs1, latlon=True, cmap=cm.bwr) 
+plt.title(u'L) Evento de OC (D-1) \n PNMM (hPa)', fontsize=6, fontweight='bold')
+map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cm.PuOr)
+map.drawmeridians(np.arange(-80.,-30.,10.), size=6, labels=[0,0,0,1], linewidth=0.4, color='black')
+map.drawparallels(np.arange(-40.,10.,10.), size=6, labels=[1,0,0,0], linewidth=0.4, color='black')
+p_value = ttest(var, D_i)
+p_value = ma.masked_where(p_value >= 0.01, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
+
+ax = fig.add_subplot(1, 5, 3)
+map, xx, yy = basemap(lat, lon)
+plt.title(u'M) Evento de OC (D0) \n PNMM (hPa)', fontsize=6, fontweight='bold')
+map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cm.PuOr)
+map.drawmeridians(np.arange(-80.,-30.,10.), size=6, labels=[0,0,0,1], linewidth=0.4, color='black')
+map.drawparallels(np.arange(-40.,10.,10.), size=6, labels=[1,0,0,0], linewidth=0.4, color='black')
+p_value = ttest(var, D)
+p_value = ma.masked_where(p_value >= 0.01, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
+
+ax = fig.add_subplot(1, 5, 4)
+map, xx, yy = basemap(lat, lon)
+plt.title(u'N) Evento de OC (D+1) \n PNMM (hPa)', fontsize=6, fontweight='bold')
+map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cm.PuOr)
+map.drawmeridians(np.arange(-80.,-30.,10.), size=6, labels=[0,0,0,1], linewidth=0.4, color='black')
+map.drawparallels(np.arange(-40.,10.,10.), size=6, labels=[1,0,0,0], linewidth=0.4, color='black')
+p_value = ttest(var, Di)
+p_value = ma.masked_where(p_value >= 0.01, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
+
+ax = fig.add_subplot(1, 5, 5)
+map, xx, yy = basemap(lat, lon)
+plt.title(u'O) Evento de OC (D+2) \n PNMM (hPa)', fontsize=6, fontweight='bold')
+map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cm.PuOr)  
+map.drawmeridians(np.arange(-80.,-30.,10.), size=6, labels=[0,0,0,1], linewidth=0.4, color='black')
+map.drawparallels(np.arange(-40.,10.,10.), size=6, labels=[1,0,0,0], linewidth=0.4, color='black')
 cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
-cbar.ax.tick_params(labelsize=6) 
-p_value = ttest(var_mx2t, DI_mx2t)
-p_value = ma.masked_where(p_value >= 0.5, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
-
-ax = fig.add_subplot(4, 3, 4)
-map, xx, yy = basemap(lat, lon)
-plt.title(u'D) Evento de OC (D-1) \n Tmin (°C)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, D_mn2t, levels=levs1, latlon=True, cmap=cm.bwr)
-p_value = ttest(var_mn2t, D_mn2t)
-p_value = ma.masked_where(p_value >= 0.5, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
-
-ax = fig.add_subplot(4, 3, 5)
-map, xx, yy = basemap(lat, lon)
-plt.title(u'E) Evento de OC (D0) \n Tmin (°C)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, DO_mn2t, levels=levs1, latlon=True, cmap=cm.bwr) 
-p_value = ttest(var_mn2t, DO_mn2t)
-p_value = ma.masked_where(p_value >= 0.5, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
-
-ax = fig.add_subplot(4, 3, 6)
-map, xx, yy = basemap(lat, lon)
-plt.title(u'F) Evento de OC (D+1) \n Tmin (°C)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, DI_mn2t, levels=levs1, latlon=True, cmap=cm.bwr)
-cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
-cbar.ax.tick_params(labelsize=6) 
-p_value = ttest(var_mn2t, DI_mn2t)
-p_value = ma.masked_where(p_value >= 0.5, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
-
-ax = fig.add_subplot(4, 3, 7)
-map, xx, yy = basemap(lat, lon)
-plt.title(u'G) Evento de OC (D-1) \n Pre (mm d⁻¹)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, D_pre, levels=levs2, latlon=True, cmap=cm.BrBG) 
-p_value = ttest(var_pre, D_pre)
-p_value = ma.masked_where(p_value >= 0.45, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
-
-ax = fig.add_subplot(4, 3, 8)
-map, xx, yy = basemap(lat, lon)
-plt.title(u'H) Evento de OC (D0) \n Pre (mm d⁻¹)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, DO_pre, levels=levs2, latlon=True, cmap=cm.BrBG)
-p_value = ttest(var_pre, DO_pre)
-p_value = ma.masked_where(p_value >= 0.45, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
-
-ax = fig.add_subplot(4, 3, 9)
-map, xx, yy = basemap(lat, lon)
-plt.title(u'I) Evento de OC (D+1) \n Pre (mm d⁻¹)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, DI_pre, levels=levs2, latlon=True, cmap=cm.BrBG)
-cbar = map.colorbar(ticks=levs2, drawedges=True, ax=ax)
-cbar.ax.tick_params(labelsize=6) 
-p_value = ttest(var_pre, DI_pre)
-p_value = ma.masked_where(p_value >= 0.45, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
-
-ax = fig.add_subplot(4, 3, 10) 
-map, xx, yy = basemap(lat, lon)
-plt.title(u'J) Evento de OC (D-1) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, D_rad, levels=levs3, latlon=True, cmap=cm.bwr)
-p_value = ttest(var_rad, D_rad)
-p_value = ma.masked_where(p_value >= 0.5, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
-
-ax = fig.add_subplot(4, 3, 11)
-map, xx, yy = basemap(lat, lon)
-plt.title(u'K) Evento de OC (D0) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, DO_rad, levels=levs3, latlon=True, cmap=cm.bwr) 
-p_value = ttest(var_rad, DO_rad)
-p_value = ma.masked_where(p_value >= 0.5, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
-
-ax = fig.add_subplot(4, 3, 12)
-map, xx, yy = basemap(lat, lon)
-plt.title(u'L) Evento de OC (D+1) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, DI_rad, levels=levs3, latlon=True, cmap=cm.bwr) 
-cbar = map.colorbar(ticks=levs3, drawedges=True, ax=ax)
-cbar.ax.tick_params(labelsize=6) 
-p_value = ttest(var_rad, DI_rad)
-p_value = ma.masked_where(p_value >= 0.5, p_value) 
-map.contourf(xx, yy, p_value, colors='none', hatches=["////"])
+cbar.ax.tick_params(labelsize=6)
+p_value = ttest(var, Dii)
+p_value = ma.masked_where(p_value >= 0.01, p_value) 
+map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 # Path out to save bias figure
 print('Path out to save bias figure')
 path_out = '/home/nice/Downloads'
-name_out = 'pyplt_maps_composites_oc_era5.png'
+name_out = 'pyplt_maps_composites_pnmm_oc_era5.png'
 if not os.path.exists(path_out):
 	create_path(path_out)
-plt.savefig(os.path.join(path_out, name_out), dpi=100, bbox_inches='tight')
+plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
 
 plt.show()
 exit()	
-	
 	
 	
 	
