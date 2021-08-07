@@ -35,13 +35,11 @@ def import_era5(var):
 	u'msl': u'msl',
 	u'r': u'ur10',
 	u'z': u'z',
-	u'uv10': u'u10',
-	u'u10': u'u10',
-	u'v10': u'v10'}
+	u'uv10': u'u10'}
 
 	print('Open data')
 	
-	path = '/home/nice/Documents/era5'
+	path = '/home/nice/Documents/janio/dados'
 	arq  = '{0}/{1}_xavier_br_day_2011-2016_lonlat.nc'.format(path, var)	
 	data = netCDF4.Dataset(arq)		
 	var  = data.variables[dict_var[var]][:]
@@ -49,36 +47,68 @@ def import_era5(var):
 	lon  = data.variables['lon'][:]
 	dataset = var[:][:,:,:]	
 
-	#~ # OC
+	std = np.std(dataset, axis=0)	
+	mean = np.nanmean(dataset, axis=0)
+	
+	# ENOC
+	# sumer
+	D_ii  = np.nanmean(var[:][1401:1520,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	D_i   = np.nanmean(var[:][1416:1535,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	D     = np.nanmean(var[:][1431:1551,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	Di    = np.nanmean(var[:][1446:1566,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	Dii   = np.nanmean(var[:][1461:1580,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	
+	std_D_ii  = np.std(var[:][1401:1520,:,:], axis=0) 
+	std_D_i   = np.std(var[:][1416:1535,:,:], axis=0)
+	std_D     = np.std(var[:][1431:1551,:,:], axis=0)
+	std_Di    = np.std(var[:][1446:1566,:,:], axis=0) 
+	std_Dii   = np.std(var[:][1461:1580,:,:], axis=0) 
+
+	mean_D_ii  = np.nanmean(var[:][1401:1520,:,:], axis=0) 
+	mean_D_i   = np.nanmean(var[:][1416:1535,:,:], axis=0)
+	mean_D     = np.nanmean(var[:][1431:1551,:,:], axis=0)
+	mean_Di    = np.nanmean(var[:][1446:1566,:,:], axis=0) 
+	mean_Dii   = np.nanmean(var[:][1461:1580,:,:], axis=0) 
+
+	std_clim  = np.std(var[:][:,:,:], axis=0)
+	mean_clim  = np.nanmean(var[:][:,:,:], axis=0)
+
+	# autumn
+	#~ D_ii  = np.nanmean(var[:][1766:1886,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D_i   = np.nanmean(var[:][1781:1901,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D     = np.nanmean(var[:][1795:1926,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Di    = np.nanmean(var[:][1810:1930,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Dii   = np.nanmean(var[:][1825:1945,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+
+	# EEOC
+	# sumer
 	#~ D_ii  = np.nanmean(var[:][1401:1520,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
 	#~ D_i   = np.nanmean(var[:][1416:1535,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
 	#~ D     = np.nanmean(var[:][1431:1551,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
 	#~ Di    = np.nanmean(var[:][1446:1566,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
 	#~ Dii   = np.nanmean(var[:][1461:1580,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+
+	# autumn
+	#~ D_ii  = np.nanmean(var[:][1766:1886,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D_i   = np.nanmean(var[:][1781:1901,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D     = np.nanmean(var[:][1795:1926,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Di    = np.nanmean(var[:][1810:1930,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Dii   = np.nanmean(var[:][1825:1945,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
 	
-	# EOC
-	D_ii  = np.nanmean(var[:][1766:1886,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	D_i   = np.nanmean(var[:][1781:1901,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	D     = np.nanmean(var[:][1795:1926,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	Di    = np.nanmean(var[:][1810:1930,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	Dii   = np.nanmean(var[:][1825:1945,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-
-	return lat, lon, dataset, D_ii, D_i, D, Di, Dii
+	return lat, lon, dataset, std_D_ii, std_clim, mean_D_ii, mean_clim, D_ii, D_i, D, Di, Dii
 
 	
-def ttest(variable, composite):
+def ttest(mean_sample1, mean_sample2, std_sample1, std_sample2):
 
-	print('Compute ttest')
+	# Calculate t statistics	
+	p1 = mean_sample1 - mean_sample2 
+	p2 = (std_sample1 - std_sample2) / np.sqrt(240)
 
-	# Standard error	
-	std = np.std(variable, axis=0)
-	
-	# Compute t statistics
-	t = (composite * np.sqrt(121))/std
+	ttest = p1 / p2
 
-	# Compute p value
-	p_value = 1 - stats.t.cdf(t, df=121)
-	
+	# Calculate p value
+	p_value = 1 - stats.t.cdf(ttest, df=240)
+
 	return p_value
 	
 		
@@ -117,407 +147,94 @@ def basemap(lat, lon):
 # Plot maps with the function
 print('Plot maps with the function')
 fig = plt.figure(figsize=(8, 2))
-
+	
 # Import era5 database
-print('Import database: PRE')
-lat, lon, var, D_ii, D_i, D, Di, Dii = import_era5('prec')   
-levs1 = [-4, -3, -2, -1, 1, 2, 3, 4]
+variable = u'prec'
+event    = u'ENOC'
+season   = u'DJF'
+
+dict_unit = {u'prec': u'PRE (mm d⁻¹)',
+u'mx2t': u'Tmax (°C)',
+u'mtnlwrf': u'ROL (W m⁻²)',
+u'msl': u'PNMM (hPa)',
+u'r': u'UR (%)',
+u'z': u'GEO 500hPa (m)',
+u'uv10': u'UV10m (m s⁻¹)'}
+
+lat, lon, var, std_D_ii, std_clim, mean_D_ii, mean_clim, D_ii, D_i, D, Di, Dii = import_era5(variable) 
+
+# PRE
+cor_map = mpl.cm.BrBG
+levs1  = [-4, -3, -2, -1, 1, 2, 3, 4]
+#~ # TEMP
+#~ cor_map = mpl.cm.brw
+#~ levs1   = [-4, -3, -2, -1, 1, 2, 3, 4]
+#~ # ROL
+#~ cor_map = mpl.cm.bwr
+#~ levs1   = [-40, -30, -20, -10, 10, 20, 30, 40]
+#~ # PNMM
+#~ cmap    = mpl.cm.PiYG
+#~ cor_map = cmap.reversed()
+#~ levs1 = [-4, -3, -2, -1, 1, 2, 3, 4]
+#~ # UR
+#~ cmap = mpl.cm.bwr
+#~ cmap_r = cmap.reversed()
+#~ levs1 = [-8, -6, -4, -2, 2, 4, 6, 8]
+#~ # GEO
+#~ cor_map = mpl.cm.PiYG
+#~ levs1 = [-40, -30, -20, -10, 10, 20, 30, 40]
+#~ # Rol
+#~ cor_map = mpl.cm.RdGy
+#~ levs1 = [-2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2]
 
 ax = fig.add_subplot(1, 5, 1)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'A) Evento de EOC (D-2) \n PRE (mm d⁻¹)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cm.BrBG)	
-p_value = ttest(var, D_ii)
+plt.title(u'A) Evento de {0} (D-2) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cor_map)	
+p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
 map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 ax = fig.add_subplot(1, 5, 2)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'B) Evento de EOC (D-1) \n PRE (mm d⁻¹)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cm.BrBG)
-p_value = ttest(var, D_i)
+plt.title(u'B) Evento de ENOC (D-1) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cor_map)
+p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
 map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 ax = fig.add_subplot(1, 5, 3)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'C) Evento de EOC (D0) \n PRE (mm d⁻¹)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cm.BrBG)
-p_value = ttest(var, D)
+plt.title(u'C) Evento de ENOC (D0) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cor_map)
+p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
 map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 ax = fig.add_subplot(1, 5, 4)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'D) Evento de EOC (D+1) \n PRE (mm d⁻¹)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cm.BrBG)
-p_value = ttest(var, Di)
+plt.title(u'D) Evento de ENOC (D+1) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cor_map)
+p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
 map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 ax = fig.add_subplot(1, 5, 5)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'E) Evento de EOC (D+2) \n PRE (mm d⁻¹)', fontsize=6, fontweight='bold')
-map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cm.BrBG)  
+plt.title(u'E) Evento de ENOC (D+2) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cor_map)  
 cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
 cbar.ax.tick_params(labelsize=6)
-p_value = ttest(var, Dii)
+p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
 map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 # Path out to save figure
 print('Path out to save figure')
 path_out = '/home/nice/Downloads'
-name_out = 'pyplt_maps_composites_pre_eoc_era5.png'
+name_out = 'pyplt_maps_composites_{0}_{1}_{2}_era5.png'.format(event, season, dict_unit[variable])
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
 plt.show()
 exit()	
-
-#~ # Import era5 database
-#~ print('Import database: Tmax')
-#~ lat, lon, var, D_ii, D_i, D, Di, Dii = import_era5('mx2t')   
-#~ levs1 = [-4, -3, -2, -1, 1, 2, 3, 4]
-
-#~ ax = fig.add_subplot(1, 5, 1)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'F) Evento de EOC (D-2) \n Tmax (°C)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cm.bwr)	
-#~ p_value = ttest(var, D_ii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 2)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'G) Evento de EOC (D-1) \n Tmax (°C)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cm.bwr)
-#~ p_value = ttest(var, D_i)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 3)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'H) Evento de EOC (D0) \n Tmax (°C)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cm.bwr)
-#~ p_value = ttest(var, D)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 4)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'I) Evento de EOC (D+1) \n Tmax (°C)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cm.bwr)
-#~ p_value = ttest(var, Di)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 5)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'J) Evento de EOC (D+2) \n Tmax (°C)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cm.bwr)  
-#~ cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
-#~ cbar.ax.tick_params(labelsize=6)
-#~ p_value = ttest(var, Dii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ # Path out to save figure
-#~ print('Path out to save figure')
-#~ path_out = '/home/nice/Downloads'
-#~ name_out = 'pyplt_maps_composites_tmax_eoc_era5.png'
-#~ if not os.path.exists(path_out):
-	#~ create_path(path_out)
-#~ plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
-#~ plt.show()
-#~ exit()	
-
-#~ # Import era5 database
-#~ print('Import database: ROL')
-#~ lat, lon, var, D_ii, D_i, D, Di, Dii = import_era5('mtnlwrf')   
-#~ levs1 = [-40, -30, -20, -10, 10, 20, 30, 40]
-
-#~ ax = fig.add_subplot(1, 5, 1)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'K) Evento de EOC (D-2) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cm.bwr)	
-#~ p_value = ttest(var, D_ii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 2)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'L) Evento de EOC (D-1) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cm.bwr)
-#~ p_value = ttest(var, D_i)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 3)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'M) Evento de EOC (D0) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cm.bwr)
-#~ p_value = ttest(var, D)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 4)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'N) Evento de EOC (D+1) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cm.bwr)
-#~ p_value = ttest(var, Di)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 5)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'O) Evento de EOC (D+2) \n ROL (W m⁻²)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cm.bwr)  
-#~ cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
-#~ cbar.ax.tick_params(labelsize=6)
-#~ p_value = ttest(var, Dii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ # Path out to save figure
-#~ print('Path out to save figure')
-#~ path_out = '/home/nice/Downloads'
-#~ name_out = 'pyplt_maps_composites_rol_eoc_era5.png'
-#~ if not os.path.exists(path_out):
-	#~ create_path(path_out)
-#~ plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
-#~ plt.show()
-#~ exit()	
-
-#~ # Import era5 database
-#~ print('Import database: PNMM')
-#~ lat, lon, var, D_ii, D_i, D, Di, Dii = import_era5('msl')   
-#~ levs1 = [-4, -3, -2, -1, 1, 2, 3, 4]
-#~ cmap = mpl.cm.PiYG
-#~ cmap_r = cmap.reversed()
-
-#~ ax = fig.add_subplot(1, 5, 1)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'P) Evento de EOC (D-2) \n PNMM (hPa)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cmap_r)	
-#~ p_value = ttest(var, D_ii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 2)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'Q) Evento de EOC (D-1) \n PNMM (hPa)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cmap_r)
-#~ p_value = ttest(var, D_i)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 3)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'R) Evento de EOC (D0) \n PNMM (hPa)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cmap_r)
-#~ p_value = ttest(var, D)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 4)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'S) Evento de EOC (D+1) \n PNMM (hPa)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cmap_r)
-#~ p_value = ttest(var, Di)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 5)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'T) Evento de EOC (D+2) \n PNMM (hPa)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cmap_r)  
-#~ cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
-#~ cbar.ax.tick_params(labelsize=6)
-#~ p_value = ttest(var, Dii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ # Path out to save figure
-#~ print('Path out to save figure')
-#~ path_out = '/home/nice/Downloads'
-#~ name_out = 'pyplt_maps_composites_pnmm_eoc_era5.png'
-#~ if not os.path.exists(path_out):
-	#~ create_path(path_out)
-#~ plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
-#~ plt.show()
-#~ exit()	
-
-#~ # Import era5 database
-#~ print('Import database: UR')
-#~ lat, lon, var, D_ii, D_i, D, Di, Dii = import_era5('r')   
-#~ levs1 = [-8, -6, -4, -2, 2, 4, 6, 8]
-#~ cmap = mpl.cm.bwr
-#~ cmap_r = cmap.reversed()
-
-#~ ax = fig.add_subplot(1, 5, 1)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'U) Evento de EOC (D-2) \n UR (%)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cmap_r)	
-#~ p_value = ttest(var, D_ii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 2)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'V) Evento de EOC (D-1) \n UR (%)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cmap_r)
-#~ p_value = ttest(var, D_i)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 3)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'W) Evento de EOC (D0) \n UR (%)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cmap_r)
-#~ p_value = ttest(var, D)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 4)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'X) Evento de EOC (D+1) \n UR (%)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cmap_r)
-#~ p_value = ttest(var, Di)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 5)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'Y) Evento de EOC (D+2) \n UR (%)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cmap_r)  
-#~ cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
-#~ cbar.ax.tick_params(labelsize=6)
-#~ p_value = ttest(var, Dii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ # Path out to save figure
-#~ print('Path out to save figure')
-#~ path_out = '/home/nice/Downloads'
-#~ name_out = 'pyplt_maps_composites_ur_eoc_era5.png'
-#~ if not os.path.exists(path_out):
-	#~ create_path(path_out)
-#~ plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
-#~ plt.show()
-#~ exit()	
-
-#~ # Import era5 database
-#~ print('Import database: GEO')
-#~ lat, lon, var, D_ii, D_i, D, Di, Dii = import_era5('z')   
-#~ levs1 = [-40, -30, -20, -10, 10, 20, 30, 40]
-
-#~ ax = fig.add_subplot(1, 5, 1)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'Z) Evento de EOC (D-2) \n GEO 500hPa (m)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cm.PiYG)	
-#~ p_value = ttest(var, D_ii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 2)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'A.1) Evento de EOC (D-1) \n GEO 500hPa (m)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cm.PiYG)
-#~ p_value = ttest(var, D_i)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 3)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'B.1) Evento de EOC (D0) \n GEO 500hPa (m)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cm.PiYG)
-#~ p_value = ttest(var, D)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 4)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'C.1) Evento de EOC (D+1) \n GEO 500hPa (m)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cm.PiYG)
-#~ p_value = ttest(var, Di)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 5)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'D.1) Evento de EOC (D+2) \n GEO 500 hPa (m)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cm.PiYG)  
-#~ cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
-#~ cbar.ax.tick_params(labelsize=6)
-#~ p_value = ttest(var, Dii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ # Path out to save figure
-#~ print('Path out to save figure')
-#~ path_out = '/home/nice/Downloads'
-#~ name_out = 'pyplt_maps_composites_z_eoc_era5.png'
-#~ if not os.path.exists(path_out):
-	#~ create_path(path_out)
-#~ plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
-#~ plt.show()
-#~ exit()	
-
-#~ # Import era5 database
-#~ print('Import database: UV10m')
-#~ lat, lon, var, D_ii, D_i, D, Di, Dii = import_era5('uv10')    
-#~ levs1 = [-2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2]
-
-#~ ax = fig.add_subplot(1, 5, 1)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'E.1) Evento de EOC (D-2) \n UV10m (m s⁻¹)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cm.RdGy)	
-#~ p_value = ttest(var, D_ii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 2)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'F.1) Evento de EOC (D-1) \n UV10m (m s⁻¹)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cm.RdGy)
-#~ p_value = ttest(var, D_i)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 3)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'G.1) Evento de EOC (D0) \n UV10m (m s⁻¹)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cm.RdGy)
-#~ p_value = ttest(var, D)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 4)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'H.1) Evento de EOC (D+1) \n UV10m (m s⁻¹)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cm.RdGy)
-#~ p_value = ttest(var, Di)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ ax = fig.add_subplot(1, 5, 5)
-#~ map, xx, yy = basemap(lat, lon)
-#~ plt.title(u'I.1) Evento de EOC (D+2) \n UV10m (m s⁻¹)', fontsize=6, fontweight='bold')
-#~ map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cm.RdGy)  
-#~ cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
-#~ cbar.ax.tick_params(labelsize=6)
-#~ p_value = ttest(var, Dii)
-#~ p_value = ma.masked_where(p_value >= 0.05, p_value) 
-#~ map.contourf(xx, yy, p_value, colors='none', hatches=['.....'])
-
-#~ # Path out to save figure
-#~ print('Path out to save figure')
-#~ path_out = '/home/nice/Downloads'
-#~ name_out = 'pyplt_maps_composites_uv10m_eoc_era5.png'
-#~ if not os.path.exists(path_out):
-	#~ create_path(path_out)
-#~ plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
-#~ plt.show()
-#~ exit()	
-
