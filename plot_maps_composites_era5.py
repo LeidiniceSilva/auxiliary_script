@@ -33,69 +33,99 @@ def import_era5(var):
 	u'mx2t': u'mx2t',
 	u'mtnlwrf': u'mtnlwrf',
 	u'msl': u'msl',
-	u'r': u'ur10',
+	u'q': u'q',
 	u'z': u'z',
 	u'uv10': u'u10'}
 
-	print('Open data')
-	
 	path = '/home/nice/Documents/janio/dados'
-	arq  = '{0}/{1}_xavier_br_day_2011-2016_lonlat.nc'.format(path, var)	
+	arq  = '{0}/{1}_era5_br_day_2011-2020.nc'.format(path, var)	
 	data = netCDF4.Dataset(arq)		
 	var  = data.variables[dict_var[var]][:]
-	lat  = data.variables['lat'][:]
-	lon  = data.variables['lon'][:]
-	dataset = var[:][:,:,:]	
-
-	std = np.std(dataset, axis=0)	
-	mean = np.nanmean(dataset, axis=0)
-	
-	# ENOC
-	# sumer
-	D_ii  = np.nanmean(var[:][1401:1520,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	D_i   = np.nanmean(var[:][1416:1535,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	D     = np.nanmean(var[:][1431:1551,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	Di    = np.nanmean(var[:][1446:1566,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	Dii   = np.nanmean(var[:][1461:1580,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	
-	std_D_ii  = np.std(var[:][1401:1520,:,:], axis=0) 
-	std_D_i   = np.std(var[:][1416:1535,:,:], axis=0)
-	std_D     = np.std(var[:][1431:1551,:,:], axis=0)
-	std_Di    = np.std(var[:][1446:1566,:,:], axis=0) 
-	std_Dii   = np.std(var[:][1461:1580,:,:], axis=0) 
-
-	mean_D_ii  = np.nanmean(var[:][1401:1520,:,:], axis=0) 
-	mean_D_i   = np.nanmean(var[:][1416:1535,:,:], axis=0)
-	mean_D     = np.nanmean(var[:][1431:1551,:,:], axis=0)
-	mean_Di    = np.nanmean(var[:][1446:1566,:,:], axis=0) 
-	mean_Dii   = np.nanmean(var[:][1461:1580,:,:], axis=0) 
+	lat  = data.variables['latitude'][:]
+	lon  = data.variables['longitude'][:]
 
 	std_clim  = np.std(var[:][:,:,:], axis=0)
 	mean_clim  = np.nanmean(var[:][:,:,:], axis=0)
+	
+	# summer
+	# ENOC
+	#~ D_ii  = np.nanmean(var[:][1046:1135,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D_i   = np.nanmean(var[:][1056:1145,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D     = np.nanmean(var[:][1066:1155,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Di    = np.nanmean(var[:][1076:1165,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Dii   = np.nanmean(var[:][1086:1175,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
 
-	# autumn
-	#~ D_ii  = np.nanmean(var[:][1766:1886,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ D_i   = np.nanmean(var[:][1781:1901,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ D     = np.nanmean(var[:][1795:1926,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ Di    = np.nanmean(var[:][1810:1930,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ Dii   = np.nanmean(var[:][1825:1945,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ std_D_ii  = np.std(var[:][1046:1135,:,:], axis=0) 
+	#~ std_D_i   = np.std(var[:][1056:1145,:,:], axis=0)
+	#~ std_D     = np.std(var[:][1066:1155,:,:], axis=0)
+	#~ std_Di    = np.std(var[:][1076:1165,:,:], axis=0) 
+	#~ std_Dii   = np.std(var[:][1086:1175,:,:], axis=0) 
+	
+	#~ mean_D_ii  = np.nanmean(var[:][1046:1135,:,:], axis=0) 
+	#~ mean_D_i   = np.nanmean(var[:][1056:1145,:,:], axis=0)
+	#~ mean_D     = np.nanmean(var[:][1066:1155,:,:], axis=0)
+	#~ mean_Di    = np.nanmean(var[:][1076:1165,:,:], axis=0) 
+	#~ mean_Dii   = np.nanmean(var[:][1086:1175,:,:], axis=0) 
 
 	# EEOC
-	# sumer
-	#~ D_ii  = np.nanmean(var[:][1401:1520,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ D_i   = np.nanmean(var[:][1416:1535,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ D     = np.nanmean(var[:][1431:1551,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ Di    = np.nanmean(var[:][1446:1566,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ Dii   = np.nanmean(var[:][1461:1580,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D_ii  = np.nanmean(var[:][1411:1500,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D_i   = np.nanmean(var[:][1426:1510,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D     = np.nanmean(var[:][1431:1520,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Di    = np.nanmean(var[:][1446:1530,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Dii   = np.nanmean(var[:][1451:1540,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+
+	#~ std_D_ii  = np.std(var[:][1411:1500,:,:], axis=0) 
+	#~ std_D_i   = np.std(var[:][1426:1510,:,:], axis=0)
+	#~ std_D     = np.std(var[:][1431:1520,:,:], axis=0)
+	#~ std_Di    = np.std(var[:][1446:1530,:,:], axis=0) 
+	#~ std_Dii   = np.std(var[:][1451:1540,:,:], axis=0) 
+
+	#~ mean_D_ii  = np.nanmean(var[:][1411:1500,:,:], axis=0) 
+	#~ mean_D_i   = np.nanmean(var[:][1426:1510,:,:], axis=0)
+	#~ mean_D     = np.nanmean(var[:][1431:1520,:,:], axis=0)
+	#~ mean_Di    = np.nanmean(var[:][1446:1530,:,:], axis=0) 
+	#~ mean_Dii   = np.nanmean(var[:][1451:1540,:,:], axis=0) 
 
 	# autumn
-	#~ D_ii  = np.nanmean(var[:][1766:1886,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ D_i   = np.nanmean(var[:][1781:1901,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ D     = np.nanmean(var[:][1795:1926,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ Di    = np.nanmean(var[:][1810:1930,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
-	#~ Dii   = np.nanmean(var[:][1825:1945,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	# ENOC
+	#~ D_ii  = np.nanmean(var[:][1136:1227,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D_i   = np.nanmean(var[:][1146:1237,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ D     = np.nanmean(var[:][1156:1247,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Di    = np.nanmean(var[:][1166:1257,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	#~ Dii   = np.nanmean(var[:][1176:1267,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+
+	#~ std_D_ii  = np.std(var[:][1136:1227,:,:], axis=0) 
+	#~ std_D_i   = np.std(var[:][1146:1237,:,:], axis=0)
+	#~ std_D     = np.std(var[:][1156:1247,:,:], axis=0)
+	#~ std_Di    = np.std(var[:][1166:1257,:,:], axis=0) 
+	#~ std_Dii   = np.std(var[:][1086:1175,:,:], axis=0) 
+
+	#~ mean_D_ii  = np.nanmean(var[:][1136:1227,:,:], axis=0) 
+	#~ mean_D_i   = np.nanmean(var[:][1146:1237,:,:], axis=0)
+	#~ mean_D     = np.nanmean(var[:][1156:1247,:,:], axis=0)
+	#~ mean_Di    = np.nanmean(var[:][1166:1257,:,:], axis=0) 
+	#~ mean_Dii   = np.nanmean(var[:][1176:1267,:,:], axis=0) 
+
+	# EEOC
+	D_ii  = np.nanmean(var[:][1500:1602,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	D_i   = np.nanmean(var[:][1510:1602,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	D     = np.nanmean(var[:][1520:1612,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	Di    = np.nanmean(var[:][1530:1622,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+	Dii   = np.nanmean(var[:][1540:1632,:,:], axis=0) - np.nanmean(var[:][:,:,:], axis=0)
+
+	std_D_ii  = np.std(var[:][1500:1602,:,:], axis=0) 
+	std_D_i   = np.std(var[:][1510:1602,:,:], axis=0)
+	std_D     = np.std(var[:][1520:1612,:,:], axis=0)
+	std_Di    = np.std(var[:][1530:1622,:,:], axis=0) 
+	std_Dii   = np.std(var[:][1540:1632,:,:], axis=0) 
+
+	mean_D_ii  = np.nanmean(var[:][1500:1602,:,:], axis=0) 
+	mean_D_i   = np.nanmean(var[:][1510:1602,:,:], axis=0)
+	mean_D     = np.nanmean(var[:][1520:1612,:,:], axis=0)
+	mean_Di    = np.nanmean(var[:][1530:1622,:,:], axis=0) 
+	mean_Dii   = np.nanmean(var[:][1540:1632,:,:], axis=0) 
 	
-	return lat, lon, dataset, std_D_ii, std_clim, mean_D_ii, mean_clim, D_ii, D_i, D, Di, Dii
+	return lat, lon, std_D_ii, std_D_i, std_D, std_Di, std_Dii, std_clim, mean_D_ii, mean_D_i, mean_D, mean_Di, mean_Dii, mean_clim, D_ii, D_i, D, Di, Dii
 
 	
 def ttest(mean_sample1, mean_sample2, std_sample1, std_sample2):
@@ -144,52 +174,53 @@ def basemap(lat, lon):
 	return map, xx, yy
 	
 	
-# Plot maps with the function
-print('Plot maps with the function')
-fig = plt.figure(figsize=(8, 2))
-	
 # Import era5 database
-variable = u'prec'
-event    = u'ENOC'
-season   = u'DJF'
+print('Import era5 datbase')
+event    = u'EEOC'
+season   = u'MAM'
+variable = u'uv10'
 
 dict_unit = {u'prec': u'PRE (mm d⁻¹)',
 u'mx2t': u'Tmax (°C)',
 u'mtnlwrf': u'ROL (W m⁻²)',
 u'msl': u'PNMM (hPa)',
-u'r': u'UR (%)',
+u'q': u'Q (g kg⁻¹)',
 u'z': u'GEO 500hPa (m)',
 u'uv10': u'UV10m (m s⁻¹)'}
 
-lat, lon, var, std_D_ii, std_clim, mean_D_ii, mean_clim, D_ii, D_i, D, Di, Dii = import_era5(variable) 
+lat, lon, std_D_ii, std_D_i, std_D, std_Di, std_Dii, std_clim, mean_D_ii, mean_D_i, mean_D, mean_Di, mean_Dii, mean_clim, D_ii, D_i, D, Di, Dii = import_era5(variable) 
+
+# Plot maps with the function
+print('Plot maps with the function')
+fig = plt.figure(figsize=(8, 2))
 
 # PRE
-cor_map = mpl.cm.BrBG
-levs1  = [-4, -3, -2, -1, 1, 2, 3, 4]
-#~ # TEMP
-#~ cor_map = mpl.cm.brw
+#~ cor_map = mpl.cm.BrBG
+#~ levs1  = [-8, -6, -4, -2, 2, 4, 6, 8]
+# TEMP
+#~ cor_map = mpl.cm.bwr
 #~ levs1   = [-4, -3, -2, -1, 1, 2, 3, 4]
-#~ # ROL
+# ROL
 #~ cor_map = mpl.cm.bwr
 #~ levs1   = [-40, -30, -20, -10, 10, 20, 30, 40]
-#~ # PNMM
+# PNMM
 #~ cmap    = mpl.cm.PiYG
 #~ cor_map = cmap.reversed()
 #~ levs1 = [-4, -3, -2, -1, 1, 2, 3, 4]
-#~ # UR
+# Q
 #~ cmap = mpl.cm.bwr
-#~ cmap_r = cmap.reversed()
-#~ levs1 = [-8, -6, -4, -2, 2, 4, 6, 8]
-#~ # GEO
+#~ cor_map = cmap.reversed()
+#~ levs1 = [-4, -3, -2, -1, 1, 2, 3, 4]
+# GEO
 #~ cor_map = mpl.cm.PiYG
 #~ levs1 = [-40, -30, -20, -10, 10, 20, 30, 40]
-#~ # Rol
-#~ cor_map = mpl.cm.RdGy
-#~ levs1 = [-2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2]
+# UV10m
+cor_map = mpl.cm.RdGy
+levs1 = [-2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2]
 
 ax = fig.add_subplot(1, 5, 1)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'A) Evento de {0} (D-2) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+plt.title(u'P) Evento de {0} (D-2) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
 map.contourf(xx, yy, D_ii, levels=levs1, latlon=True, cmap=cor_map)	
 p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
@@ -197,42 +228,42 @@ map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 ax = fig.add_subplot(1, 5, 2)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'B) Evento de ENOC (D-1) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+plt.title(u'Q) Evento de {0} (D-1) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
 map.contourf(xx, yy, D_i, levels=levs1, latlon=True, cmap=cor_map)
-p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
+p_value = ttest(std_D_i, std_clim, mean_D_i, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
 map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 ax = fig.add_subplot(1, 5, 3)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'C) Evento de ENOC (D0) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+plt.title(u'R) Evento de {0} (D0) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
 map.contourf(xx, yy, D, levels=levs1, latlon=True, cmap=cor_map)
-p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
+p_value = ttest(std_D, std_clim, mean_D, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
 map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 ax = fig.add_subplot(1, 5, 4)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'D) Evento de ENOC (D+1) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+plt.title(u'S) Evento de {0} (D+1) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
 map.contourf(xx, yy, Di, levels=levs1, latlon=True, cmap=cor_map)
-p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
+p_value = ttest(std_Di, std_clim, mean_Di, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
 map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 ax = fig.add_subplot(1, 5, 5)
 map, xx, yy = basemap(lat, lon)
-plt.title(u'E) Evento de ENOC (D+2) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
+plt.title(u'T) Evento de {0} (D+2) \n {1} {2}'.format(event, season, dict_unit[variable]), fontsize=6, fontweight='bold')
 map.contourf(xx, yy, Dii, levels=levs1, latlon=True, cmap=cor_map)  
 cbar = map.colorbar(ticks=levs1, drawedges=True, ax=ax)
 cbar.ax.tick_params(labelsize=6)
-p_value = ttest(std_D_ii, std_clim, mean_D_ii, mean_clim)
+p_value = ttest(std_Dii, std_clim, mean_Dii, mean_clim)
 p_value = ma.masked_where(p_value >= 0.05, p_value) 
 map.contourf(xx, yy, p_value, colors='none', hatches=['....'])
 
 # Path out to save figure
 print('Path out to save figure')
-path_out = '/home/nice/Downloads'
-name_out = 'pyplt_maps_composites_{0}_{1}_{2}_era5.png'.format(event, season, dict_unit[variable])
+path_out = '/home/nice/Documents/janio/figs'
+name_out = 'pyplt_maps_composites_{0}_{1}_{2}_era5.png'.format(event, season, variable)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
