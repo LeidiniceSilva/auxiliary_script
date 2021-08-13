@@ -795,53 +795,53 @@ def compute_exceed(fcst, hind, obs, **kwargs):
     return y_prev
 
 
-# def compute_rpss(climobs, fcst, obs):
-#
-#     '''
-#     Calcula RPS e RPSS (Mesma metodologia usada pelo Dirceu Reis Jr (usando membros))
-#     climobs = Climatologia observada. Ex. 30 anos do cmap. Array 3d (Tempo, Lat, Lon)
-#     fcst = Membros das previsões a serem avaliadas. Array 4d (Membros, Tempo, Lat, Lon)
-#     obs = Dados observados (Tempo, Lat, Lon)
-#     fcst e obs devem ter a mesma dimensão!
-#     :return: rps, rpss
-#     '''
-#
-#     # A curva da normal é a mesma usada na previsão
-#     # Cálculo do percentis
-#     # nobs = float(len(obs[:, 0, 0]))  # Qtd de anos da climatologia do obs
-#     media = np.nanmean(climobs, axis=0)
-#     desvio = np.std(climobs, axis=0)
-#     y_normal_obs = st.norm(loc=media, scale=desvio)
-#     r1 = 2./3.
-#     r2 = 1./3.
-#     p33 = y_normal_obs.isf(q=r1)
-#     p66 = y_normal_obs.isf(q=r2)
-#
-#     # RPS previsão
-#     # Qtd de anos
-#     nmemb = float(len(fcst[:, 0, 0, 0]))
-#
-#     # Metodo do Dirceu
-#     prob33fcst = np.sum((fcst < p33), axis=0)/nmemb
-#     prob66fcst = np.sum((fcst < p66), axis=0)/nmemb
-#
-#     prob33obs = (obs < p33)
-#     prob66obs = (obs < p66)
-#
-#     a = ((prob33fcst - prob33obs)**2)/2.
-#     b = ((prob66fcst - prob66obs)**2)/2.
-#     rps_prev = a + b
-#
-#     prob33clim = np.zeros((2, 64, 128), dtype=np.float)+1/3.
-#     prob66clim = np.zeros((2, 64, 128), dtype=np.float)+2/3.
-#     a = (prob33clim - prob33obs)**2
-#     b = (prob66clim - prob66obs)**2
-#     rps_clim = a + b
-#
-#     rpsprev = np.nanmean(rps_prev, axis=0)
-#
-#     rpsclim = np.nanmean(rps_clim, axis=0)
-#
-#     rpss = 1 - (rpsprev/rpsclim)
-#
-#     return rpss
+def compute_rpss(climobs, fcst, obs):
+
+	 '''
+	 Calcula RPS e RPSS (Mesma metodologia usada pelo Dirceu Reis Jr (usando membros))
+	 climobs = Climatologia observada. Ex. 30 anos do cmap. Array 3d (Tempo, Lat, Lon)
+	 fcst = Membros das previsões a serem avaliadas. Array 4d (Membros, Tempo, Lat, Lon)
+	 obs = Dados observados (Tempo, Lat, Lon)
+	 fcst e obs devem ter a mesma dimensão!
+	 :return: rps, rpss
+	 '''
+	 
+	 # A curva da normal é a mesma usada na previsão
+	 # Cálculo do percentis
+	 # nobs = float(len(obs[:, 0, 0]))  # Qtd de anos da climatologia do obs
+	 media = np.nanmean(climobs, axis=0)
+	 desvio = np.std(climobs, axis=0)
+	 y_normal_obs = st.norm(loc=media, scale=desvio)
+	 r1 = 2./3.
+	 r2 = 1./3.
+	 p33 = y_normal_obs.isf(q=r1)
+	 p66 = y_normal_obs.isf(q=r2)
+
+	 # RPS previsão
+	 # Qtd de anos
+	 nmemb = float(len(fcst[:, 0, 0, 0]))
+
+	 # Metodo do Dirceu
+	 prob33fcst = np.sum((fcst < p33), axis=0)/nmemb
+	 prob66fcst = np.sum((fcst < p66), axis=0)/nmemb
+
+	 prob33obs = (obs < p33)
+	 prob66obs = (obs < p66)
+
+	 a = ((prob33fcst - prob33obs)**2)/2.
+	 b = ((prob66fcst - prob66obs)**2)/2.
+	 rps_prev = a + b
+
+	 prob33clim = np.zeros((2, 64, 128), dtype=np.float)+1/3.
+	 prob66clim = np.zeros((2, 64, 128), dtype=np.float)+2/3.
+	 a = (prob33clim - prob33obs)**2
+	 b = (prob66clim - prob66obs)**2
+	 rps_clim = a + b
+
+	 rpsprev = np.nanmean(rps_prev, axis=0)
+
+	 rpsclim = np.nanmean(rps_clim, axis=0)
+
+	 rpss = 1 - (rpsprev/rpsclim)
+
+	 return rpss

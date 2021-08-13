@@ -2,7 +2,7 @@
 
 __author__ = "Leidinice Silva"
 __email__ = "leidinice.silvae@funceme.br"
-__date__ = "08/06/2017"
+__date__ = "06/09/2018"
 __description__ = " Compute real precipitation of olamv.3.3 model "
 
 import os
