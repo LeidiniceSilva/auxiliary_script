@@ -1,29 +1,26 @@
 # -*- coding: utf-8 -*-
 
-""" Compute standard deviation of ETP. """
-
 __author__ = "Leidinice Silva"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = "20/09/2016"
 __description__ = " Compute standard deviation of ETP "
 
-# Import data
 import netCDF4
 import calendar
 import argparse
 import datetime
 import numpy as np
 import numpy.ma as ma
-from PyFuncemeClimateTools import DefineGrid as dg
-from PyFuncemeClimateTools import PlotMaps as pm
+
 from PyFuncemeClimateTools import Thiessen
+from PyFuncemeClimateTools import PlotMaps as pm
+from PyFuncemeClimateTools import DefineGrid as dg
 from hidropy.preprocessing.write_thiessen import write_thiessen
 
 y1, y2, x1, x2 = -60, 15, -90, -33
 
 mes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-dic = {'Jan': 31., 'Fev': 28.5, 'Mar': 31., 'Abr': 30., 'Mai': 31., 'Jun': 30., 'Jul': 31., 'Ago': 31., 'Set': 30.,
-       'Out': 31., 'Nov': 30., 'Dez': 31.}
+dic = {'Jan': 31., 'Fev': 28.5, 'Mar': 31., 'Abr': 30., 'Mai': 31., 'Jun': 30., 'Jul': 31., 'Ago': 31., 'Set': 30., 'Out': 31., 'Nov': 30., 'Dez': 31.}
 
 cor1 = ('#ffffff', '#ffff00', '#fcd17d', '#ff8000', '#ff0000', '#750000', '#340003') #Paleta
 lev1 = (5., 7.5, 10., 12.5, 15., 17.5, 20.)

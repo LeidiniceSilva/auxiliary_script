@@ -7,8 +7,8 @@ __description__ = "This script plot annual climatology anomaly from obs database
 
 import os
 import netCDF4
-import numpy as np
 import matplotlib
+import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
@@ -105,7 +105,6 @@ name_out = 'pyplt_clim_anomaly_cru.png'
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
-
 plt.show()
 exit()
 

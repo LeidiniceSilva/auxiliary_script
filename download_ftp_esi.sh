@@ -16,8 +16,6 @@ pwd
 /usr/bin/wget -N ftp://ftp.star.nesdis.noaa.gov/pub/smcd/emb/chain/bbarker/DFPPM_*WK_SMN_${ANO}???.dat
 /usr/bin/wget -N ftp://ftp.star.nesdis.noaa.gov/pub/smcd/emb/chain/bbarker/DFPPM_*WK_${ANO}???.dat
 
-
-
 skip(){
 HOST2='ftp.star.nesdis.noaa.gov'
 USER2='anonymous'

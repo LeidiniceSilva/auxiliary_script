@@ -1,14 +1,15 @@
 # coding: utf-8
 
-from mpl_toolkits.basemap import Basemap
-from matplotlib import colors as c
-from matplotlib.colors import BoundaryNorm
-import numpy as np
-import matplotlib.pyplot as plt
-
 __author__ = 'Marcelo Rodrigues'
 __email__ = 'marcelorodriguesss@gmail.com'
 __date__ = '07 Nov 2017'
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+from matplotlib import colors as c
+from mpl_toolkits.basemap import Basemap
+from matplotlib.colors import BoundaryNorm
 
 
 def plotmap(data, lat, lon, **kwargs):

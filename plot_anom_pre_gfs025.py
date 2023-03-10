@@ -1,36 +1,28 @@
 # -*- coding: utf-8 -*-
 
-"""
-This script creates images of accumulated (0-7 and 7-15 days) 
-    precipitation simulated by GFS025 model.
-"""
-
-
-import matplotlib as mpl
-# mpl.use('Agg')
-
-from matplotlib.colors import BoundaryNorm
-from mpl_toolkits.basemap import Basemap
-from datetime import datetime, timedelta
-from matplotlib import colors as c
-from netCDF4 import Dataset
-import numpy as np
-import argparse
-# import calendar
-import matplotlib.pyplot as plt
-import os
-from mpl_toolkits.basemap import interp
-from os.path import expanduser
-from PyFuncemeClimateTools import DefineGrid as Dg
-from PyFuncemeClimateTools.DefineDates import index_between_dates
-
-home = expanduser("~")
-
 __author__ = 'Leidinice Silva'
 __email__ = 'leidinice.silva@funceme.br'
 __date__ = '08/01/2018'
 __description__='This script creates images of accumulated (0-7 and 7-15 days)' \
                     ' precipitation simulated by GFS025 model.'
+                    
+import os
+import argparse
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+from netCDF4 import Dataset
+from os.path import expanduser
+from matplotlib import colors as c
+from mpl_toolkits.basemap import Basemap
+from datetime import datetime, timedelta
+from mpl_toolkits.basemap import interp
+from matplotlib.colors import BoundaryNorm
+from PyFuncemeClimateTools import DefineGrid as Dg
+from PyFuncemeClimateTools.DefineDates import index_between_dates
+
+home = expanduser("~")
 
 
 def arguments():

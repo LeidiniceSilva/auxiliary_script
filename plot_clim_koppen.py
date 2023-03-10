@@ -5,14 +5,15 @@ __email__       = "leidinicesilva@gmail.com"
 __date__        = "01/15/2020"
 __description__ = "This script plot annual climatology with koppen classification"
 
+import comp_koppen
 import xarray as xr
 import numpy as np
-import matplotlib.pylab as plt
 import scipy.interpolate
 import cartopy.crs as ccrs
-from cartopy.feature import NaturalEarthFeature
+import matplotlib.pylab as plt
 import matplotlib.patches as mpatches
-import comp_koppen
+
+from cartopy.feature import NaturalEarthFeature
 
 # Testando para uma localidade, neste exemplo, cidade de Verdelandia na Bahia.
 

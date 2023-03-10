@@ -22,7 +22,6 @@ timeslice1=1995-2014
 timeslice2=2041-2060
 timeslice3=2080-2099
 
-
 ######################### separating for periods - historical (1995-2014), near future (2041-2060) and far future (2080-2099) ###################
 
 ### RCP2.6

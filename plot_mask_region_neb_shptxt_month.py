@@ -9,19 +9,16 @@ __maintainer__ = "Marcelo Rodrigues"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = 07/25/2016
 
-# Description
-# Verification watershed Sao Francisco
-
-# Import Datas
-import netCDF4
-import matplotlib as mpl ; mpl.use('Agg')
+import os
 import re
 import wget
+import netCDF4
 import numpy as np
-import os
-import matplotlib.pyplot as plt
 import numpy.ma as ma
 import scipy.stats as st
+import matplotlib.pyplot as plt
+import matplotlib as mpl ; mpl.use('Agg')
+
 from PyFuncemeClimateTools import DefineGrid as Dg
 from PyFuncemeClimateTools import PlotMaps as pm
 
@@ -82,8 +79,7 @@ path_in = "/home/leidinice/Documentos/esi/dados/esi/clim/fig/4WK/"
 pathout_fig = "/home/leidinice/Documentos/esi/dados/esi/clim/fig/4WK/"
 
 mes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-dic_esi = {'Jan': 3, 'Fev': 7, 'Mar': 12, 'Abr': 16, 'Mai': 20, 'Jun': 25,
-           'Jul': 29, 'Ago': 34, 'Set': 38, 'Out': 42, 'Nov': 47, 'Dez': 51}
+dic_esi = {'Jan': 3, 'Fev': 7, 'Mar': 12, 'Abr': 16, 'Mai': 20, 'Jun': 25, 'Jul': 29, 'Ago': 34, 'Set': 38, 'Out': 42, 'Nov': 47, 'Dez': 51}
 
 for i, season in enumerate(mes):
 

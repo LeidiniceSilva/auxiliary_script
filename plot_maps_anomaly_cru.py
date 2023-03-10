@@ -160,7 +160,6 @@ name_out = 'pyplt_maps_anomaly_cru.png'
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=200, bbox_inches='tight')
-
 plt.show()
 exit()
 

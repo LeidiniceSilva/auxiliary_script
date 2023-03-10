@@ -11,7 +11,6 @@ import xarray as xr
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
-
 	
 # Export variable
 path_var = '/home/nice/Downloads/era5/'
@@ -70,7 +69,6 @@ ax3.set_ylabel(r'10 Metre Wind Speed (m s⁻¹)', color='blue')
 ax1.set_xticks(np.arange(0.5, 12 + 0.5))
 ax1.set_xticklabels(['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'])
 plt.setp(ax1.get_xticklabels())
-
 plt.title('A) Fortaleza-CE (Lat=-3.75, Lon=-38.55) - ERA5 (1979-2019)')
 
 # Set up ticks and grid lines
@@ -94,7 +92,6 @@ name_out = 'pyplt_clim_era5_fortaleza_1979-2019.png'
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
-
 plt.show()
 exit()
 

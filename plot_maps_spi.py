@@ -9,18 +9,16 @@ __maintainer__ = "Marcelo Rodrigues"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = 07/11/2016
 
-
-# Plot maps
-# Import Datas
-import netCDF4
-import matplotlib as mpl ; mpl.use('Agg')  # Descomente para não mostrar a janela em cada plot
 import re
-import wget
-import numpy as np
 import os
-import matplotlib.pyplot as plt
+import wget
+import netCDF4
+import numpy as np
 import numpy.ma as ma
 import scipy.stats as st
+import matplotlib.pyplot as plt
+import matplotlib as mpl ; mpl.use('Agg')  
+
 from PyFuncemeClimateTools import DefineGrid as dg
 from PyFuncemeClimateTools import PlotMaps as pm
 

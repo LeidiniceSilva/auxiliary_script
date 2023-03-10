@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 
 
-
 def import_accum_database():
 	
 	path = '/home/nice/Documents/daniele'
@@ -59,7 +58,6 @@ def import_anom_database():
 # Import obs database 	
 pre_accum = import_accum_database()
 pre_mean = np.nanmean(pre_accum)
-
 pre_anom = import_anom_database()
 
 # Plot obs database 	
@@ -106,7 +104,6 @@ name_out = 'graph_clim_anom_cru_neb.png'
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=600, bbox_inches='tight')
-
 plt.show()
 exit()
 

@@ -1,30 +1,24 @@
 # -*- coding: utf-8 -*-
 
-"""
-This script plot mensal anomaly oaflux.
-"""
-
-import os
-import netCDF4
-import numpy as np
-import matplotlib as mpl 
-# mpl.use('Agg')
-import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import shiftgrid
-
-from datetime import datetime, date
-from PyFuncemeClimateTools import PlotMaps as pm
-from hidropy.utils.hidropy_utils import create_path
-from matplotlib.font_manager import FontProperties
-
-from pltsst import plotmap
-
 __author__ = "leidinice Silva"
 __email__  = "leidinice.silva@funceme.br"
 __date__   = "12/07/2017"
 __description__ = "This script plot mensal anomaly oaflux"
 
-    
+import os
+import netCDF4
+import numpy as np
+import matplotlib as mpl 
+import matplotlib.pyplot as plt
+
+from pltsst import plotmap
+from datetime import datetime, date
+from mpl_toolkits.basemap import shiftgrid
+from PyFuncemeClimateTools import PlotMaps as pm
+from hidropy.utils.hidropy_utils import create_path
+from matplotlib.font_manager import FontProperties
+
+
 def compute_anomaly(model, obs):
 
     """

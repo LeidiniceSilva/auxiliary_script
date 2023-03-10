@@ -25,8 +25,6 @@ timeslice1=1995-2014
 timeslice2=2041-2060
 timeslice3=2080-2099
 
-
-
 ######### add historical plus scenario - it is better to make the averages - annual, djf and jja ########
 
 #RCP2.6

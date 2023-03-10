@@ -3,18 +3,15 @@
 ###Faz o teste de hipotese para medias considerando que ambos os conjuntos possuam o mesmo numero de dados
 #you should use the output from ensemble
 
-
 #Near future RCP2.6
 #modelRCP85=/home/pesquisa/Documentos/Analises_teste/ensemble/ensemble_rcp26_annual2041-2060.nc
 #Far future RCP2.6
 #modelRCP85=/home/pesquisa/Documentos/Analises_teste/ensemble/ensemble_rcp26_annual2080-2099.nc
 
-
 #Near future RCP8.5
 #modelRCP85=/home/pesquisa/Documentos/Analises_teste/ensemble/ensemble_rcp85_annual2041-2060.nc
 #Far future RCP8.5
 modelRCP85=/home/pesquisa/Documentos/Analises_teste/ensemble/ensemble_rcp85_annual2080-2099.nc
-
 
 #historical RCP2.6
 #modelpres=/home/pesquisa/Documentos/Analises_teste/ensemble/ensemble_rcp26_annual1995-2014.nc
@@ -49,13 +46,11 @@ cdo chname,pr,stdfut std2_GCM_fut.nc std_GCM_fut.nc
 cdo chname,pr,stdpres std2_GCM_pres.nc std_GCM_pres.nc
 cdo chname,pr,dif 0diff_GCM.nc diff_GCM.nc
 
-
 #### junta os calculos em um unico nc (a diff da media, std^2, e o n)
 cdo merge diff_GCM.nc std_GCM_fut.nc std_GCM_pres.nc ndata_GCM.nc 0ttest_GCM.nc
 cdo expr,'t=abs(dif/sqrt((stdfut/n)+(stdpres/n)))' 0ttest_GCM.nc ttest_GCM.nc
 ###Esse eh a saida que nos interessa que tem a diferenca e o teste
 cdo merge diff_GCM.nc ttest_GCM.nc sig_GCM.nc
-
 
 echo GCM
 cat <<EOF> Plot_sig.gs

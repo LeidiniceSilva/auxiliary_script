@@ -23,7 +23,6 @@ season=jja
 
 domain=SAM-22
 
-
 cdo add ${dir}${var}${domain}_${model1}_${scenario}_r1i1p1_ICTP-RegCM4-7_v0_${timeslice}_${season}.nc ${dir}${var}${domain}_${model2}_${scenario}_r1i1p1_ICTP-RegCM4-7_v0_${timeslice}_${season}.nc ensemble1.nc
 
 cdo add ${dir}${var}${domain}_${model3}_${scenario}_r1i1p1_ICTP-RegCM4-7_v0_${timeslice}_${season}.nc ensemble1.nc ensemble_${scenario}_${season}${timeslice}.nc

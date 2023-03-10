@@ -9,20 +9,18 @@ __maintainer__ = "Marcelo Rodrigues"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = 19/8/2016
 
-# Plot graphs ESI x SPI
-
-# Import Datas
+import re
+import os
+import wget
 import netCDF4
 import numpy as np
 import pandas as pd
 import numpy.ma as ma
 import scipy.stats as st
-import matplotlib as mpl ; mpl.use('Agg')  # Descomente para não mostrar a janela em cada plot
-import re
-import wget
-import os
+import matplotlib as mpl ; mpl.use('Agg') 
 import matplotlib.pyplot as plt
 import datetime as dt
+
 from datetime import date
 from PyFuncemeClimateTools import DefineGrid as Dg
 from PyFuncemeClimateTools import PlotMaps as pm

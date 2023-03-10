@@ -52,8 +52,6 @@ scenario=historical
 #scenario=rcp85
 domain=SAM-22
 
-
-
 #################################
 ### setting calendar 
 

@@ -8,11 +8,6 @@ __version__ = "1.0.1"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = 07/25/2016
 
-
-# Description 
-# Importar arquivos .nc para .tif
-
-# Import Datas
 import os
 
 nc_name = 'esi_12WK_{0:4d}_SA.nc'

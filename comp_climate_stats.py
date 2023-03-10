@@ -8,7 +8,6 @@ __credits__ = ["Fco Vasconcelos", "Arthur Costa", "Aurélio Noronha"]
 # Incluir função de probabilidade acumulada
 # Incluir método estátisco de previsão objetiva
 
-
 from mpl_toolkits.basemap import shiftgrid, interp
 from PyFuncemeClimateTools import DefineGrid as dg
 from netCDF4 import Dataset
@@ -21,6 +20,7 @@ def _checkdims(model, obs):
     if not model.ndim == obs.ndim:
         print('Dims are not equals!')
         exit(1)
+
 
 def compute_rmse(model, obs):
 

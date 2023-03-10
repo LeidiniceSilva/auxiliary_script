@@ -9,34 +9,22 @@ __maintainer__ = "Marcelo Rodrigues"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = 07/25/2016
 
-# Description
-# Verification watershed Sao Francisco
-
-# Import Datas
-import netCDF4
-import matplotlib as mpl ; mpl.use('Agg')
+import os
 import re
 import wget
 import netCDF4
-import matplotlib as mpl ; mpl.use('Agg')  # Descomente para não mostrar a janela em cada plot
-import numpy.ma as ma
-from PyFuncemeClimateTools import DefineGrid as Dg
-from mpl_toolkits.basemap import Basemap
-from mpl_toolkits.basemap import maskoceans
-from matplotlib import colors as c
-from matplotlib.colors import BoundaryNorm
-import os
 import numpy as np
-import matplotlib.pyplot as plt
 import numpy.ma as ma
+import matplotlib.pyplot as plt
+import matplotlib as mpl ; mpl.use('Agg')
+
 from datetime import date
 from gridfill import fill
-import argparse
-
-__author__ = 'Diogenes Fontenele'
-__email__ = 'diogenesfontenele13@gmail.com'
-__date__ = '05/07/2016'
-__description__='Compute ESI for NEB region'
+from matplotlib import colors as c
+from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import maskoceans
+from matplotlib.colors import BoundaryNorm
+from PyFuncemeClimateTools import DefineGrid as Dg
 
 
 def arguments():

@@ -11,8 +11,6 @@ done
 /usr/bin/wget -N ftp://ftp.whoi.edu/pub/science/oaflux/data_v3/monthly/evaporation/evapr_oaflux_2017rt.nc.gz
 gunzip evapr_oaflux_2017rt.nc.gz
 
-
-
 # Download via ftp ----------------------- lh
 path="/home/leidinice/documentos/oaflux/dados/lh/"
 echo
@@ -23,8 +21,6 @@ for year in `seq 1981 2016`; do
 done
 /usr/bin/wget -N ftp://ftp.whoi.edu/pub/science/oaflux/data_v3/monthly/turbulence/lh_oaflux_2017rt.nc.gz
 gunzip lh_oaflux_2017rt.nc.gz
-
-
 
 # Download via ftp ----------------------- qa
 path="/home/leidinice/documentos/oaflux/dados/qa/"
@@ -37,8 +33,6 @@ done
 /usr/bin/wget -N ftp://ftp.whoi.edu/pub/science/oaflux/data_v3/monthly/turbulence/qa_oaflux_2017rt.nc.gz
 gunzip qa_oaflux_2017rt.nc.gz
 
-
-
 # Download via ftp ----------------------- sh
 path="/home/leidinice/documentos/oaflux/dados/sh/"
 echo
@@ -50,8 +44,6 @@ done
 /usr/bin/wget -N ftp://ftp.whoi.edu/pub/science/oaflux/data_v3/monthly/turbulence/sh_oaflux_2017rt.nc.gz
 gunzip sh_oaflux_2017rt.nc.gz
 
-
-
 # Download via ftp ----------------------- ts
 path="/home/leidinice/documentos/oaflux/dados/ts/"
 echo
@@ -62,8 +54,6 @@ for year in `seq 1981 2016`; do
 done
 /usr/bin/wget -N ftp://ftp.whoi.edu/pub/science/oaflux/data_v3/monthly/turbulence/ts_oaflux_2017rt.nc.gz
 gunzip ts_oaflux_2017rt.nc.gz
-
-
 
 # Download via ftp ---------------------- ws
 path="/home/leidinice/documentos/oaflux/dados/ws/"

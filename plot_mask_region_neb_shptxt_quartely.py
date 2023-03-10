@@ -9,19 +9,16 @@ __maintainer__ = "Marcelo Rodrigues"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = 07/25/2016
 
-# Description
-# Verification watershed Sao Francisco
-
-# Import Datas
-import netCDF4
-import matplotlib as mpl ; mpl.use('Agg')  # Descomente para não mostrar a janela em cada plot
 import re
-import wget
-import numpy as np
 import os
-import matplotlib.pyplot as plt
+import wget
+import netCDF4
+import numpy as np
 import numpy.ma as ma
 import scipy.stats as st
+import matplotlib.pyplot as plt
+import matplotlib as mpl ; mpl.use('Agg')  
+
 from PyFuncemeClimateTools import DefineGrid as Dg
 from PyFuncemeClimateTools import PlotMaps as pm
 
@@ -83,9 +80,8 @@ pathout_fig = "/home/leidinice/Documentos/esi/dados/esi/clim/12WK/"
 trim = ['NDJ', 'DJF', 'JFM', 'FMA', 'MAM']
 dic_esi = {'NDJ': 3, 'DJF': 7, 'JFM': 12, 'FMA': 16, 'MAM': 20}
 
-# trim = ['NDJ', 'DJF', 'JFM', 'FMA', 'MAM', 'AMJ', 'MJJ', 'JJA', 'JAS', 'ASO', 'SON', 'OND']
-# dic_esi = {'NDJ': 3, 'DJF': 7, 'JFM': 12, 'FMA': 16, 'MAM': 20, 'AMJ': 25, 'MJJ': 29, 'JJA': 34, 'JAS': 38, 'ASO': 42,
-#  'SON': 47, 'OND': 51}
+trim = ['NDJ', 'DJF', 'JFM', 'FMA', 'MAM', 'AMJ', 'MJJ', 'JJA', 'JAS', 'ASO', 'SON', 'OND']
+dic_esi = {'NDJ': 3, 'DJF': 7, 'JFM': 12, 'FMA': 16, 'MAM': 20, 'AMJ': 25, 'MJJ': 29, 'JJA': 34, 'JAS': 38, 'ASO': 42, 'SON': 47, 'OND': 51}
 
 for i, season in enumerate(trim):
 

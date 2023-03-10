@@ -3,7 +3,6 @@
 #__date__        = '06/09/19'
 #__description__ = 'Plot maps olam and obs database'
 
-
 'reinit'
 'set display color white'
 'c'

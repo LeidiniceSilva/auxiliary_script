@@ -9,20 +9,18 @@ __maintainer__ = "Marcelo Rodrigues"
 __email__ = "leidinice.silvae@funceme.br"
 __date__ = 19/8/2016
 
-# Plot graphs ESI x SPI
-
-# Import Datas
+import re
+import os
+import wget
 import netCDF4
 import numpy as np
 import pandas as pd
 import numpy.ma as ma
 import scipy.stats as st
-import matplotlib as mpl ; mpl.use('Agg')  # Descomente para não mostrar a janela em cada plot
-import re
-import wget
-import os
-import matplotlib.pyplot as plt
+import matplotlib as mpl ; mpl.use('Agg')  
 import datetime as dt
+import matplotlib.pyplot as plt
+
 from datetime import date
 from PyFuncemeClimateTools import DefineGrid as Dg
 from PyFuncemeClimateTools import PlotMaps as pm
@@ -84,8 +82,7 @@ path_in1 = "/home/leidinice/Documentos/esi/results/data/esi/clim/dado_12WK/"
 path_in2 = "/home/leidinice/Documentos/esi/results/data/spi/"
 
 trim_esi = ['NDJ', 'DJF', 'JFM', 'FMA', 'MAM', 'AMJ', 'MJJ', 'JJA', 'JAS', 'ASO', 'SON', 'OND']
-dic_esi = {'NDJ': 3, 'DJF': 7, 'JFM': 12, 'FMA': 16, 'MAM': 20, 'AMJ': 25, 'MJJ': 29, 'JJA': 34, 'JAS': 38, 'ASO': 42,
-           'SON': 47, 'OND': 51}
+dic_esi = {'NDJ': 3, 'DJF': 7, 'JFM': 12, 'FMA': 16, 'MAM': 20, 'AMJ': 25, 'MJJ': 29, 'JJA': 34, 'JAS': 38, 'ASO': 42, 'SON': 47, 'OND': 51}
 
 esi_st = []
 spi_st = []

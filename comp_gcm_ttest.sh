@@ -2,7 +2,6 @@
 
 ####you should use the output from ensemble - 20 time steps for each time slice
 
-
 #Near future RCP8.5 (don't need to uncommented)
 area=NearFuture85
 modelRCP85=/media/christiana/Seagate/MLLOPART/pr/pr_AFR-22_rcp85_r1i1p1_ICTP-RegCM4-7_v0_mon_20410101-20601231_ensemble_HadGEM_NorESM.nc
@@ -21,12 +20,10 @@ cdo timsum num1.nc 00cont.nc
 cdo chname,pr,n 00cont.nc ndata_GCM.nc
 
 ####calcula a media
-
 cdo timmean ${modelRCP85} medfut.nc
 cdo timmean ${modelpres}  medpres.nc
 
 ####calcula a diferença futuro menos o presente
-
 cdo sub medfut.nc medpres.nc  0diff_GCM.nc
 
 ####calcula o desvio-padrao
