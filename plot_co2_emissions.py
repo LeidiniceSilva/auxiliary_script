@@ -89,7 +89,6 @@ plt.text(2060, -10, 'Net-negative global emissions')
 plt.grid(axis='y')
 ax.spines['right'].set_color('none')
 ax.spines['top'].set_color('none')
-# ~ ax.tick_params(axis='both',which='both',left=False)
 plt.legend(bbox_to_anchor=(0.5, 1.075), loc=9, ncol=7, frameon=False)
 
 print('Path out to save figure')
