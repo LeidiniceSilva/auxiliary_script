@@ -1,12 +1,0 @@
---2023-05-31 14:09:00--  http://clima-dods.ictp.it/CHyM_Data/museo/PREC/TRMM/1998/trmm_3B42_19980101.12.7.nc
-Resolvendo clima-dods.ictp.it (clima-dods.ictp.it)... 140.105.16.180
-Conectando-se a clima-dods.ictp.it (clima-dods.ictp.it)|140.105.16.180|:80... conectado.
-A requisição HTTP foi enviada, aguardando resposta... 200 OK
-Tamanho: 698452 (682K) [application/x-netcdf]
-Salvando em: ‘trmm_3B42_19980101.12.7.nc’
-
-trmm_3B42_19980101.12.7.nc  92%[==================================>   ] 628,80K  17,4 B/s    TED 52m 24strmm_3B42_19980101.12.7.nc 100%[=====================================>] 682,08K  18,8 B/s    em 10h 18m 
-
-utime(trmm_3B42_19980101.12.7.nc): Arquivo ou diretório inexistente
-2023-06-01 00:27:23 (18,8 B/s) - ‘trmm_3B42_19980101.12.7.nc’ salvo [698452/698452]
-
