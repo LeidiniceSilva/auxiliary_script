@@ -27,8 +27,8 @@ for var in ${var_list[@]}; do
 	    exp=('historical_r1i1p1')
 	    
 	    # Date
-            in_date=${year}${mon}'0100'    
-            fi_date=${year}'063018'
+		in_date=${year}${mon}'0100'    
+		fi_date=${year}'063018'
 
 	    if [ ${mon} == '07' ]
 	    then
