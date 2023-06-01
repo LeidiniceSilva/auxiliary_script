@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "Mar 01, 2023"
+__date__        = "Jun 01, 2023"
 __description__ = "This script plot all statistical of cmip6 models"
 
 import os
@@ -93,21 +93,7 @@ def compute_ivs(obs, model):
     ivs = (p3 - p4)**2  
     
     return ivs    
-    
-
-def sort_list(data_list):
-	
-	li = []
-	for i in range(len(data_list)):
-		li.append([data_list[i], i])
-	  
-	li.sort()
-	sort_index = []
-	for x in li:
-		sort_index.append(x[1])
-	
-	return sort_index
-	
+   
 
 cmip6 = {1	:['ACCESS-CM2'],
 		 2	:['BCC-CSM2-MR'],
@@ -343,7 +329,7 @@ ivs_etccdi_lpb = np.array([ivs_wsdi_lpb, ivs_tx90p_lpb, ivs_rx5day_lpb, ivs_r95p
 fig = plt.figure(figsize=(8, 8))
 
 xlabels = legend
-ylabels = ['WSDI', 'Tx90p',  'rx5day', 'R95p', 'CDD']
+ylabels = ['WSDI', 'Tx90p',  'Rx5day', 'R95p', 'CDD']
 
 norm1 = colors.BoundaryNorm(boundaries=np.arange(-100, 110, 10), ncolors=256)
 norm2 = colors.BoundaryNorm(boundaries=np.arange(-1, 1.1, 0.1), ncolors=256)
@@ -355,7 +341,7 @@ color3 = cm.Blues
 
 ax = fig.add_subplot(5, 3, 1)  
 pcm = ax.pcolormesh(ree_etccdi_naz, edgecolors='white', linewidths=1., norm=norm1, cmap=color1)
-ax.set_title(u'(a) Relative error', loc='left', fontweight='bold', fontsize=8)
+ax.set_title(u'(a) RE', loc='left', fontweight='bold', fontsize=8)
 ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
 ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
@@ -367,9 +353,9 @@ clb.ax.tick_params(labelsize=8)
 
 ax = fig.add_subplot(5, 3, 2)  
 pcm = ax.pcolormesh(pcc_etccdi_naz, edgecolors='white', linewidths=1., norm=norm2, cmap=color2)
-ax.set_title(u'(b) Correlation', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_title(u'(b) PCC', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(pcc_etccdi_naz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(pcc_etccdi_naz.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -380,9 +366,9 @@ clb.ax.tick_params(labelsize=8)
 
 ax = fig.add_subplot(5, 3, 3)  
 pcm = ax.pcolormesh(ivs_etccdi_naz, edgecolors='white', linewidths=1., norm=norm3, cmap=color3)
-ax.set_title(u'(c) Interannual variability', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_title(u'(c) IVS', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(ivs_etccdi_naz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(ivs_etccdi_naz.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -396,8 +382,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 4)  
 pcm = ax.pcolormesh(ree_etccdi_saz, edgecolors='white', linewidths=1., norm=norm1, cmap=color1)
 ax.set_title(u'(d)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(ree_etccdi_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(ree_etccdi_saz.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -408,8 +394,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 5)  
 pcm = ax.pcolormesh(pcc_etccdi_saz, edgecolors='white', linewidths=1., norm=norm2, cmap=color2)
 ax.set_title(u'(e)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(pcc_etccdi_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(pcc_etccdi_saz.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -421,8 +407,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 6)  
 pcm = ax.pcolormesh(ivs_etccdi_saz, edgecolors='white', linewidths=1., norm=norm3, cmap=color3)
 ax.set_title(u'(f)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(ivs_etccdi_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(ivs_etccdi_saz.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -436,8 +422,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 7)  
 pcm = ax.pcolormesh(ree_etccdi_neb, edgecolors='white', linewidths=1., norm=norm1, cmap=color1)
 ax.set_title(u'(g)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(ree_etccdi_neb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(ree_etccdi_neb.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -448,8 +434,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 8)  
 pcm = ax.pcolormesh(pcc_etccdi_neb, edgecolors='white', linewidths=1., norm=norm2, cmap=color2)
 ax.set_title(u'(h)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(pcc_etccdi_neb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(pcc_etccdi_neb.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -461,8 +447,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 9)  
 pcm = ax.pcolormesh(ivs_etccdi_neb, edgecolors='white', linewidths=1., norm=norm3, cmap=color3)
 ax.set_title(u'(i)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(ivs_etccdi_neb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(ivs_etccdi_neb.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -476,8 +462,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 10)  
 pcm = ax.pcolormesh(ree_etccdi_sam, edgecolors='white', linewidths=1., norm=norm1, cmap=color1)
 ax.set_title(u'(j)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(ree_etccdi_sam.shape[1]) + 0.5)
+ax.set_yticks(np.arange(ree_etccdi_sam.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -488,8 +474,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 11)  
 pcm = ax.pcolormesh(pcc_etccdi_sam, edgecolors='white', linewidths=1., norm=norm2, cmap=color2)
 ax.set_title(u'(k)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(pcc_etccdi_sam.shape[1]) + 0.5)
+ax.set_yticks(np.arange(pcc_etccdi_sam.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -501,8 +487,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 12)  
 pcm = ax.pcolormesh(ivs_etccdi_sam, edgecolors='white', linewidths=1., norm=norm3, cmap=color3)
 ax.set_title(u'(l)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(ivs_etccdi_sam.shape[1]) + 0.5)
+ax.set_yticks(np.arange(ivs_etccdi_sam.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -516,8 +502,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 13)  
 pcm = ax.pcolormesh(ree_etccdi_lpb, edgecolors='white', linewidths=1., norm=norm1, cmap=color1)
 ax.set_title(u'(m)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(ree_etccdi_lpb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(ree_etccdi_lpb.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 clb = fig.colorbar(pcm, ax=ax, extend='both', pad=0.01)
@@ -527,8 +513,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 14)  
 pcm = ax.pcolormesh(pcc_etccdi_lpb, edgecolors='white', linewidths=1., norm=norm2, cmap=color2)
 ax.set_title(u'(n)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(pcc_etccdi_lpb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(pcc_etccdi_lpb.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_yticklabels(), visible=False)
@@ -539,8 +525,8 @@ clb.ax.tick_params(labelsize=8)
 ax = fig.add_subplot(5, 3, 15)  
 pcm = ax.pcolormesh(ivs_etccdi_lpb, edgecolors='white', linewidths=1., norm=norm3, cmap=color3)
 ax.set_title(u'(o)', loc='left', fontweight='bold', fontsize=8)
-ax.set_xticks(np.arange(ree_etccdi_naz.shape[1]) + 0.5)
-ax.set_yticks(np.arange(ree_etccdi_naz.shape[0]) + 0.5)
+ax.set_xticks(np.arange(ivs_etccdi_lpb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(ivs_etccdi_lpb.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8, rotation=90)
 ax.set_yticklabels(ylabels, fontsize=8)
 plt.setp(ax.get_yticklabels(), visible=False)
@@ -549,6 +535,9 @@ ax.yaxis.set_label_position("right")
 clb = fig.colorbar(pcm, ax=ax, extend='max', pad=0.01)
 clb.ax.yaxis.set_label_position('right')
 clb.ax.tick_params(labelsize=8)
+
+plt.subplots_adjust(hspace=0.20)
+plt.subplots_adjust(wspace=0.25)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/paper_mari/figs'

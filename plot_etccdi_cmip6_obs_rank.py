@@ -2,483 +2,850 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "Mar 01, 2023"
-__description__ = "This script plot rank of cmip6 models"
+__date__        = "Jun 01, 2023"
+__description__ = "This script plot statistical rank of cmip6 models"
 
 import os
 import netCDF4
 import numpy as np
+import numpy.ma as ma
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
-from dict_cmip6_models_name import cmip6
-from comp_stats_metrics import compute_mbe
-from comp_stats_metrics import compute_rmse
-from comp_stats_metrics import compute_tss
-from comp_stats_metrics import compute_pcc
-from comp_stats_metrics import compute_ivs
 
-
-def import_obs_latlon(param, area, period, date):
+def import_obs(param, area):
 	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.0_{3}_{4}_lonlat.nc'.format(path, param, area, period, date)	
-		
+	path  = '/home/nice/Documentos/paper_mari/database/obs'
+	arq   = '{0}/{1}_19860101_20050131_BR-DWGD_UFES_UTEXAS_v_3.0_0.5.nc_{2}.nc'.format(path, param, area)	
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
 	value = var[:][:,:,:]
-	fld_mean = np.nanmean(value, axis=0)
-	
+
+	fld_mean = np.nanmean(value, axis=0)	
 	latlon = []
 	for i in range(0, fld_mean.shape[0]):
 		for ii in fld_mean[i]:
 			latlon.append(ii)
+			
 	ts_latlon = np.array(latlon)
+	ts_time = np.nanmean(np.nanmean(value, axis=1), axis=1)
 	
-	return ts_latlon
-	
-	
-def import_obs_mon(param, area, period, date):
-	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.0_{3}_{4}_lonlat.nc'.format(path, param, area, period, date)	
-		
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
-	mon_mean = np.nanmean(np.nanmean(value, axis=1), axis=1)
-	
-	ts_mon = []
-	for i in range(0, 11 + 1):
-		clim = np.nanmean(mon_mean[i::12], axis=0)
-		ts_mon.append(clim)
-	
-	return ts_mon
+	return ts_latlon, ts_time
 
-
-def import_obs_ann(param, area, period, date):
 	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/obs'
-	arq   = '{0}/{1}_{2}_BR-DWGD_UFES_UTEXAS_v_3.0_{3}_{4}_lonlat.nc'.format(path, param, area, period, date)	
-		
+def import_cmip(param, model, area):
+	
+	if model == 'CMCC-ESM2':
+		dict_var = {u'cddETCCDI': u'cdd',
+		u'r95pETCCDI': u'r95p',
+		u'rx5dayETCCDI': u'rx5day',
+		u'tx90pETCCDI': u'tx90p',
+		u'wsdiETCCDI': u'wsdi'}
+	else:
+		dict_var = {u'cddETCCDI': u'cddETCCDI',
+		u'r95pETCCDI': u'r95pETCCDI',
+		u'rx5dayETCCDI': u'rx5dayETCCDI',
+		u'tx90pETCCDI': u'tx90pETCCDI',
+		u'wsdiETCCDI': u'wsdiETCCDI'}
+	
+	path  = '/home/nice/Documentos/paper_mari/database/cmip6'
+	arq   = '{0}/{1}_yr_{2}_historical_1986-2005.nc_{3}.nc'.format(path, param, model, area)		
 	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
+	var   = data.variables[dict_var[param]][:] 
 	value = var[:][:,:,:]
-	ts_ann = np.nanmean(np.nanmean(value, axis=1), axis=1)
 	
-	return ts_ann
-	
-	
-def import_cmip_latlon(param, area, model, exp, period, date):
-
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip6'
-	arq   = '{0}/{1}_{2}_{3}_historical_{4}_{5}_{6}_lonlat.nc'.format(path, param, area, model, exp, period, date)	
-				
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
 	fld_mean = np.nanmean(value, axis=0)
-	
 	latlon = []
 	for i in range(0, fld_mean.shape[0]):
 		for ii in fld_mean[i]:
 			latlon.append(ii)
+			
 	ts_latlon = np.array(latlon)
+	ts_time = np.nanmean(np.nanmean(value, axis=1), axis=1)
 	
-	return ts_latlon
-	              
+	return ts_latlon, ts_time
 
-def import_cmip_mon(param, area, model, exp, period, date):
-	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip6'
-	arq   = '{0}/{1}_{2}_{3}_historical_{4}_{5}_{6}_lonlat.nc'.format(path, param, area, model, exp, period, date)	
-				
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
-	mon_mean = np.nanmean(np.nanmean(value, axis=1), axis=1)
-	
-	ts_mon = []
-	for i in range(0, 11 + 1):
-		clim = np.nanmean(mon_mean[i::12], axis=0)
-		ts_mon.append(clim)
-	
-	return ts_mon
-	
 
-def import_cmip_ann(param, area, model, exp, period, date):
-	
-	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/database/cmip6'
-	arq   = '{0}/{1}_{2}_{3}_historical_{4}_{5}_{6}_lonlat.nc'.format(path, param, area, model, exp, period, date)	
-				
-	data  = netCDF4.Dataset(arq)
-	var   = data.variables[param][:] 
-	lat   = data.variables['lat'][:]
-	lon   = data.variables['lon'][:]
-	value = var[:][:,:,:]
-	ts_ann = np.nanmean(np.nanmean(value, axis=1), axis=1)
-	
-	return ts_ann
-	
+def compute_ree(model, obs):
 
-def sort_list(data_list):
+    p1 = np.nanmean(np.array(model) - np.array(obs))
+    p2 = np.nanmean(np.array(model))
+    p3 = p1/p2
+    ree = p3 * 100.0
+    
+    return ree
+    
+    
+def compute_pcc(obs, model):
+   
+    pcc = ma.corrcoef(ma.masked_invalid(obs), ma.masked_invalid(model))[0][1]
+    
+    return pcc
+           
+               
+def compute_ivs(obs, model):
+
+    p1 = np.nanstd(obs, ddof=0)
+    p2 = np.nanstd(model, ddof=0)
+    p3 = p2 / p1
+    p4 = p1 / p2
+    ivs = (p3 - p4)**2  
+    
+    return ivs   
+    
+
+def sort_list_x(data_list):
 	
 	li = []
 	for i in range(len(data_list)):
+		
+		if data_list[i] < 0:
+			data_list[i] = data_list[i]*(-1)
+		
 		li.append([data_list[i], i])
-	  
+	
 	li.sort()
 	sort_index = []
 	for x in li:
 		sort_index.append(x[1])
+
+	model_list = []
+	value_list = []
+	for ii in sort_index:
+		model_list.append(cmip6_i[ii+1][0])
+		value_list.append(data_list[ii])
 	
-	return sort_index
+	data_argsort = np.argsort(model_list)
+
+	data_argsort_i = []
+	for idx in data_argsort:
+		data_argsort_i.append(idx+1)
+
+	return data_argsort_i
+
+
+def sort_list_y(data_list):
 	
+	li = []
+	for i in range(len(data_list)):
+		li.append([data_list[i], i])
 	
+	li.sort(reverse=True)
+	sort_index = []
+	for x in li:
+		sort_index.append(x[1])
+
+	model_list = []
+	value_list = []
+	for ii in sort_index:
+		model_list.append(cmip6_i[ii+1][0])
+		value_list.append(data_list[ii])
+
+	data_argsort = np.argsort(model_list)
+	
+	data_argsort_i = []
+	for idx in data_argsort:
+		data_argsort_i.append(idx+1)
+	
+	return data_argsort_i
+		
+
+def sort_list_z(data_list):
+	
+	li = []
+	for i in range(len(data_list)):		
+		li.append([data_list[i], i])
+	
+	li.sort()
+	sort_index = []
+	for x in li:
+		sort_index.append(x[1])
+
+	model_list = []
+	value_list = []
+	for ii in sort_index:
+		model_list.append(cmip6_i[ii+1][0])
+		value_list.append(data_list[ii])
+	
+	data_argsort = np.argsort(model_list)
+
+	data_argsort_i = []
+	for idx in data_argsort:
+		data_argsort_i.append(idx+1)
+
+	return data_argsort_i
+
+
+cmip6 = {1	:['ACCESS-CM2'],
+		 2	:['BCC-CSM2-MR'],
+		 3	:['CanESM5'],
+		 4	:['CMCC-ESM2'],
+		 5	:['CNRM-CM6-1'],
+		 6	:['CNRM-ESM2-1'],
+		 7	:['GFDL-ESM4'],
+		 8	:['INM-CM4-8'],
+		 9	:['INM-CM5-0'],
+		 10	:['KIOST-ESM'],
+		 11	:['MIROC6'],
+		 12 :['MIROC-ES2L'],
+		 13	:['MPI-ESM1-2-HR'],
+		 14	:['MPI-ESM1-2-LR'],
+		 15	:['MRI-ESM2-0'],
+		 16	:['NESM3'],
+		 17	:['NorESM2-MM']}
+
+cmip6_i = {1 :['ACCESS-CM2'],
+		 2	:['BCC-CSM2-MR'],
+		 3	:['CANESM5'],
+		 4	:['CMCC-ESM2'],
+		 5	:['CNRM-CM6-1'],
+		 6	:['CNRM-ESM2-1'],
+		 7	:['GFDL-ESM4'],
+		 8	:['INM-CM4-8'],
+		 9	:['INM-CM5-0'],
+		 10	:['KIOST-ESM'],
+		 11	:['MIROC6'],
+		 12 :['MIROCES2L'],
+		 13	:['MPI-ESM1-2-HR'],
+		 14	:['MPI-ESM1-2-LR'],
+		 15	:['MRI-ESM2-0'],
+		 16	:['NESM3'],
+		 17	:['NORESM2-MM']}
+		 	
 # Import cmip models and obs database 
-idx = 'ivs'
-var_obs = 'Tmin'
-var_cmip6 = 'tasmin'
-dt = '1986-2005'
+cdd_naz_obs_x, cdd_naz_obs_y = import_obs('cdd', 'NAZ')
+cdd_saz_obs_x, cdd_saz_obs_y = import_obs('cdd', 'SAZ')
+cdd_neb_obs_x, cdd_neb_obs_y = import_obs('cdd', 'NEB')
+cdd_sam_obs_x, cdd_sam_obs_y = import_obs('cdd', 'SAM')
+cdd_lpb_obs_x, cdd_lpb_obs_y = import_obs('cdd', 'LPB')
 
-namz_obs_latlon = import_obs_latlon(var_obs, 'NAMZ', 'ANN', dt)
-samz_obs_latlon = import_obs_latlon(var_obs, 'SAMZ', 'ANN', dt)
-neb_obs_latlon = import_obs_latlon(var_obs, 'NEB', 'ANN', dt)
-sam_obs_latlon = import_obs_latlon(var_obs, 'SAM', 'ANN', dt)
-lpb_obs_latlon = import_obs_latlon(var_obs, 'LPB', 'ANN', dt)
-br_obs_latlon = import_obs_latlon(var_obs, 'BR', 'ANN', dt)
+r95p_naz_obs_x, r95p_naz_obs_y = import_obs('r95p', 'NAZ')
+r95p_saz_obs_x, r95p_saz_obs_y = import_obs('r95p', 'SAZ')
+r95p_neb_obs_x, r95p_neb_obs_y = import_obs('r95p', 'NEB')
+r95p_sam_obs_x, r95p_sam_obs_y = import_obs('r95p', 'SAM')
+r95p_lpb_obs_x, r95p_lpb_obs_y = import_obs('r95p', 'LPB')
 
-namz_obs_mon_ts = import_obs_mon(var_obs, 'NAMZ', 'MON', dt)
-samz_obs_mon_ts = import_obs_mon(var_obs, 'SAMZ', 'MON', dt)
-neb_obs_mon_ts  = import_obs_mon(var_obs, 'NEB', 'MON', dt)
-sam_obs_mon_ts = import_obs_mon(var_obs, 'SAM', 'MON', dt)
-lpb_obs_mon_ts = import_obs_mon(var_obs, 'LPB', 'MON', dt)
-br_obs_mon_ts = import_obs_mon(var_obs, 'BR', 'MON', dt)
+rx5day_naz_obs_x, rx5day_naz_obs_y = import_obs('rx5day', 'NAZ')
+rx5day_saz_obs_x, rx5day_saz_obs_y = import_obs('rx5day', 'SAZ')
+rx5day_neb_obs_x, rx5day_neb_obs_y = import_obs('rx5day', 'NEB')
+rx5day_sam_obs_x, rx5day_sam_obs_y = import_obs('rx5day', 'SAM')
+rx5day_lpb_obs_x, rx5day_lpb_obs_y = import_obs('rx5day', 'LPB')
 
-namz_obs_ann_ts = import_obs_ann(var_obs, 'NAMZ', 'ANN', dt)
-samz_obs_ann_ts = import_obs_ann(var_obs, 'SAMZ', 'ANN', dt)
-neb_obs_ann_ts  = import_obs_ann(var_obs, 'NEB', 'ANN', dt)
-sam_obs_ann_ts = import_obs_ann(var_obs, 'SAM', 'ANN', dt)
-lpb_obs_ann_ts = import_obs_ann(var_obs, 'LPB', 'ANN', dt)
-br_obs_ann_ts = import_obs_ann(var_obs, 'BR', 'ANN', dt)
+tx90p_naz_obs_x, tx90p_naz_obs_y = import_obs('tx90p', 'NAZ')
+tx90p_saz_obs_x, tx90p_saz_obs_y = import_obs('tx90p', 'SAZ')
+tx90p_neb_obs_x, tx90p_neb_obs_y = import_obs('tx90p', 'NEB')
+tx90p_sam_obs_x, tx90p_sam_obs_y = import_obs('tx90p', 'SAM')
+tx90p_lpb_obs_x, tx90p_lpb_obs_y = import_obs('tx90p', 'LPB')
 
-mbe_namz_cmip6 = []
-rmse_namz_cmip6 = []
-tss_namz_cmip6 = []
-pcc_namz_cmip6 = []
-ivs_namz_cmip6 = []
+wsdi_naz_obs_x, wsdi_naz_obs_y = import_obs('wsdi', 'NAZ')
+wsdi_saz_obs_x, wsdi_saz_obs_y = import_obs('wsdi', 'SAZ')
+wsdi_neb_obs_x, wsdi_neb_obs_y = import_obs('wsdi', 'NEB')
+wsdi_sam_obs_x, wsdi_sam_obs_y = import_obs('wsdi', 'SAM')
+wsdi_lpb_obs_x, wsdi_lpb_obs_y = import_obs('wsdi', 'LPB')
 
-mbe_samz_cmip6 = []
-rmse_samz_cmip6 = []
-tss_samz_cmip6 = []
-pcc_samz_cmip6 = []
-ivs_samz_cmip6 = []
+ree_cdd_naz, ree_cdd_saz, ree_cdd_neb, ree_cdd_sam, ree_cdd_lpb = [], [], [], [], []
+pcc_cdd_naz, pcc_cdd_saz, pcc_cdd_neb, pcc_cdd_sam, pcc_cdd_lpb = [], [], [], [], []
+ivs_cdd_naz, ivs_cdd_saz, ivs_cdd_neb, ivs_cdd_sam, ivs_cdd_lpb = [], [], [], [], []
 
-mbe_neb_cmip6 = []
-rmse_neb_cmip6 = []
-tss_neb_cmip6 = []
-pcc_neb_cmip6 = []
-ivs_neb_cmip6 = []
+ree_r95p_naz, ree_r95p_saz, ree_r95p_neb, ree_r95p_sam, ree_r95p_lpb = [], [], [], [], []
+pcc_r95p_naz, pcc_r95p_saz, pcc_r95p_neb, pcc_r95p_sam, pcc_r95p_lpb = [], [], [], [], []
+ivs_r95p_naz, ivs_r95p_saz, ivs_r95p_neb, ivs_r95p_sam, ivs_r95p_lpb = [], [], [], [], []
 
-mbe_sam_cmip6 = []
-rmse_sam_cmip6 = []
-tss_sam_cmip6 = []
-pcc_sam_cmip6 = []
-ivs_sam_cmip6 = []
+ree_rx5day_naz, ree_rx5day_saz, ree_rx5day_neb, ree_rx5day_sam, ree_rx5day_lpb = [], [], [], [], []
+pcc_rx5day_naz, pcc_rx5day_saz, pcc_rx5day_neb, pcc_rx5day_sam, pcc_rx5day_lpb = [], [], [], [], []
+ivs_rx5day_naz, ivs_rx5day_saz, ivs_rx5day_neb, ivs_rx5day_sam, ivs_rx5day_lpb = [], [], [], [], []
 
-mbe_lpb_cmip6 = []
-rmse_lpb_cmip6 = []
-tss_lpb_cmip6 = []
-pcc_lpb_cmip6 = []
-ivs_lpb_cmip6 = []
+ree_tx90p_naz, ree_tx90p_saz, ree_tx90p_neb, ree_tx90p_sam, ree_tx90p_lpb = [], [], [], [], []
+pcc_tx90p_naz, pcc_tx90p_saz, pcc_tx90p_neb, pcc_tx90p_sam, pcc_tx90p_lpb = [], [], [], [], []
+ivs_tx90p_naz, ivs_tx90p_saz, ivs_tx90p_neb, ivs_tx90p_sam, ivs_tx90p_lpb = [], [], [], [], []
 
-mbe_br_cmip6 = []
-rmse_br_cmip6 = []
-tss_br_cmip6 = []
-pcc_br_cmip6 = []
-ivs_br_cmip6 = []
+ree_wsdi_naz, ree_wsdi_saz, ree_wsdi_neb, ree_wsdi_sam, ree_wsdi_lpb = [], [], [], [], []
+pcc_wsdi_naz, pcc_wsdi_saz, pcc_wsdi_neb, pcc_wsdi_sam, pcc_wsdi_lpb = [], [], [], [], []
+ivs_wsdi_naz, ivs_wsdi_saz, ivs_wsdi_neb, ivs_wsdi_sam, ivs_wsdi_lpb = [], [], [], [], []
 
 legend = []
 
 for i in range(1, 18):
+	
+	print(cmip6[i])
+	
+	cdd_naz_cmip_x, cdd_naz_cmip_y = import_cmip('cddETCCDI', cmip6[i][0], 'NAZ')
+	cdd_saz_cmip_x, cdd_saz_cmip_y = import_cmip('cddETCCDI', cmip6[i][0], 'SAZ')
+	cdd_neb_cmip_x, cdd_neb_cmip_y = import_cmip('cddETCCDI', cmip6[i][0], 'NEB')
+	cdd_sam_cmip_x, cdd_sam_cmip_y = import_cmip('cddETCCDI', cmip6[i][0], 'SAM')
+	cdd_lpb_cmip_x, cdd_lpb_cmip_y = import_cmip('cddETCCDI', cmip6[i][0], 'LPB')
 
-	namz_cmip_latlon = import_cmip_latlon(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	samz_cmip_latlon = import_cmip_latlon(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	neb_cmip_latlon = import_cmip_latlon(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	sam_cmip_latlon = import_cmip_latlon(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	lpb_cmip_latlon = import_cmip_latlon(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	br_cmip_latlon = import_cmip_latlon(var_cmip6, 'BR', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	
-	namz_cmip_mon_ts = import_cmip_mon(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	samz_cmip_mon_ts = import_cmip_mon(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	neb_cmip_mon_ts = import_cmip_mon(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	sam_cmip_mon_ts = import_cmip_mon(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	lpb_cmip_mon_ts = import_cmip_mon(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	br_cmip_mon_ts = import_cmip_mon(var_cmip6, 'BR', cmip6[i][0], cmip6[i][1], 'MON', dt)
-	
-	namz_cmip_ann_ts = import_cmip_ann(var_cmip6, 'NAMZ', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	samz_cmip_ann_ts = import_cmip_ann(var_cmip6, 'SAMZ', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	neb_cmip_ann_ts = import_cmip_ann(var_cmip6, 'NEB', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	sam_cmip_ann_ts = import_cmip_ann(var_cmip6, 'SAM', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	lpb_cmip_ann_ts = import_cmip_ann(var_cmip6, 'LPB', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-	br_cmip_ann_ts = import_cmip_ann(var_cmip6, 'BR', cmip6[i][0], cmip6[i][1], 'ANN', dt)
-			
-	mbe_namz_cmip6.append(compute_mbe(namz_cmip_latlon, namz_obs_latlon))
-	rmse_namz_cmip6.append(compute_rmse(namz_cmip_latlon, namz_obs_latlon))	
-	tss_namz_cmip6.append(compute_tss(namz_obs_latlon, namz_cmip_latlon))
-	pcc_namz_cmip6.append(compute_pcc(namz_obs_mon_ts, namz_cmip_mon_ts))
-	ivs_namz_cmip6.append(compute_ivs(namz_obs_ann_ts, namz_cmip_ann_ts))
-	
-	mbe_samz_cmip6.append(compute_mbe(samz_cmip_latlon, samz_obs_latlon))
-	rmse_samz_cmip6.append(compute_rmse(samz_cmip_latlon, samz_obs_latlon))
-	tss_samz_cmip6.append(compute_tss(samz_obs_latlon, samz_cmip_latlon))
-	pcc_samz_cmip6.append(compute_pcc(samz_obs_mon_ts, samz_cmip_mon_ts))
-	ivs_samz_cmip6.append(compute_ivs(samz_obs_ann_ts, samz_cmip_ann_ts))
-		
-	mbe_neb_cmip6.append(compute_mbe(neb_cmip_latlon, neb_obs_latlon))
-	rmse_neb_cmip6.append(compute_rmse(neb_cmip_latlon, neb_obs_latlon))
-	tss_neb_cmip6.append(compute_tss(neb_obs_latlon, neb_cmip_latlon))
-	pcc_neb_cmip6.append(compute_pcc(neb_obs_mon_ts, neb_cmip_mon_ts))
-	ivs_neb_cmip6.append(compute_ivs(neb_obs_ann_ts, neb_cmip_ann_ts))
-		
-	mbe_sam_cmip6.append(compute_mbe(sam_cmip_latlon, sam_obs_latlon))
-	rmse_sam_cmip6.append(compute_rmse(sam_cmip_latlon, sam_obs_latlon))
-	tss_sam_cmip6.append(compute_tss(sam_obs_latlon, sam_cmip_latlon))
-	pcc_sam_cmip6.append(compute_pcc(sam_obs_mon_ts, sam_cmip_mon_ts))
-	ivs_sam_cmip6.append(compute_ivs(sam_obs_ann_ts, sam_cmip_ann_ts))
-		
-	mbe_lpb_cmip6.append(compute_mbe(lpb_cmip_latlon, lpb_obs_latlon))
-	rmse_lpb_cmip6.append(compute_rmse(lpb_cmip_latlon, lpb_obs_latlon))
-	tss_lpb_cmip6.append(compute_tss(lpb_obs_latlon, lpb_cmip_latlon))
-	pcc_lpb_cmip6.append(compute_pcc(lpb_obs_mon_ts, lpb_cmip_mon_ts))
-	ivs_lpb_cmip6.append(compute_ivs(lpb_obs_ann_ts, lpb_cmip_ann_ts))
-	
-	mbe_br_cmip6.append(compute_mbe(br_cmip_latlon, br_obs_latlon))
-	rmse_br_cmip6.append(compute_rmse(br_cmip_latlon, br_obs_latlon))
-	tss_br_cmip6.append(compute_tss(br_obs_latlon, br_cmip_latlon))
-	pcc_br_cmip6.append(compute_pcc(br_obs_mon_ts, br_cmip_mon_ts))
-	ivs_br_cmip6.append(compute_ivs(br_obs_ann_ts, br_cmip_ann_ts))
+	r95p_naz_cmip_x, r95p_naz_cmip_y = import_cmip('r95pETCCDI', cmip6[i][0], 'NAZ')
+	r95p_saz_cmip_x, r95p_saz_cmip_y = import_cmip('r95pETCCDI', cmip6[i][0], 'SAZ')
+	r95p_neb_cmip_x, r95p_neb_cmip_y = import_cmip('r95pETCCDI', cmip6[i][0], 'NEB')
+	r95p_sam_cmip_x, r95p_sam_cmip_y = import_cmip('r95pETCCDI', cmip6[i][0], 'SAM')
+	r95p_lpb_cmip_x, r95p_lpb_cmip_y = import_cmip('r95pETCCDI', cmip6[i][0], 'LPB')
 
+	rx5day_naz_cmip_x, rx5day_naz_cmip_y = import_cmip('rx5dayETCCDI', cmip6[i][0], 'NAZ')
+	rx5day_saz_cmip_x, rx5day_saz_cmip_y = import_cmip('rx5dayETCCDI', cmip6[i][0], 'SAZ')
+	rx5day_neb_cmip_x, rx5day_neb_cmip_y = import_cmip('rx5dayETCCDI', cmip6[i][0], 'NEB')
+	rx5day_sam_cmip_x, rx5day_sam_cmip_y = import_cmip('rx5dayETCCDI', cmip6[i][0], 'SAM')
+	rx5day_lpb_cmip_x, rx5day_lpb_cmip_y = import_cmip('rx5dayETCCDI', cmip6[i][0], 'LPB')
+
+	tx90p_naz_cmip_x, tx90p_naz_cmip_y = import_cmip('tx90pETCCDI', cmip6[i][0], 'NAZ')
+	tx90p_saz_cmip_x, tx90p_saz_cmip_y = import_cmip('tx90pETCCDI', cmip6[i][0], 'SAZ')
+	tx90p_neb_cmip_x, tx90p_neb_cmip_y = import_cmip('tx90pETCCDI', cmip6[i][0], 'NEB')
+	tx90p_sam_cmip_x, tx90p_sam_cmip_y = import_cmip('tx90pETCCDI', cmip6[i][0], 'SAM')
+	tx90p_lpb_cmip_x, tx90p_lpb_cmip_y = import_cmip('tx90pETCCDI', cmip6[i][0], 'LPB')
+
+	wsdi_naz_cmip_x, wsdi_naz_cmip_y = import_cmip('wsdiETCCDI', cmip6[i][0], 'NAZ')
+	wsdi_saz_cmip_x, wsdi_saz_cmip_y = import_cmip('wsdiETCCDI', cmip6[i][0], 'SAZ')
+	wsdi_neb_cmip_x, wsdi_neb_cmip_y = import_cmip('wsdiETCCDI', cmip6[i][0], 'NEB')
+	wsdi_sam_cmip_x, wsdi_sam_cmip_y = import_cmip('wsdiETCCDI', cmip6[i][0], 'SAM')
+	wsdi_lpb_cmip_x, wsdi_lpb_cmip_y = import_cmip('wsdiETCCDI', cmip6[i][0], 'LPB')
+	
+	# NAZ
+	ree_cdd_naz.append(compute_ree(cdd_naz_cmip_x, cdd_naz_obs_x))
+	pcc_cdd_naz.append(compute_pcc(cdd_naz_obs_x, cdd_naz_cmip_x))
+	ivs_cdd_naz.append(compute_ivs(cdd_naz_obs_y, cdd_naz_cmip_y))
+	
+	ree_r95p_naz.append(compute_ree(r95p_naz_cmip_x, r95p_naz_obs_x))
+	pcc_r95p_naz.append(compute_pcc(r95p_naz_obs_x, r95p_naz_cmip_x))
+	ivs_r95p_naz.append(compute_ivs(r95p_naz_obs_y, r95p_naz_cmip_y))
+
+	ree_rx5day_naz.append(compute_ree(rx5day_naz_cmip_x, rx5day_naz_obs_x))
+	pcc_rx5day_naz.append(compute_pcc(rx5day_naz_obs_x, rx5day_naz_cmip_x))
+	ivs_rx5day_naz.append(compute_ivs(rx5day_naz_obs_y, rx5day_naz_cmip_y))
+
+	ree_tx90p_naz.append(compute_ree(tx90p_naz_cmip_x, tx90p_naz_obs_x))
+	pcc_tx90p_naz.append(compute_pcc(tx90p_naz_obs_x, tx90p_naz_cmip_x))
+	ivs_tx90p_naz.append(compute_ivs(tx90p_saz_obs_y, tx90p_naz_cmip_y))
+
+	ree_wsdi_naz.append(compute_ree(wsdi_naz_cmip_x, wsdi_naz_obs_x))
+	pcc_wsdi_naz.append(compute_pcc(wsdi_naz_obs_x, wsdi_naz_cmip_x))
+	ivs_wsdi_naz.append(compute_ivs(wsdi_saz_obs_y, wsdi_naz_cmip_y))
+
+	# SAZ
+	ree_cdd_saz.append(compute_ree(cdd_saz_cmip_x, cdd_saz_obs_x))
+	pcc_cdd_saz.append(compute_pcc(cdd_saz_obs_x, cdd_saz_cmip_x))
+	ivs_cdd_saz.append(compute_ivs(cdd_saz_obs_y, cdd_saz_cmip_y))
+	
+	ree_r95p_saz.append(compute_ree(r95p_saz_cmip_x, r95p_saz_obs_x))
+	pcc_r95p_saz.append(compute_pcc(r95p_saz_obs_x, r95p_saz_cmip_x))
+	ivs_r95p_saz.append(compute_ivs(r95p_saz_obs_y, r95p_saz_cmip_y))
+
+	ree_rx5day_saz.append(compute_ree(rx5day_saz_cmip_x, rx5day_saz_obs_x))
+	pcc_rx5day_saz.append(compute_pcc(rx5day_saz_obs_x, rx5day_saz_cmip_x))
+	ivs_rx5day_saz.append(compute_ivs(rx5day_saz_obs_y, rx5day_saz_cmip_y))
+
+	ree_tx90p_saz.append(compute_ree(tx90p_saz_cmip_x, tx90p_saz_obs_x))
+	pcc_tx90p_saz.append(compute_pcc(tx90p_saz_obs_x, tx90p_saz_cmip_x))
+	ivs_tx90p_saz.append(compute_ivs(tx90p_saz_obs_y, tx90p_saz_cmip_y))
+
+	ree_wsdi_saz.append(compute_ree(wsdi_saz_cmip_x, wsdi_saz_obs_x))
+	pcc_wsdi_saz.append(compute_pcc(wsdi_saz_obs_x, wsdi_saz_cmip_x))
+	ivs_wsdi_saz.append(compute_ivs(wsdi_saz_obs_y, wsdi_saz_cmip_y))
+	
+	# NEB
+	ree_cdd_neb.append(compute_ree(cdd_neb_cmip_x, cdd_neb_obs_x))
+	pcc_cdd_neb.append(compute_pcc(cdd_neb_obs_x, cdd_neb_cmip_x))
+	ivs_cdd_neb.append(compute_ivs(cdd_neb_obs_y, cdd_neb_cmip_y))
+	
+	ree_r95p_neb.append(compute_ree(r95p_neb_cmip_x, r95p_neb_obs_x))
+	pcc_r95p_neb.append(compute_pcc(r95p_neb_obs_x, r95p_neb_cmip_x))
+	ivs_r95p_neb.append(compute_ivs(r95p_neb_obs_y, r95p_neb_cmip_y))
+
+	ree_rx5day_neb.append(compute_ree(rx5day_neb_cmip_x, rx5day_neb_obs_x))
+	pcc_rx5day_neb.append(compute_pcc(rx5day_neb_obs_x, rx5day_neb_cmip_x))
+	ivs_rx5day_neb.append(compute_ivs(rx5day_neb_obs_y, rx5day_neb_cmip_y))
+	
+	ree_tx90p_neb.append(compute_ree(tx90p_neb_cmip_x, tx90p_neb_obs_x))
+	pcc_tx90p_neb.append(compute_pcc(tx90p_neb_obs_x, tx90p_neb_cmip_x))
+	ivs_tx90p_neb.append(compute_ivs(tx90p_neb_obs_y, tx90p_neb_cmip_y))
+
+	ree_wsdi_neb.append(compute_ree(wsdi_neb_cmip_x, wsdi_neb_obs_x))
+	pcc_wsdi_neb.append(compute_pcc(wsdi_neb_obs_x, wsdi_neb_cmip_x))
+	ivs_wsdi_neb.append(compute_ivs(wsdi_neb_obs_y, wsdi_neb_cmip_y))
+
+	# SAM
+	ree_cdd_sam.append(compute_ree(cdd_sam_cmip_x, cdd_sam_obs_x))
+	pcc_cdd_sam.append(compute_pcc(cdd_sam_obs_x, cdd_sam_cmip_x))
+	ivs_cdd_sam.append(compute_ivs(cdd_sam_obs_y, cdd_sam_cmip_y))
+	
+	ree_r95p_sam.append(compute_ree(r95p_sam_cmip_x, r95p_sam_obs_x))
+	pcc_r95p_sam.append(compute_pcc(r95p_sam_obs_x, r95p_sam_cmip_x))
+	ivs_r95p_sam.append(compute_ivs(r95p_sam_obs_y, r95p_sam_cmip_y))
+
+	ree_rx5day_sam.append(compute_ree(rx5day_sam_cmip_x, rx5day_sam_obs_x))
+	pcc_rx5day_sam.append(compute_pcc(rx5day_sam_obs_x, rx5day_sam_cmip_x))
+	ivs_rx5day_sam.append(compute_ivs(rx5day_sam_obs_y, rx5day_sam_cmip_y))
+
+	ree_tx90p_sam.append(compute_ree(tx90p_sam_cmip_x, tx90p_sam_obs_x))
+	pcc_tx90p_sam.append(compute_pcc(tx90p_sam_obs_x, tx90p_sam_cmip_x))
+	ivs_tx90p_sam.append(compute_ivs(tx90p_sam_obs_y, tx90p_sam_cmip_y))
+	
+	ree_wsdi_sam.append(compute_ree(wsdi_sam_cmip_x, wsdi_sam_obs_x))
+	pcc_wsdi_sam.append(compute_pcc(wsdi_sam_obs_x, wsdi_sam_cmip_x))
+	ivs_wsdi_sam.append(compute_ivs(wsdi_sam_obs_y, wsdi_sam_cmip_y))
+
+	# LPB
+	ree_cdd_lpb.append(compute_ree(cdd_lpb_cmip_x, cdd_lpb_obs_x))
+	pcc_cdd_lpb.append(compute_pcc(cdd_lpb_obs_x, cdd_lpb_cmip_x))
+	ivs_cdd_lpb.append(compute_ivs(cdd_lpb_obs_y, cdd_lpb_cmip_y))
+	
+	ree_r95p_lpb.append(compute_ree(r95p_lpb_cmip_x, r95p_lpb_obs_x))
+	pcc_r95p_lpb.append(compute_pcc(r95p_lpb_obs_x, r95p_lpb_cmip_x))
+	ivs_r95p_lpb.append(compute_ivs(r95p_lpb_obs_y, r95p_lpb_cmip_y))
+
+	ree_rx5day_lpb.append(compute_ree(rx5day_lpb_cmip_x, rx5day_lpb_obs_x))
+	pcc_rx5day_lpb.append(compute_pcc(rx5day_lpb_obs_x, rx5day_lpb_cmip_x))
+	ivs_rx5day_lpb.append(compute_ivs(rx5day_lpb_obs_y, rx5day_lpb_cmip_y))
+
+	ree_tx90p_lpb.append(compute_ree(tx90p_lpb_cmip_x, tx90p_lpb_obs_x))
+	pcc_tx90p_lpb.append(compute_pcc(tx90p_lpb_obs_x, tx90p_lpb_cmip_x))
+	ivs_tx90p_lpb.append(compute_ivs(tx90p_lpb_obs_y, tx90p_lpb_cmip_y))
+	
+	ree_wsdi_lpb.append(compute_ree(wsdi_lpb_cmip_x, wsdi_lpb_obs_x))
+	pcc_wsdi_lpb.append(compute_pcc(wsdi_lpb_obs_x, wsdi_lpb_cmip_x))
+	ivs_wsdi_lpb.append(compute_ivs(wsdi_lpb_obs_y, wsdi_lpb_cmip_y))
+		
 	legend.append(cmip6[i][0])
 
-if idx == 'mbe':
-	namz_cmip6 = mbe_namz_cmip6
-	samz_cmip6 = mbe_samz_cmip6
-	neb_cmip6 = mbe_neb_cmip6
-	sam_cmip6 = mbe_sam_cmip6
-	lpb_cmip6 = mbe_lpb_cmip6
-	br_cmip6 = mbe_br_cmip6
-	idx_label = 'MBE'
-elif idx == 'rmse':
-	namz_cmip6 = rmse_namz_cmip6
-	samz_cmip6 = rmse_samz_cmip6
-	neb_cmip6 = rmse_neb_cmip6
-	sam_cmip6 = rmse_sam_cmip6
-	lpb_cmip6 = rmse_lpb_cmip6
-	br_cmip6 = rmse_br_cmip6
-	idx_label = 'RMSE'
-elif idx == 'tss':
-	namz_cmip6 = tss_namz_cmip6
-	samz_cmip6 = tss_samz_cmip6
-	neb_cmip6 = tss_neb_cmip6
-	sam_cmip6 = tss_sam_cmip6
-	lpb_cmip6 = tss_lpb_cmip6
-	br_cmip6 = tss_br_cmip6
-	idx_label = 'TSS'
-elif idx == 'pcc':
-	namz_cmip6 = pcc_namz_cmip6
-	samz_cmip6 = pcc_samz_cmip6
-	neb_cmip6 = pcc_neb_cmip6
-	sam_cmip6 = pcc_sam_cmip6
-	lpb_cmip6 = pcc_lpb_cmip6
-	br_cmip6 = pcc_br_cmip6
-	idx_label = 'PCC'
-else:
-	namz_cmip6 = ivs_namz_cmip6
-	samz_cmip6 = ivs_samz_cmip6
-	neb_cmip6 = ivs_neb_cmip6
-	sam_cmip6 = ivs_sam_cmip6
-	lpb_cmip6 = ivs_lpb_cmip6
-	br_cmip6 = ivs_br_cmip6
-	idx_label = 'IVS'
-		
-sort_list_namz = sort_list(namz_cmip6)
-model_list_namz = []
-value_list_namz = []
-for i in sort_list_namz:
-	model_list_namz.append(cmip6[i+1][0])
-	value_list_namz.append(namz_cmip6[i])
+# CDD
+sort_ree_cdd_naz = sort_list_x(ree_cdd_naz)
+sort_pcc_cdd_naz = sort_list_y(pcc_cdd_naz)
+sort_ivs_cdd_naz = sort_list_z(ivs_cdd_naz)
+	
+sort_ree_cdd_saz = sort_list_x(ree_cdd_saz)
+sort_pcc_cdd_saz = sort_list_y(pcc_cdd_saz)
+sort_ivs_cdd_saz = sort_list_z(ivs_cdd_saz)
 
-sort_list_samz = sort_list(samz_cmip6)
-model_list_samz = []
-value_list_samz = []
-for ii in sort_list_samz:
-	model_list_samz.append(cmip6[ii+1][0])
-	value_list_samz.append(samz_cmip6[ii])
+sort_ree_cdd_neb = sort_list_x(ree_cdd_neb)
+sort_pcc_cdd_neb = sort_list_y(pcc_cdd_neb)
+sort_ivs_cdd_neb = sort_list_z(ivs_cdd_neb)
 
-sort_list_neb = sort_list(neb_cmip6)
-model_list_neb = []
-value_list_neb = []
-for iii in sort_list_neb:
-	model_list_neb.append(cmip6[iii+1][0])
-	value_list_neb.append(neb_cmip6[iii])
+sort_ree_cdd_sam = sort_list_x(ree_cdd_sam)
+sort_pcc_cdd_sam = sort_list_y(pcc_cdd_sam)
+sort_ivs_cdd_sam = sort_list_z(ivs_cdd_sam)
 
-sort_list_sam = sort_list(sam_cmip6)
-model_list_sam = []
-value_list_sam = []
-for iv in sort_list_sam:
-	model_list_sam.append(cmip6[iv+1][0])
-	value_list_sam.append(sam_cmip6[iv])
+sort_ree_cdd_lpb = sort_list_x(ree_cdd_lpb)
+sort_pcc_cdd_lpb = sort_list_y(pcc_cdd_lpb)
+sort_ivs_cdd_lpb = sort_list_z(ivs_cdd_lpb)
 
-sort_list_lpb = sort_list(lpb_cmip6)
-model_list_lpb = []
-value_list_lpb = []
-for v in sort_list_lpb:
-	model_list_lpb.append(cmip6[v+1][0])
-	value_list_lpb.append(lpb_cmip6[v])
+# R95P
+sort_ree_r95p_naz = sort_list_x(ree_r95p_naz)
+sort_pcc_r95p_naz = sort_list_y(pcc_r95p_naz)
+sort_ivs_r95p_naz = sort_list_z(ivs_r95p_naz)
 
-sort_list_br = sort_list(br_cmip6)
-model_list_br = []
-value_list_br = []
-for vi in sort_list_br:
-	model_list_br.append(cmip6[vi+1][0])
-	value_list_br.append(br_cmip6[vi])
+sort_ree_r95p_saz = sort_list_x(ree_r95p_saz)
+sort_pcc_r95p_saz = sort_list_y(pcc_r95p_saz)
+sort_ivs_r95p_saz = sort_list_z(ivs_r95p_saz)
+
+sort_ree_r95p_neb = sort_list_x(ree_r95p_neb)
+sort_pcc_r95p_neb = sort_list_y(pcc_r95p_neb)
+sort_ivs_r95p_neb = sort_list_z(ivs_r95p_neb)
+
+sort_ree_r95p_sam = sort_list_x(ree_r95p_sam)
+sort_pcc_r95p_sam = sort_list_y(pcc_r95p_sam)
+sort_ivs_r95p_sam = sort_list_z(ivs_r95p_sam)
+
+sort_ree_r95p_lpb = sort_list_x(ree_r95p_lpb)
+sort_pcc_r95p_lpb = sort_list_y(pcc_r95p_lpb)
+sort_ivs_r95p_lpb = sort_list_z(ivs_r95p_lpb)
+
+# RX5DAY
+sort_ree_rx5day_naz = sort_list_x(ree_rx5day_naz)
+sort_pcc_rx5day_naz = sort_list_y(pcc_rx5day_naz)
+sort_ivs_rx5day_naz = sort_list_z(ivs_rx5day_naz)
+
+sort_ree_rx5day_saz = sort_list_x(ree_rx5day_saz)
+sort_pcc_rx5day_saz = sort_list_y(pcc_rx5day_saz)
+sort_ivs_rx5day_saz = sort_list_z(ivs_rx5day_saz)
+
+sort_ree_rx5day_neb = sort_list_x(ree_rx5day_neb)
+sort_pcc_rx5day_neb = sort_list_y(pcc_rx5day_neb)
+sort_ivs_rx5day_neb = sort_list_z(ivs_rx5day_neb)
+
+sort_ree_rx5day_sam = sort_list_x(ree_rx5day_sam)
+sort_pcc_rx5day_sam = sort_list_y(pcc_rx5day_sam)
+sort_ivs_rx5day_sam = sort_list_z(ivs_rx5day_sam)
+
+sort_ree_rx5day_lpb = sort_list_x(ree_rx5day_lpb)
+sort_pcc_rx5day_lpb = sort_list_y(pcc_rx5day_lpb)
+sort_ivs_rx5day_lpb = sort_list_z(ivs_rx5day_lpb)
+
+# TX90P
+sort_ree_tx90p_naz = sort_list_x(ree_tx90p_naz)
+sort_pcc_tx90p_naz = sort_list_y(pcc_tx90p_naz)
+sort_ivs_tx90p_naz = sort_list_z(ivs_tx90p_naz)
+
+sort_ree_tx90p_saz = sort_list_x(ree_tx90p_saz)
+sort_pcc_tx90p_saz = sort_list_y(pcc_tx90p_saz)
+sort_ivs_tx90p_saz = sort_list_z(ivs_tx90p_saz)
+
+sort_ree_tx90p_neb = sort_list_x(ree_tx90p_neb)
+sort_pcc_tx90p_neb = sort_list_y(pcc_tx90p_neb)
+sort_ivs_tx90p_neb = sort_list_z(ivs_tx90p_neb)
+
+sort_ree_tx90p_sam = sort_list_x(ree_tx90p_sam)
+sort_pcc_tx90p_sam = sort_list_y(pcc_tx90p_sam)
+sort_ivs_tx90p_sam = sort_list_z(ivs_tx90p_sam)
+
+sort_ree_tx90p_lpb = sort_list_x(ree_tx90p_lpb)
+sort_pcc_tx90p_lpb = sort_list_y(pcc_tx90p_lpb)
+sort_ivs_tx90p_lpb = sort_list_z(ivs_tx90p_lpb)
+
+# WSDI
+sort_ree_wsdi_naz = sort_list_x(ree_wsdi_naz)
+sort_pcc_wsdi_naz = sort_list_y(pcc_wsdi_naz)
+sort_ivs_wsdi_naz = sort_list_z(ivs_wsdi_naz)
+
+sort_ree_wsdi_saz = sort_list_x(ree_wsdi_saz)
+sort_pcc_wsdi_saz = sort_list_y(pcc_wsdi_saz)
+sort_ivs_wsdi_saz = sort_list_z(ivs_wsdi_saz)
+
+sort_ree_wsdi_neb = sort_list_x(ree_wsdi_neb)
+sort_pcc_wsdi_neb = sort_list_y(pcc_wsdi_neb)
+sort_ivs_wsdi_neb = sort_list_z(ivs_wsdi_neb)
+
+sort_ree_wsdi_sam = sort_list_x(ree_wsdi_sam)
+sort_pcc_wsdi_sam = sort_list_y(pcc_wsdi_sam)
+sort_ivs_wsdi_sam = sort_list_z(ivs_wsdi_sam)
+
+sort_ree_wsdi_lpb = sort_list_x(ree_wsdi_lpb)
+sort_pcc_wsdi_lpb = sort_list_y(pcc_wsdi_lpb)
+sort_ivs_wsdi_lpb = sort_list_z(ivs_wsdi_lpb)
+
+rank_cdd_naz = np.array([sort_ivs_cdd_naz, sort_pcc_cdd_naz, sort_ree_cdd_naz])
+rank_cdd_saz = np.array([sort_ivs_cdd_saz, sort_pcc_cdd_saz, sort_ree_cdd_saz])
+rank_cdd_neb = np.array([sort_ivs_cdd_neb, sort_pcc_cdd_neb, sort_ree_cdd_neb])
+rank_cdd_sam = np.array([sort_ivs_cdd_sam, sort_pcc_cdd_sam, sort_ree_cdd_sam])
+rank_cdd_lpb = np.array([sort_ivs_cdd_lpb, sort_pcc_cdd_lpb, sort_ree_cdd_lpb])
+
+rank_r95p_naz = np.array([sort_ivs_r95p_naz, sort_pcc_r95p_naz, sort_ree_r95p_naz])
+rank_r95p_saz = np.array([sort_ivs_r95p_saz, sort_pcc_r95p_saz, sort_ree_r95p_saz])
+rank_r95p_neb = np.array([sort_ivs_r95p_neb, sort_pcc_r95p_neb, sort_ree_r95p_neb])
+rank_r95p_sam = np.array([sort_ivs_r95p_sam, sort_pcc_r95p_sam, sort_ree_r95p_sam])
+rank_r95p_lpb = np.array([sort_ivs_r95p_lpb, sort_pcc_r95p_lpb, sort_ree_r95p_lpb])
+
+rank_rx5day_naz = np.array([sort_ivs_rx5day_naz, sort_pcc_rx5day_naz, sort_ree_rx5day_naz])
+rank_rx5day_saz = np.array([sort_ivs_rx5day_saz, sort_pcc_rx5day_saz, sort_ree_rx5day_saz])
+rank_rx5day_neb = np.array([sort_ivs_rx5day_neb, sort_pcc_rx5day_neb, sort_ree_rx5day_neb])
+rank_rx5day_sam = np.array([sort_ivs_rx5day_sam, sort_pcc_rx5day_sam, sort_ree_rx5day_sam])
+rank_rx5day_lpb = np.array([sort_ivs_rx5day_lpb, sort_pcc_rx5day_lpb, sort_ree_rx5day_lpb])
+
+rank_tx90p_naz = np.array([sort_ivs_tx90p_naz, sort_pcc_tx90p_naz, sort_ree_tx90p_naz])
+rank_tx90p_saz = np.array([sort_ivs_tx90p_saz, sort_pcc_tx90p_saz, sort_ree_tx90p_saz])
+rank_tx90p_neb = np.array([sort_ivs_tx90p_neb, sort_pcc_tx90p_neb, sort_ree_tx90p_neb])
+rank_tx90p_sam = np.array([sort_ivs_tx90p_sam, sort_pcc_tx90p_sam, sort_ree_tx90p_sam])
+rank_tx90p_lpb = np.array([sort_ivs_tx90p_lpb, sort_pcc_tx90p_lpb, sort_ree_tx90p_lpb])
+
+rank_wsdi_naz = np.array([sort_ivs_wsdi_naz, sort_pcc_wsdi_naz, sort_ree_wsdi_naz])
+rank_wsdi_saz = np.array([sort_ivs_wsdi_saz, sort_pcc_wsdi_saz, sort_ree_wsdi_saz])
+rank_wsdi_neb = np.array([sort_ivs_wsdi_neb, sort_pcc_wsdi_neb, sort_ree_wsdi_neb])
+rank_wsdi_sam = np.array([sort_ivs_wsdi_sam, sort_pcc_wsdi_sam, sort_ree_wsdi_sam])
+rank_wsdi_lpb = np.array([sort_ivs_wsdi_lpb, sort_pcc_wsdi_lpb, sort_ree_wsdi_lpb])
 
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(10, 8))
 
-if var_cmip6 == 'pr':
-	color = 'blue'
-else:
-	color = 'red'
-	
-ax = fig.add_subplot(3, 2, 1)  
-ax.barh(model_list_namz, value_list_namz, color=color, edgecolor='white')
-plt.title(u'(a) NAMZ', loc='left', fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	             
-ax = fig.add_subplot(3, 2, 2)  
-ax.barh(model_list_samz, value_list_samz, color=color, edgecolor='white')
-plt.title(u'(b) SAMZ', loc='left', fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	        
-ax = fig.add_subplot(3, 2, 3)  
-ax.barh(model_list_neb, value_list_neb, color=color, edgecolor='white')
-plt.title(u'(c) NEB', loc='left', fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	        
-ax = fig.add_subplot(3, 2, 4)  
-ax.barh(model_list_sam, value_list_sam, color=color, edgecolor='white')
-plt.title(u'(d) SAM', loc='left', fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	        
-ax = fig.add_subplot(3, 2, 5)  
-ax.barh(model_list_lpb, value_list_lpb, color=color, edgecolor='white')
-plt.title(u'(e) LPB', loc='left', fontsize=8, fontweight='bold')
-plt.xlabel('{0}'.format(idx_label), fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
-	
-ax = fig.add_subplot(3, 2, 6)  
-ax.barh(model_list_br, value_list_br, color=color, edgecolor='white')
-plt.title(u'(f) BR', loc='left', fontsize=8, fontweight='bold')
-plt.xlabel('{0}'.format(idx_label), fontsize=8, fontweight='bold')
-plt.yticks(fontsize=7)
-plt.xticks(fontsize=7)
-ax.xaxis.set_tick_params(pad=-5)
-ax.xaxis.set_ticks_position('none')
-ax.yaxis.set_ticks_position('none')
-ax.grid(b=True, color ='gray', linestyle='--', linewidth=0.5, alpha = 0.2)
-for s in ['top', 'bottom', 'left', 'right']:
-    ax.spines[s].set_visible(False)
-for i in ax.patches:
-    plt.text(i.get_width()+0.02, i.get_y()+0.5, str(round((i.get_width()), 2)), fontsize=7, fontweight='bold', color='gray')
-if idx == 'rmse':
-	ax.invert_yaxis()
-elif idx == 'ivs':
-	ax.invert_yaxis()
+xlabels = legend
+ylabels = ['IVS', 'PCC', 'RE']
 
-plt.subplots_adjust(wspace=0.35)
-                    	                
+norm = colors.BoundaryNorm(boundaries=np.arange(1, 18, 1), ncolors=256)
+color = cm.rainbow
+
+ax = fig.add_subplot(5, 5, 1)  
+pcm = ax.pcolormesh(rank_cdd_naz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(a) CDD', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_cdd_naz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_cdd_naz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.set_ylabel('NAZ', fontweight='bold', fontsize=8, rotation=-90, labelpad=455)
+ax.yaxis.set_label_position("right")
+plt.setp(ax.get_xticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 2)  
+pcm = ax.pcolormesh(rank_r95p_naz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(b) R95p', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_r95p_naz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_r95p_naz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 3)  
+pcm = ax.pcolormesh(rank_rx5day_naz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(c) Rx5day', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_rx5day_naz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_rx5day_naz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 4)  
+pcm = ax.pcolormesh(rank_tx90p_naz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(d) Tx90p', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_tx90p_naz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_tx90p_naz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 5)  
+pcm = ax.pcolormesh(rank_wsdi_naz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(e) WSDI', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_wsdi_naz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_wsdi_naz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+cbar = plt.colorbar(pcm, cax=fig.add_axes([0.92, 0.28, 0.02, 0.43]), pad=0.01)
+cbar.ax.tick_params(labelsize=8)
+
+ax = fig.add_subplot(5, 5, 6)  
+pcm = ax.pcolormesh(rank_cdd_saz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(f)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_cdd_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_cdd_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.set_ylabel('SAZ', fontweight='bold', fontsize=8, rotation=-90, labelpad=455)
+ax.yaxis.set_label_position("right")
+plt.setp(ax.get_xticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 7)  
+pcm = ax.pcolormesh(rank_r95p_saz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(g)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_r95p_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_r95p_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 8)  
+pcm = ax.pcolormesh(rank_rx5day_saz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(h)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_rx5day_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_rx5day_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 9)  
+pcm = ax.pcolormesh(rank_tx90p_saz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(i)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_tx90p_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_tx90p_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 10)  
+pcm = ax.pcolormesh(rank_wsdi_saz, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(j)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_wsdi_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_wsdi_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 11)  
+pcm = ax.pcolormesh(rank_cdd_neb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(k)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_cdd_neb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_cdd_neb.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.set_ylabel('NEB', fontweight='bold', fontsize=8, rotation=-90, labelpad=455)
+ax.yaxis.set_label_position("right")
+plt.setp(ax.get_xticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 12)  
+pcm = ax.pcolormesh(rank_r95p_neb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(l)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_r95p_neb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_r95p_neb.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 13)  
+pcm = ax.pcolormesh(rank_rx5day_neb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(m)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_rx5day_neb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_rx5day_neb.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 14)  
+pcm = ax.pcolormesh(rank_tx90p_neb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(n)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_tx90p_neb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_tx90p_neb.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 15)  
+pcm = ax.pcolormesh(rank_wsdi_neb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(o)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_wsdi_neb.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_wsdi_neb.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 16)  
+pcm = ax.pcolormesh(rank_cdd_sam, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(p)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_cdd_sam.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_cdd_sam.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.set_ylabel('NEB', fontweight='bold', fontsize=8, rotation=-90, labelpad=455)
+ax.yaxis.set_label_position("right")
+plt.setp(ax.get_xticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 17)  
+pcm = ax.pcolormesh(rank_r95p_sam, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(q)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_r95p_sam.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_r95p_sam.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 18)  
+pcm = ax.pcolormesh(rank_rx5day_sam, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(r)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_rx5day_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_rx5day_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 19)  
+pcm = ax.pcolormesh(rank_tx90p_sam, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(s)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_tx90p_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_tx90p_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 20)  
+pcm = ax.pcolormesh(rank_wsdi_sam, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(t)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_wsdi_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_wsdi_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=8)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+ax.yaxis.set_label_position("right")
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 21)  
+pcm = ax.pcolormesh(rank_cdd_lpb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(u)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_cdd_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_cdd_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=7, rotation=90)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.set_ylabel('LPB', fontweight='bold', fontsize=8, rotation=-90, labelpad=455)
+ax.yaxis.set_label_position("right")
+
+ax = fig.add_subplot(5, 5, 22)  
+pcm = ax.pcolormesh(rank_r95p_lpb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(v)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_r95p_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_r95p_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=7, rotation=90)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 23)  
+pcm = ax.pcolormesh(rank_rx5day_lpb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(w)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_rx5day_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_rx5day_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=7, rotation=90)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 24)  
+pcm = ax.pcolormesh(rank_tx90p_lpb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(x)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_tx90p_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_tx90p_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=7, rotation=90)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+plt.setp(ax.get_yticklabels(), visible=False)
+
+ax = fig.add_subplot(5, 5, 25)  
+pcm = ax.pcolormesh(rank_wsdi_lpb, edgecolors='white', linewidths=0., norm=norm, cmap=color)
+ax.set_title(u'(y)', loc='left', fontweight='bold', fontsize=8)
+ax.set_xticks(np.arange(rank_wsdi_saz.shape[1]) + 0.5)
+ax.set_yticks(np.arange(rank_wsdi_saz.shape[0]) + 0.5)
+ax.set_xticklabels(xlabels, fontsize=7, rotation=90)
+ax.set_yticklabels(ylabels, fontsize=8)
+ax.get_yaxis().set_visible(False)
+ax.set_ylabel('LPB', fontweight='bold', fontsize=8, rotation=-90, labelpad=10)
+ax.yaxis.set_label_position("right")
+plt.setp(ax.get_yticklabels(), visible=False)
+
+plt.subplots_adjust(wspace=0.)
+plt.subplots_adjust(hspace=0.25)
+
 # Path out to save figure
-path_out = '/home/nice/Documentos/AdaptaBrasil_MCTI/figs/figs_report-II'
-name_out = 'pyplt_rank_{0}_cmip6_{1}_{2}.png'.format(idx, var_cmip6, dt)
+path_out = '/home/nice/Documentos/paper_mari/figs'
+name_out = 'pyplt_portrait_rank_etccdi_indices_cmip6.png'
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.show()
 exit()
+
+
+
+
+
+
+
+
+
+
+
+	
+
 
