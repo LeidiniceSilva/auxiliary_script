@@ -724,7 +724,7 @@ ax.set_xticks(np.arange(rank_cdd_sam.shape[1]) + 0.5)
 ax.set_yticks(np.arange(rank_cdd_sam.shape[0]) + 0.5)
 ax.set_xticklabels(xlabels, fontsize=8)
 ax.set_yticklabels(ylabels, fontsize=8)
-ax.set_ylabel('NEB', fontweight='bold', fontsize=8, rotation=-90, labelpad=455)
+ax.set_ylabel('SAM', fontweight='bold', fontsize=8, rotation=-90, labelpad=455)
 ax.yaxis.set_label_position("right")
 plt.setp(ax.get_xticklabels(), visible=False)
 
