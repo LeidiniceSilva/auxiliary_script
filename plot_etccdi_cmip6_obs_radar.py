@@ -16,7 +16,7 @@ import matplotlib.colors as colors
 
 def import_obs(param, area):
 	
-	path  = '/home/nice/Documentos/paper_mari/database/obs'
+	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/paper_mari/database/obs'
 	arq   = '{0}/{1}_19860101_20050131_BR-DWGD_UFES_UTEXAS_v_3.0_0.5.nc_{2}.nc'.format(path, param, area)	
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[param][:] 
@@ -49,7 +49,7 @@ def import_cmip(param, model, area):
 		u'tx90pETCCDI': u'tx90pETCCDI',
 		u'wsdiETCCDI': u'wsdiETCCDI'}
 	
-	path  = '/home/nice/Documentos/paper_mari/database/cmip6'
+	path  = '/home/nice/Documentos/AdaptaBrasil_MCTI/paper_mari/database/cmip6'
 	arq   = '{0}/{1}_yr_{2}_historical_1986-2005.nc_{3}.nc'.format(path, param, model, area)		
 	data  = netCDF4.Dataset(arq)
 	var   = data.variables[dict_var[param]][:] 
@@ -278,7 +278,7 @@ legend = []
 
 for i in range(1, 18):
 	
-	print(cmip6[i])
+	print(i, ':  ', cmip6[i])
 	
 	cdd_naz_cmip_x, cdd_naz_cmip_y = import_cmip('cddETCCDI', cmip6[i][0], 'NAZ')
 	cdd_saz_cmip_x, cdd_saz_cmip_y = import_cmip('cddETCCDI', cmip6[i][0], 'SAZ')
@@ -589,6 +589,13 @@ sort_cri_wsdi_saz = sort_list_y(cri_wsdi_saz)
 sort_cri_wsdi_neb = sort_list_y(cri_wsdi_neb)
 sort_cri_wsdi_sam = sort_list_y(cri_wsdi_sam)
 sort_cri_wsdi_lpb = sort_list_y(cri_wsdi_lpb)
+
+print('CRI wsdi NAZ: ', sort_cri_wsdi_naz)
+print('CRI wsdi SAZ: ', sort_cri_wsdi_saz)
+print('CRI wsdi NEB: ', sort_cri_wsdi_neb)
+print('CRI wsdi SAM: ', sort_cri_wsdi_sam)
+print('CRI wsdi LPB: ', sort_cri_wsdi_lpb)
+exit()
 
 # Plot cmip models and obs database 
 fig = plt.figure(figsize=(9, 7))
