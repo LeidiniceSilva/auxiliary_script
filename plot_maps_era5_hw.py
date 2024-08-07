@@ -176,7 +176,6 @@ plt.quiverkey(plt_map1, X=0.9, Y=1.05, U=np.max(u_mean_ii[0,3,:,:]), label='5m/s
 cbar = plt.colorbar(plt_map,  cax=fig.add_axes([0.92, 0.105, 0.01, 0.18]))
 cbar.ax.tick_params(labelsize=font_size)
 
-
 # Path out to save figure
 path_out = '/home/esp-shared-a/Distribution/Users/epichell/mdasilva/ERA5/'
 name_out = 'pyplt_maps_anom_era5_heat-waves_2023.png'
