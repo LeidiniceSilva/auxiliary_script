@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 var = 'Tmax'
 period = '1991_2023'
 
-path = '/home/esp-shared-a/Distribution/Users/epichell/mdasilva/Study_case/Heat_wave'
+path = '/afs/ictp.it/home/m/mda_silv/Documents/Heat_wave'
 
 def comp_anom(region):
 
@@ -60,29 +60,24 @@ def comp_anom(region):
 	# Create a Date column for plotting
 	daily_avg_temps_2023['Date'] = pd.to_datetime(daily_avg_temps_2023[['Month', 'Day']].assign(Year=2023))
 
-
 	return daily_avg_temps_2023
 
 
 # Import dataset
 day_anom_son_2023_CO = comp_anom('CO')
-day_anom_son_2023_N = comp_anom('N')
-day_anom_son_2023_NE = comp_anom('NE')
 day_anom_son_2023_SE = comp_anom('SE')
 
 # Plot figure 
-fig = plt.figure(figsize=(12, 6))
+fig = plt.figure()
 
 colors_CO = ['red' if value > 0 else 'blue' for value in day_anom_son_2023_CO['Anomaly']]
-colors_N = ['red' if value > 0 else 'blue' for value in day_anom_son_2023_N['Anomaly']]
-colors_NE = ['red' if value > 0 else 'blue' for value in day_anom_son_2023_NE['Anomaly']]
 colors_SE = ['red' if value > 0 else 'blue' for value in day_anom_son_2023_SE['Anomaly']]
 
 # Subplot 1
-ax=fig.add_subplot(2, 2, 1)
+ax=fig.add_subplot(2, 1, 1)
 plt.bar(day_anom_son_2023_CO['Date'], day_anom_son_2023_CO['Anomaly'], color=colors_CO, edgecolor='black', linewidth=1)
 plt.title('(a)', loc='left', fontweight='bold')
-plt.ylabel('Temperature Anomaly (°C)', fontweight='bold')
+plt.ylabel('Tmax anomaly (°C)', fontweight='bold')
 plt.ylim(-10,10)
 plt.grid(True, linestyle='--', alpha=0.8)
 plt.axhline(0, color='black', linewidth=0.8)
@@ -90,35 +85,14 @@ plt.xticks(rotation=45)
 plt.setp(ax.get_xticklabels(), visible=False)
 
 # Subplot 2
-ax=fig.add_subplot(2, 2, 2)
-plt.bar(day_anom_son_2023_N['Date'], day_anom_son_2023_N['Anomaly'], color=colors_N, edgecolor='black', linewidth=1)
-plt.title('(b)', loc='left', fontweight='bold')
-plt.ylim(-10,10)
-plt.grid(True, linestyle='--', alpha=0.8)
-plt.axhline(0, color='black', linewidth=0.8)
-plt.xticks(rotation=45)
-plt.setp(ax.get_xticklabels(), visible=False)
-
-# Subplot 3
-ax=fig.add_subplot(2, 2, 3)
-plt.bar(day_anom_son_2023_NE['Date'], day_anom_son_2023_NE['Anomaly'], color=colors_NE, edgecolor='black', linewidth=1)
-plt.title('(c)', loc='left', fontweight='bold')
-plt.xlabel('Date', fontweight='bold')
-plt.ylabel('Temperature Anomaly (°C)', fontweight='bold')
-plt.ylim(-10,10)
-plt.grid(True, linestyle='--', alpha=0.8)
-plt.axhline(0, color='black', linewidth=0.8)
-plt.xticks(rotation=45)
-
-# Subplot 4
-ax=fig.add_subplot(2, 2, 4)
+ax=fig.add_subplot(2, 1, 2)
 plt.bar(day_anom_son_2023_SE['Date'], day_anom_son_2023_SE['Anomaly'], color=colors_SE, edgecolor='black', linewidth=1)
-plt.title('(d)', loc='left', fontweight='bold')
-plt.xlabel('Date', fontweight='bold')
+plt.title('(b)', loc='left', fontweight='bold')
+plt.ylabel('Tmax anomaly (°C)', fontweight='bold')
 plt.ylim(-10,10)
 plt.grid(True, linestyle='--', alpha=0.8)
 plt.axhline(0, color='black', linewidth=0.8)
-plt.xticks(rotation=45)	
+plt.xticks(rotation=45)
 	
 # Path out to save figure
 path_out = '{0}/figs'.format(path)
